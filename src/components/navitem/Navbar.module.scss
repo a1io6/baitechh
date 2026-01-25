@@ -1,0 +1,47 @@
+// Переменные
+$bg-color: #f8f9fa;
+$card-bg: #ffffff;
+$text-color: #334155;
+$border-color: #e2e8f0;
+$shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+$hover-border: #3b82f6;
+
+.navContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 31px;
+  padding-bottom: 30px;
+  justify-content: start;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 40px;
+  background-color: #F5F7FA;
+  border: 1px solid $border-color;
+  border-radius: 10px; // Скругление как на фото
+  text-decoration: none;
+  box-shadow: $shadow;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    border-color: $hover-border;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  }
+
+  .label {
+    color: $text-color;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .icon {
+    display: flex;
+    align-items: center;
+    color: #1e293b; // Темный цвет иконок
+  }
+}

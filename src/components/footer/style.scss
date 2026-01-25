@@ -1,0 +1,312 @@
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+footer{
+  width: 100%;
+  background: #00162A;
+}
+/* === CONTAINER === */
+.footer__container {
+  margin: 0 auto;
+   max-width: 1440px !important;
+  display: grid;
+  color: #fff;
+  grid-template-columns: 1.3fr 1fr 1fr 1.4fr;
+  gap: 40px;
+  padding: 60px 80px;
+  align-items: flex-start;
+}
+
+/* === LOGO === */
+.footer__logo {
+  width: 150px;
+  margin-bottom: 28px;
+}
+
+/* === INFO ITEMS === */
+.footer__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  color: #cbd5e1;
+}
+.footer__item:first-of-type span {
+  color: #fff;
+}
+.footer__item svg {
+  font-size: 18px;
+  color: #A1B1CF;
+  margin-top: 3px;
+}
+
+
+/* === SOCIALS (ОНДОЛГОН) === */
+.footer__socials {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.footer__social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #cbd5e1;
+  font-size: 14px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.footer__social:hover {
+  opacity: 0.85;
+  transform: translateX(3px);
+}
+
+.footer__social-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer__social-icon svg {
+  font-size: 18px;
+  color: #22c55e;
+}
+
+.footer__social-text {
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+/* === COLUMNS === */
+
+.footer__col h4 {
+  margin-top: 100px;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 22px;
+  color: #fff;
+}
+
+.footer__col ul {
+  list-style: none;
+}
+
+.footer__col ul li {
+  margin-bottom: 2px;
+}
+
+.footer__col ul li a {
+  color: #cbd5e1;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer__col ul li a:hover {
+  color: #22c55e;
+}
+
+.footer__col ul h2{
+  font-size: 20px;
+  font-weight:500;
+}
+/* === SUBSCRIBE === */
+.footer__subscribe-text {
+  font-size: 14px;
+  color: #cbd5e1;
+  margin: 35px 0 16px;
+  line-height: 1.5;
+}
+
+.footer__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid #22c55e;
+  color: #22c55e;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.footer__btn:hover {
+  background: #22c55e;
+  color: #00162A;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+}
+
+/* === MAP === */
+.footer__map {
+  position: relative;
+  width: 100%;
+  max-width: 299px;
+  height: 250px;
+  margin-top: 100px;
+}
+
+.footer__map-title {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: rgba(0, 22, 42, 0.85);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.footer__map iframe {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  border: none;
+}
+
+/* === BOTTOM === */
+.footer__bottom {
+  text-align: center;
+  font-size: 13px;
+  color: #94a3b8;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── previous styles remain unchanged until responsive part ── */
+
+.footer {
+  width: 100%;
+  background: #00162A;
+}
+
+/* === ACCORDION === */
+.footer__accordion-header {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer__accordion-icon {
+  width: 20px;
+  height: 20px;
+  color: #cbd5e1;
+  transition: transform 0.35s ease;
+}
+
+.footer__accordion-icon--open {
+  transform: rotate(180deg);
+}
+
+.footer__accordion-content {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease, margin-top 0.35s ease;
+  margin-top: 0;
+}
+
+.footer__accordion-content--open {
+  max-height: 800px; // large enough value (you can increase if needed)
+  margin-top: 16px;
+}
+
+/* Desktop — show titles normally, hide accordion styles */
+@media (min-width: 601px) {
+  .footer__accordion-header {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .footer__accordion-icon {
+    display: none;
+  }
+
+  .footer__accordion-content {
+    max-height: none !important;
+    overflow: visible;
+    margin-top: 22px; // original spacing
+  }
+
+  // Restore original margin-top for desktop h4
+  .footer__col h4 {
+    margin-top: 100px;
+  }
+}
+
+/* Mobile — accordion mode */
+@media (max-width: 600px) {
+  .footer__container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 32px 20px 40px;
+  }
+
+  .footer__col {
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 20px 0;
+
+    &:first-child {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  // Contacts block has different spacing
+  .footer__col--contacts {
+    padding-top: 0;
+    border-top: none;
+  }
+
+  // Map adapts
+  .footer__col--map {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .footer__logo {
+    margin-bottom: 24px;
+  }
+
+  .footer__map {
+    margin-top: 16px;
+    max-width: 100%;
+    height: 220px;
+  }
+
+  .footer__col h4 {
+    margin-top: 0 !important;
+    font-size: 17px;
+  }
+
+  .footer__col ul {
+    padding-left: 4px;
+  }
+
+  .footer__bottom {
+    padding: 20px 20px;
+  }
+}
