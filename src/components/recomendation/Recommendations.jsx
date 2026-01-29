@@ -96,7 +96,6 @@ export function Recommendations() {
   return (
     <div className='recommendations'>
       <h2 className="recommendations__title">Рекомендации</h2>
-      <Under text="Главная" text1="Камеры" text2="Домофон" />
       <div className="recommendations-carousel">
         <Swiper
           modules={[Pagination]}
@@ -106,12 +105,12 @@ export function Recommendations() {
           loop={false}
           grabCursor={true}
           breakpoints={{
-            480: {
+            360: {
               slidesPerView: 1.5,
               spaceBetween: 15
             },
             640: {
-              slidesPerView: 2,
+              slidesPerView: 2.5,
               spaceBetween: 15
             },
             768: {
@@ -119,7 +118,7 @@ export function Recommendations() {
               spaceBetween: 18
             },
             1024: {
-              slidesPerView: 3,
+              slidesPerView: 3.2,
               spaceBetween: 20
             },
             1200: {

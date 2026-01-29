@@ -20,6 +20,9 @@ footer{
   gap: 40px;
   padding: 60px 80px;
   align-items: flex-start;
+  @media (max-width: 950px){
+    grid-template-columns: 1.4fr 1fr 1fr;
+  }
 }
 
 /* === LOGO === */
@@ -159,6 +162,10 @@ footer{
   max-width: 299px;
   height: 250px;
   margin-top: 100px;
+  @media (max-width:950px) {
+    margin-top: 30px;
+      width: 100%;
+  }
 }
 
 .footer__map-title {
@@ -203,6 +210,7 @@ footer{
   background: none;
   border: none;
   padding: 0;
+  margin-top: 20px;
   cursor: pointer;
   text-align: left;
   display: flex;
@@ -234,7 +242,7 @@ footer{
 }
 
 /* Desktop — show titles normally, hide accordion styles */
-@media (min-width: 601px) {
+@media (min-width: 781px) {
   .footer__accordion-header {
     pointer-events: none;
     cursor: default;
@@ -257,7 +265,7 @@ footer{
 }
 
 /* Mobile — accordion mode */
-@media (max-width: 600px) {
+@media (max-width: 780px) { 
   .footer__container {
     display: flex;
     flex-direction: column;
@@ -268,7 +276,7 @@ footer{
   .footer__col {
     width: 100%;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 20px 0;
+    padding: 0px 0;
 
     &:first-child {
       border-top: 1px solid rgba(255, 255, 255, 0.08);

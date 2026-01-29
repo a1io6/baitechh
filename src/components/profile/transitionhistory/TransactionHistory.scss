@@ -1,0 +1,56 @@
+.transactionhistory{
+    .transactionhistorycard{
+    max-width: 308px;
+    padding: 20px;
+    border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 10px 8px 24px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    .details{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        .title{
+            display: flex;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            h3{
+                color: #00162A;
+       font-size: 14px;
+       font-weight: 500;
+            }
+            span{
+            font-size: 16px;
+       font-weight: 400;
+       color:#3AA15B;
+            }
+        }
+        .date{
+            font-size: 12px;
+            font-weight: 500;
+            color: #00162A;
+        }
+    }
+    }
+    .icon{
+        width: 32px;
+        padding-top: 3px;
+        height: 31px;
+        font-size: 14px;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &--success{
+            background-color: #3AA15B;
+        }
+        &--error{
+            background-color: #E74C3C;
+        }
+    }
+}

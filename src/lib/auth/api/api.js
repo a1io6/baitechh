@@ -1,0 +1,82 @@
+// services/authService.js
+import Cookies from 'js-cookie';
+import { $api } from '../../../../API/api';
+
+export const authService = {
+  register: async (formData) => {
+    const { data } = await $api.post('/api/auth/register/', formData);
+    return data;
+  },
+
+  // Подтверждение регистрации по OTP
+verifyRegistration: async (email, otp) => {
+  const { data } = await $api.post('/api/auth/verify-registration/', {
+    email,
+    otp
+  });
+  return data;
+},
+  // Повторная отправка кода активации
+  resendActivationCode: async (email) => {
+    const { data } = await $api.post('/api/auth/resend-activation-code/', {
+      email
+    });
+    return data;
+  },
+
+  // Вход в систему
+  login: async (credentials) => {
+    const { data } = await $api.post('/api/auth/login/', credentials);
+    if (data.access) {
+      Cookies.set('access', data.access, { expires: 7 });
+    }
+    if (data.refresh) {
+      Cookies.set('refresh', data.refresh, { expires: 30 });
+    }
+    return data;
+  },
+
+  // Выход из системы
+  logout: async () => {
+    try {
+      const { data } = await $api.post('/api/auth/logout/');
+      return data;
+    } finally {
+      Cookies.remove('access');
+      Cookies.remove('refresh');
+    }
+  },
+
+  // Получение текущего пользователя (если есть такой endpoint)
+  getMe: async () => {
+    const { data } = await $api.get('/api/auth/me/');
+    return data;
+  },
+
+  // Запрос сброса пароля
+  passwordResetRequest: async (email) => {
+    const { data } = await $api.post('/api/password-reset/request/', {
+      email
+    });
+    return data;
+  },
+
+  // Подтверждение кода сброса пароля
+  passwordResetVerify: async (email, otp) => {
+    const { data } = await $api.post('/api/password-reset/verify/', {
+      email,
+      otp
+    });
+    return data;
+  },
+
+  // Завершение сброса пароля
+  passwordResetComplete: async (email, otp, new_password) => {
+    const { data } = await $api.post('/api/password-reset/complete/', {
+      email,
+      otp,
+      new_password
+    });
+    return data;
+  }
+};

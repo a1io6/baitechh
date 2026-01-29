@@ -6,7 +6,6 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import './recommendations.scss';
 import Card from '../ui/card/Card';
-import Under from '../ui/under/Under';
 
 
 export function PopularCard() {
@@ -92,9 +91,8 @@ export function PopularCard() {
 
   return (
     <div className='recommendations'>
-      <h2 className="recommendations__title">Похожие товары</h2>
-      <Under text="Главная" text1="Камеры" text2="Домофон" />
-      <div className="recommendations-carousel">
+      <h2 className="recommendations__title mt-[40px]">Похожие товары</h2>
+      <div className="recommendations-carousel mt-[-30px]">
         <Swiper
           modules={[Pagination]}
           spaceBetween={20}

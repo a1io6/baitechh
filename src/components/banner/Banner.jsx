@@ -44,7 +44,7 @@ export function Banner() {
   ];
 
   return (
-    <div className="hero-banner pt-100 mt-[400px]">
+    <div className="hero-banner">
       <Swiper
         modules={[Pagination, Autoplay, EffectFade]}
         spaceBetween={0}

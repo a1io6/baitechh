@@ -13,6 +13,9 @@ $hover-border: #3b82f6;
   padding-top: 31px;
   padding-bottom: 30px;
   justify-content: start;
+  @media (max-width: 1200px) {
+    padding-left: 20px;
+  }
 }
 
 .navItem {
@@ -26,7 +29,14 @@ $hover-border: #3b82f6;
   text-decoration: none;
   box-shadow: $shadow;
   transition: all 0.2s ease-in-out;
-
+  @media (max-width: 768px) {
+    padding: 8px 20px;
+    // display: none;
+  }
+  @media (max-width: 480px) {
+    gap: 5px;
+    padding: 5px 10px;
+  }
   &:hover {
     border-color: $hover-border;
     transform: translateY(-1px);
@@ -37,6 +47,9 @@ $hover-border: #3b82f6;
     color: $text-color;
     font-size: 16px;
     font-weight: 400;
+    @media (max-width: 768px) {
+      font-size: 14px;
+  }
   }
 
   .icon {
@@ -44,4 +57,10 @@ $hover-border: #3b82f6;
     align-items: center;
     color: #1e293b; // Темный цвет иконок
   }
+}
+@media (max-width:768px) {
+  .navItem:first-child {
+    display: none;
+  }
+  
 }

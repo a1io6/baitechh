@@ -7,24 +7,76 @@ import Button from "@/components/ui/auth/buttton";
 import CloseRegister from "@/components/ui/auth/closeregister";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
+import { useLogin, useRegister, useResendActivationCode } from "@/lib/auth/hooks/hooks";
 
 const LoginPage = ({ type = "login" }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
-  const [phone, setPhone] = useState("");
-  const router = useRouter();   
+  const [number, setPhone] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  // React Query hooks
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
+  const resendCodeMutation = useResendActivationCode();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (type === "login") {
+      // Логин
+      try {
+        await loginMutation.mutateAsync({
+          email,
+          password
+        });
+      } catch (error) {
+        console.error('Login error:', error);
+      }
+    } else {
+      // Регистрация
+      if (!acceptedTerms) {
+        toast.error.email('Необходимо принять условия обслуживания');
+        return;
+      }
+
+      if (password.length < 8) {
+        toast.error('Пароль должен содержать минимум 8 символов');
+        return;
+      }
+
+      try {
+        const formData = {
+          name: name,
+          surname: surname,
+          number,
+          email,
+          password
+        };
+
+        // Регистрация
+        await registerMutation.mutateAsync(formData);
+        
+        router.push(`/codeverify?email=${encodeURIComponent(email)}`);
+      } catch (error) {
+        console.error('Registration error:', error);
+      }
+    }
   };
 
-  const handleForgotPassword = (e) => {
-    e.preventDefault();
-  };
+  // Определяем состояние загрузки в зависимости от типа
+  const isLoading = type === "login" 
+    ? loginMutation.isPending 
+    : registerMutation.isPending;
+
+  // Определяем ошибку в зависимости от типа
+  const error = type === "login"
+    ? loginMutation.error
+    : registerMutation.error;
 
   return (
     <div className={`login-form1`}>
@@ -67,9 +119,9 @@ const LoginPage = ({ type = "login" }) => {
                 required
               />
               <InputField
-                type="number"
+                type="tel"
                 placeholder="Введите телефон"
-                value={phone}
+                value={number}
                 onChange={(e) => setPhone(e.target.value)}
                 disabled={isLoading}
                 required
@@ -94,18 +146,32 @@ const LoginPage = ({ type = "login" }) => {
             required
           />
 
-          {error && <div className="login-form1__error">{error}</div>}
+          {error && (
+            <div className="login-form1__error">
+              {error?.response?.data?.message || 
+               error?.response?.data?.detail ||
+               error?.response?.data?.email ||
+               error?.response?.data?.non_field_errors  ||
+               (type === "login" ? 'Ошибка входа' : 'Ошибка регистрации')}
+            </div>
+          )}
 
           <Divider />
 
           {type === "register" && (
             <div className="login-form1__terms-container">
-              <input type="checkbox" className="login-form1__terms-checkbox" />
+              <input 
+                type="checkbox" 
+                className="login-form1__terms-checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                disabled={isLoading}
+              />
               <p className="login-form1__terms">
                 Регистрируясь вы соглашаетесь с нашими{" "}
-                <a href="#" className="login-form1__terms-link">
+                <Link href="/terms" className="login-form1__terms-link">
                   условиями обслуживания
-                </a>
+                </Link>
               </p>
             </div>
           )}
@@ -116,9 +182,9 @@ const LoginPage = ({ type = "login" }) => {
             size="large"
             fullWidth
             loading={isLoading}
-            disabled={isLoading}
+            disabled={isLoading || (type === "register" && !acceptedTerms)}
           >
-            Войти
+            {type === "login" ? "Войти" : "Зарегистрироваться"}
           </Button>
         </form>
 
