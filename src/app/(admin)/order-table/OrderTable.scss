@@ -1,0 +1,223 @@
+// Цветовая палитра остается прежней
+$colors: (
+  returns: (bg: rgba(127, 140, 141, 0.1), text: #7f8c8d, border: #7f8c8d),
+  delivered: (bg: rgba(39, 174, 96, 0.1), text: #27ae60, border: #27ae60),
+  stock: (bg: rgba(41, 128, 185, 0.1), text: #2980b9, border: #2980b9),
+  transit: (bg: rgba(241, 196, 15, 0.1), text: #d4ac0d, border: #f1c40f)
+);
+
+.dashboard {
+  padding: 60px; // Увеличено с 40px
+  background: #f4f7f6;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  &__header {
+    margin-bottom: 40px; 
+    display: flex;
+    justify-content: space-between;
+    .search-bar {
+      &__input {
+        width: 450px; // Увеличено с 350px
+        padding: 16px 24px; // Увеличены внутренние отступы
+        font-size: 16px; // Добавлен размер шрифта
+        border-radius: 12px; // Более мягкие углы
+        border: 1px solid #e0e0e0;
+        outline: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        
+        &:focus { 
+          border-color: map-get(map-get($colors, stock), border);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+      }
+    }
+  }
+
+  .table {
+    width: 100%;
+    background: #fff;
+    border-radius: 16px; // Увеличено с 12px
+    border-collapse: collapse;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06); // Более глубокая тень
+
+    th {
+      padding: 24px 20px; // Увеличено
+      text-align: left;
+      font-size: 15px; // Увеличено с 13px
+      font-weight: 600;
+      color: #95a5a6;
+      border-bottom: 2px solid #f0f0f0; // Линия чуть толще
+    }
+
+    td {
+      padding: 22px 20px; // Увеличено с 16px
+      font-size: 16px; // Увеличено с 14px
+      color: #2c3e50;
+      border-bottom: 1px solid #f4f4f4;
+    }
+
+    &__address { 
+      max-width: 300px; // Увеличено с 200px
+      line-height: 1.6; 
+      color: #7f8c8d; 
+    }
+
+    &__row {
+      transition: all 0.2s ease;
+      &:hover { 
+        background: #f8fbff; 
+        transform: scale(1.002); // Легкий эффект увеличения при наведении
+      }
+    }
+  }
+}
+
+// Увеличенный Select-статус
+.status-wrapper {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 25px; // Более округлый
+  padding: 8px 16px; // Увеличено с 4/12
+  border: 2px solid transparent; // Граница чуть толще
+  width: 160px; // Увеличено с 130px
+  transition: all 0.3s ease;
+
+  &__select {
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px; // Увеличено с 12px
+    font-weight: 700; // Жирнее
+    outline: none;
+    appearance: none;
+    text-align: center;
+  }
+
+  @each $name, $map in $colors {
+    &--#{$name} {
+      background: map-get($map, bg);
+      border-color: map-get($map, border);
+      &:hover { background: rgba(map-get($map, border), 0.2); } // Эффект при наведении
+      .status-wrapper__select { color: map-get($map, text); }
+    }
+  }
+}
+.settings-button{
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 26px;
+  color: #7f8c8d;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #34495e;
+  }
+  svg{
+    pointer-events: none;
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.filter-wrapper {
+  position: relative; // Чтобы окно позиционировалось относительно этого блока
+
+  .settings-button {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      background: #1e3a8a;
+      color: #fff;
+    }
+  }
+}
+
+.filter-modal {
+  position: absolute;
+  top: 50px; // Смещение вниз от кнопки
+  right: 0; // Прижать к правому краю кнопки
+  width: 320px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+  z-index: 1000;
+  border: 1px solid #f0f0f0;
+
+  &__header h3 {
+    text-align: center;
+    font-size: 18px;
+    color: #001a3d;
+    margin-bottom: 20px;
+  }
+
+  &__section {
+    margin-bottom: 20px;
+    
+    h4 {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 10px;
+      font-weight: 400;
+    }
+  }
+
+  &__chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .chip {
+      padding: 6px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      color: #001a3d;
+      
+      &:hover {
+        border-color: #1e3a8a;
+      }
+    }
+  }
+
+  &__dates {
+    display: flex;
+    gap: 10px;
+    
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 13px;
+    }
+  }
+
+  &__apply {
+    width: 100%;
+    padding: 12px;
+    background: #002855; // Темно-синий как на фото
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+
+    &:hover {
+      background: #001a3d;
+    }
+  }
+}

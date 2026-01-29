@@ -1,0 +1,63 @@
+.stats-container {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: #f4f7f9;
+
+  .stats-card {
+    flex: 1;
+    min-width: 180px;
+    max-width: 220px;
+    padding: 20px 15px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .card-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1e3a8a; // Темно-синий для цифр
+    }
+
+    .card-subvalue, .card-footer {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    /* Цветовые схемы для границ и заголовков */
+    &.green {
+      border-top: 3px solid #10b981;
+      .card-title { color: #10b981; }
+    }
+    &.yellow {
+      border-top: 3px solid #eab308;
+      .card-title { color: #eab308; }
+    }
+    &.blue {
+      border-top: 3px solid #3b82f6;
+      .card-title { color: #3b82f6; }
+    }
+    &.red {
+      border-top: 3px solid #ef4444;
+      .card-title { color: #ef4444; }
+    }
+    &.gray {
+      border-top: 3px solid #94a3b8;
+      .card-title { color: #94a3b8; }
+    }
+  }
+}

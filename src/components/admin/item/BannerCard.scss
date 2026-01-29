@@ -1,0 +1,115 @@
+.banner-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: #d1d5db;
+        background-color: #f9fafb;
+    }
+
+    &__checkbox {
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+
+        input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+
+            &:checked~.banner-item__checkmark {
+                background-color: #3b82f6;
+                border-color: #3b82f6;
+
+                &::after {
+                    display: block;
+                }
+            }
+        }
+    }
+
+    &__checkmark {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #d1d5db;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &::after {
+            content: "";
+            display: none;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+    }
+
+    &__image {
+        width: 80px;
+        height: 60px;
+        border-radius: 6px;
+        overflow: hidden;
+        background-color: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__image-placeholder {
+        color: #9ca3af;
+    }
+
+    &__actions {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+    }
+
+    &__action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &--edit {
+            background-color: #f3f4f6;
+            color: #6b7280;
+
+            &:hover {
+                background-color: #e5e7eb;
+                color: #374151;
+            }
+        }
+
+        &--delete {
+            background-color: #fee2e2;
+            color: #ef4444;
+
+            &:hover {
+                background-color: #fecaca;
+            }
+        }
+    }
+}

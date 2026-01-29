@@ -1,0 +1,320 @@
+// styles.scss
+
+.catalog-admin {
+    min-height: 100vh;
+    background-color: #f9fafb;
+    padding: 24px;
+    width: 100%;
+    max-width: 1200px;
+
+    &__container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 32px;
+        gap: 16px;
+    }
+
+    &__search {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    &__title {
+        font-size: 30px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 24px;
+    }
+
+    .search {
+        position: relative;
+        flex: 1;
+        max-width: 432px;
+
+        &__input {
+            width: 100%;
+            padding: 12px 48px 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s ease;
+
+            &:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+        }
+
+        &__icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+    }
+
+    .categories-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        color: #374151;
+        background: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: #f3f4f6;
+        }
+    }
+
+    .add-btn {
+        background-color: #1e3a5f;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: #162d4a;
+        }
+    }
+
+    .product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        transition: box-shadow 0.2s ease;
+
+        &:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        &__content {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        &__image {
+            width: 224px;
+            height: 160px;
+            background-color: #d1d5db;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        &__info {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            align-items: center;
+        }
+
+        &__section {
+            &--status {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        &__label {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        &__text {
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        &__status {
+            color: #374151;
+
+            &--out {
+                color: #ef4444;
+            }
+        }
+
+        &__menu {
+            color: #9ca3af;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: #4b5563;
+            }
+        }
+    }
+
+    .menu-wrapper {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 8px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+        min-width: 200px;
+        z-index: 10;
+        overflow: hidden;
+
+        &__item {
+            width: 100%;
+            padding: 12px 16px;
+            background: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: #f3f4f6;
+            }
+
+            &--danger {
+                color: #ef4444;
+
+                &:hover {
+                    background-color: #fee2e2;
+                }
+            }
+        }
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+    }
+
+    .modal {
+        background: white;
+        border-radius: 16px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+        &__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        &__title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        &__close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 4px;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: #4b5563;
+            }
+        }
+
+        &__body {
+            padding: 24px;
+        }
+
+        &__text {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 24px;
+        }
+
+        &__buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        &__btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &--primary {
+                background-color: #10b981;
+                color: white;
+
+                &:hover {
+                    background-color: #059669;
+                }
+            }
+
+            &--secondary {
+                background-color: #e5e7eb;
+                color: #374151;
+
+                &:hover {
+                    background-color: #d1d5db;
+                }
+            }
+
+            &--danger {
+                background-color: #ef4444;
+                color: white;
+
+                &:hover {
+                    background-color: #dc2626;
+                }
+            }
+        }
+    }
+}
