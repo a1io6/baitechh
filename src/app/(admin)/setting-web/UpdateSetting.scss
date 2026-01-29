@@ -1,0 +1,96 @@
+.edit-page-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  padding: 40px;
+  background-color: #f4f7f9; // Фон страницы
+  min-height: 100vh;
+}
+
+.edit-container {
+  width: 1101px; // Сиз берген туурасы
+  font-family: 'Inter', sans-serif;
+
+  .page-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 30px;
+  }
+
+  .form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      label {
+        font-size: 14px;
+        color: #1e293b;
+        font-weight: 400;
+      }
+
+      input {
+        width: 848px;  // Инпуттун туурасы
+        height: 48px; // Инпуттун бийиктиги
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0 16px;
+        font-size: 14px;
+        color: #334155;
+        outline: none;
+
+        &::placeholder {
+          color: #94a3b8;
+        }
+
+        &:focus {
+          border-color: #1e293b;
+          background: #fff;
+        }
+      }
+    }
+
+    .button-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+
+      button {
+        height: 48px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-save {
+        width: 280px;
+        background-color: #1e293b; // Сүрөттөгү кочкул түс
+        color: white;
+        border: none;
+
+        &:hover {
+          background-color: #0f172a;
+        }
+      }
+
+      .btn-cancel {
+        width: 280px;
+        background-color: white;
+        color: #1e293b;
+        border: 1px solid #1e293b;
+
+        &:hover {
+          background-color: #f1f5f9;
+        }
+      }
+    }
+  }
+}
