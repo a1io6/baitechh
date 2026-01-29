@@ -8,11 +8,13 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 .container {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
 }
+
 body {
   background: rgba(245, 247, 250, 1);
    font-family: "Montserrat", sans-serif;
@@ -22,4 +24,5 @@ body {
 }
 .sidebarapp::-webkit-scrollbar {
   display: none;
+  font-family: "Montserrat", sans-serif;
 }
