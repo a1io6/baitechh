@@ -1,0 +1,108 @@
+.catalogWrapper {
+  position: relative;
+  display: none; // Скрыто на больших экранах
+  width: 100%;
+  margin-bottom: 10px;
+
+  @media (max-width: 768px) {
+    padding: 0px 15px;
+    display: block; // Видно только до 780px
+  }
+}
+
+.catalogButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+
+  .arrow {
+    margin-left: auto;
+    transition: transform 0.3s;
+    &.rotate { transform: rotate(180deg); }
+  }
+}
+
+.catalogDropdown {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #eee;
+  overflow: hidden;
+}
+
+.categoryList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.categoryItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f9f9f9;
+  cursor: pointer;
+
+  .itemLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #333;
+    font-weight: 500;
+  }
+
+  .subArrow {
+    transition: transform 0.2s;
+    color: #ccc;
+  }
+
+  &.active {
+    background: #f8f9fa;
+    .subArrow { transform: rotate(90deg); color: #2c3e50; }
+  }
+}
+
+// Выпадающая часть с группами
+.subDrawer {
+  background: #fcfcfc;
+  padding: 10px 20px 20px 48px; // Отступ слева, чтобы текст был под названием категории
+  border-bottom: 1px solid #eee;
+
+  .subGroup {
+    margin-top: 15px;
+  }
+
+  .groupName {
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #999;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .linksList {
+    list-style: none;
+    padding: 0;
+  }
+
+  .linkItem {
+    padding: 8px 0;
+    font-size: 14px;
+    color: #444;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child { border: none; }
+  }
+}

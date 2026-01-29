@@ -1,0 +1,200 @@
+.course-page {
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  padding: 0px 20px;
+
+  // Мобилдик түзмөктөрдө четтериндеги боштукту азайтуу
+  @media (max-width: 768px) {
+    padding: 10px 15px;
+  }
+}
+
+.course-container {
+  width: 100%; // Контейнер ийкемдүү болушу үчүн 100%
+  max-width: 1280px; 
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+
+  .course-title {
+    font-size: clamp(24px, 5vw, 32px);
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #00162A;
+  }
+
+  .course-description {
+    font-size: 20px;
+    line-height: 1.5;
+    max-width: 1000px;
+    color: #00162ACC;
+    margin-bottom: 40px;
+
+    @media (max-width: 768px) {
+      font-size: 18px; // Телефондо бир аз кичирээк
+    }
+  }
+
+  .course-main-info {
+    display: flex;
+    gap: 50px;
+    margin-bottom: 80px;
+
+    // Планшет жана телефондо сүрөт менен программаны астын-үстүн кылуу
+    @media (max-width: 1100px) {
+      flex-direction: column;
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    .course-image {
+      flex-shrink: 0;
+      width: 625px;
+      height: 381px;
+      border-radius: 12px;
+      background: #e2e8f0;
+      overflow: hidden;
+
+      @media (max-width: 1100px) {
+        width: 100%; // Планшетте толук туурасы
+        max-width: 625px;
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+        height: 250px; // Телефондо бийиктигин азайтуу
+      }
+
+      .image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+      }
+    }
+
+    .course-program {
+      flex: 1;
+      h3 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #00162A;
+      }
+
+      .program-items {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        p {
+          font-size: 20px;
+          color: #00162ACC;
+          margin: 0;
+          padding: 4px 0;
+          line-height: 1.2; // line-height бир аз көбөйтүлдү, тексттер жабышпашы үчүн
+          position: relative;
+
+          @media (max-width: 768px) {
+            font-size: 17px; // Телефондо текстти бир аз кичирейтүү
+          }
+        }
+      }
+    }
+  }
+
+  .benefits-section {
+    margin-bottom: 80px;
+    h2 { 
+      font-size: 26px; 
+      margin-bottom: 40px; 
+      font-weight: 600; 
+      color: #00162A; 
+
+      @media (max-width: 768px) {
+        margin-bottom: 25px;
+      }
+    }
+
+    .benefits-grid {
+        width: 100%;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+
+      // Телефондо карталарды ортого түздөө
+      @media (max-width: 1024px) {
+        overflow-y: scroll;
+        padding: 20px 5px;
+      }
+
+      .benefit-card {
+        max-width: 227px;
+        height: 180px;
+        background: #F5F7FA;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.196);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        transition: 0.3s ease;
+
+        @media (max-width: 1024px) {
+          width: 227px;
+        }
+        @media (max-width: 480px) {
+          width: 200px;
+        }
+
+        &:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+          border-color: #22c55e;
+        }
+
+        .icon-wrapper { color: #22c55e; margin-bottom: 15px; }
+        .benefit-text { font-size: 13px; font-weight: 500; color: #334155; }
+      }
+    }
+  }
+
+  .course-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 40px;
+    gap: 20px;
+
+    // Телефондо футерди тигинен тизүү
+    @media (max-width: 900px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 30px;
+    }
+
+    .footer-links p {
+      font-size: 16px;
+      color: #00162ACC;
+      margin-bottom: 8px;
+    }
+
+    .footer-contact {
+      text-align: right;
+      
+      @media (max-width: 900px) {
+        text-align: left;
+      }
+
+      a {
+        font-size: 20px;
+        font-weight: 500;
+        color: #1e293b;
+        text-decoration: none;
+        &:hover { color: #10b981; }
+      }
+    }
+  }
+}

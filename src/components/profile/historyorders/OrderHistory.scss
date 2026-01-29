@@ -1,0 +1,10 @@
+.otderhistory{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    .orderhistorycards{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+}

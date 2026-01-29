@@ -4,9 +4,11 @@ import { HiOutlinePlus } from "react-icons/hi";
 import { LuMinus } from "react-icons/lu";
 import img from '../../../../assets/svg/Vector (43).svg';
 import Image from 'next/image';
+import Link from 'next/link';
 function Card({product}) {
   return (
     <div>
+      <Link href={`/productdetail`}>
         <div className='product-card'>
                 <div className="product-card__badge">
                   {product.badge}
@@ -42,6 +44,7 @@ function Card({product}) {
                   </button>
                 </div>
               </div>
+      </Link>
     </div>
   )
 }

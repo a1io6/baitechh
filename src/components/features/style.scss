@@ -38,13 +38,11 @@ $white: #F7F6F5;
 }
 
 .features {
-  padding: 20px 0px;
+  padding: 30px 0px;
   background: $bg-light;
   animation: fadeInUp 0.8s ease-out;
 
   &__container {
-    max-width: 1280px;
-    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 30px;
@@ -55,12 +53,12 @@ $white: #F7F6F5;
   max-width: 247px;
   background: $white;
   padding: 12px 10px;
-  border-radius: 24px;
+  border-radius: 14px;
   text-align: center;
   transition: all 0.4s ease;
   animation: scaleIn 0.6s ease-out backwards;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.422);
-
+  
   @for $i from 1 through 5 {
     &:nth-child(#{$i}) {
       animation-delay: #{$i * 0.1}s;
@@ -111,13 +109,12 @@ $white: #F7F6F5;
 @media (max-width: 1200px) {
   .features {
     &__container {
-      grid-template-columns: repeat(3, 1fr);
+      // grid-template-columns: repeat(3, 1fr);
       gap: 25px;
     }
   }
 
   .feature-card {
-    padding: 28px 18px;
 
     &__icon {
       width: 56px;
@@ -134,18 +131,19 @@ $white: #F7F6F5;
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .features {
     padding: 50px 20px;
 
     &__container {
-      grid-template-columns: repeat(2, 1fr);
+      padding: 20px 10px;
       gap: 20px;
+      overflow-x: auto;
     }
   }
 
   .feature-card {
-    padding: 25px 18px;
+    width: 230px;
 
     &__icon {
       width: 52px;
@@ -162,125 +160,105 @@ $white: #F7F6F5;
 
 @media (max-width: 768px) {
   .features {
-    padding: 40px 15px;
-
-    &__container {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-  }
-
-  .feature-card {
-    padding: 20px 15px;
-    border-radius: 20px;
-
-    &__icon {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 14px;
-    }
-
-    &__title {
-      font-size: 15px;
-      margin-bottom: 8px;
-    }
-
-    &__description {
-      font-size: 12px;
+    padding: 40px 0px;
+ &__container {
+      padding: 20px 15px;
+      gap: 20px;
+      overflow-x: auto;
     }
   }
 }
 
-@media (max-width: 640px) {
-  .features {
-    padding: 35px 15px;
+// @media (max-width: 640px) {
+//   .features {
+//     padding: 35px 15px;
 
-    &__container {
-      gap: 12px;
-    }
-  }
+//     &__container {
+//       gap: 12px;
+//     }
+//   }
 
-  .feature-card {
-    padding: 18px 12px;
+//   .feature-card {
+//     padding: 18px 12px;
 
-    &__icon {
-      width: 44px;
-      height: 44px;
-    }
+//     &__icon {
+//       width: 44px;
+//       height: 44px;
+//     }
 
-    &__title {
-      font-size: 14px;
-    }
+//     &__title {
+//       font-size: 14px;
+//     }
 
-    &__description {
-      font-size: 11px;
-      line-height: 1.5;
-    }
-  }
-}
+//     &__description {
+//       font-size: 11px;
+//       line-height: 1.5;
+//     }
+//   }
+// }
 
-@media (max-width: 480px) {
-  .features {
-    padding: 30px 10px;
+// @media (max-width: 480px) {
+//   .features {
+//     padding: 30px 10px;
 
-    &__container {
-      grid-template-columns: 1fr;
-      gap: 12px;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-  }
+//     &__container {
+//       // grid-template-columns: 1fr;
+//       gap: 12px;
+//       max-width: 400px;
+//       margin: 0 auto;
+//     }
+//   }
 
-  .feature-card {
-    padding: 20px 16px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-    gap: 15px;
+//   .feature-card {
+//     padding: 20px 16px;
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+//     text-align: left;
+//     gap: 15px;
 
-    &__icon {
-      width: 48px;
-      height: 48px;
-      margin: 0;
-      flex-shrink: 0;
-    }
+//     &__icon {
+//       width: 48px;
+//       height: 48px;
+//       margin: 0;
+//       flex-shrink: 0;
+//     }
 
-    &__content {
-      flex: 1;
-    }
+//     &__content {
+//       flex: 1;
+//     }
 
-    &__title {
-      font-size: 15px;
-      margin-bottom: 6px;
-    }
+//     &__title {
+//       font-size: 15px;
+//       margin-bottom: 6px;
+//     }
 
-    &__description {
-      font-size: 12px;
-    }
-  }
-}
+//     &__description {
+//       font-size: 12px;
+//     }
+//   }
+// }
 
-@media (max-width: 375px) {
-  .features {
-    padding: 25px 10px;
-  }
+// @media (max-width: 375px) {
+//   .features {
+//     padding: 25px 10px;
+//   }
 
-  .feature-card {
-    padding: 16px 14px;
-    gap: 12px;
+//   .feature-card {
+//     padding: 16px 14px;
+//     gap: 12px;
 
-    &__icon {
-      width: 42px;
-      height: 42px;
-    }
+//     &__icon {
+//       width: 42px;
+//       height: 42px;
+//     }
 
-    &__title {
-      font-size: 14px;
-    }
+//     &__title {
+//       font-size: 14px;
+//     }
 
-    &__description {
-      font-size: 11px;
-    }
-  }
-}
+//     &__description {
+//       font-size: 11px;
+//     }
+//   }
+// }

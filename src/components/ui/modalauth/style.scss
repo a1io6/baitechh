@@ -1,0 +1,26 @@
+.modal-auth-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #00000000;
+    z-index: -23;
+}
+.modal-auth{
+    z-index: 132242400;
+    position: absolute;
+    top: 50px;
+    right: 0px;
+    padding: 10px;
+    background: #F5F7FA;
+        border-radius: 8px;
+     width: 194px;
+         display: flex;
+         flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    gap: 10px;
+    box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.1);
+    height: 74px;
+}

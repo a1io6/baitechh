@@ -197,7 +197,7 @@ export default function Catalog({onClose}) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-    <div className={`${styles.catalogContainer} container`}>
+    <div onClick={(e) => e.stopPropagation()}  className={`${styles.catalogContainer} container`}>
       {/* Левая панель - Кнопки-фильтры */}
       <aside className={styles.sidebar}>
         {Object.entries(catalogData).map(([key, value]) => (
