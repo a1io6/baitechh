@@ -69,13 +69,27 @@ export const useLogin = () => {
     mutationKey: ['login'],
     mutationFn: (credentials) => authService.login(credentials),
     onSuccess: (data) => {
+      console.log('Login data:', data);
+      
       // Обновляем кеш пользователя
       if (data.user) {
         queryClient.setQueryData(['auth', 'user'], data.user);
       }
-      localStorage.setItem('accessToken', data.access); // сохраняем токен
-      toast.success('Вход выполнен успешно!');
-      router.push('/');
+
+      const isAdmin = data.user?.role === 'admin' || 
+                      data.role || 
+                      data.user?.is_staff || 
+                      data.user?.is_superuser;
+
+      if (isAdmin) {
+        localStorage.setItem('adminToken', data.access);
+        toast.success('Добро пожаловать в админ панель!');
+        router.push('/admin');
+      } else {
+        localStorage.setItem('accessToken', data.access);
+        toast.success('Вход выполнен успешно!');
+        router.push('/');
+      }
     },
     onError: (error) => {
       const message = error.response?.data?.message || 

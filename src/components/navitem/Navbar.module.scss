@@ -16,6 +16,11 @@ $hover-border: #3b82f6;
   @media (max-width: 1200px) {
     padding-left: 20px;
   }
+  @media (max-width: 768px) {
+    padding-left: 15px;
+    padding-top: 15px;
+  padding-bottom: 15px;
+  }
 }
 
 .navItem {
