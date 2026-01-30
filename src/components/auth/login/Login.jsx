@@ -8,7 +8,7 @@ import CloseRegister from "@/components/ui/auth/closeregister";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { useLogin, useRegister, useResendActivationCode } from "@/lib/auth/hooks/hooks";
+import { useLogin, useRegister } from "@/lib/auth/hooks/hooks";
 
 const LoginPage = ({ type = "login" }) => {
   const [email, setEmail] = useState("");
@@ -22,7 +22,6 @@ const LoginPage = ({ type = "login" }) => {
   // React Query hooks
   const loginMutation = useLogin();
   const registerMutation = useRegister();
-  const resendCodeMutation = useResendActivationCode();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,17 +29,30 @@ const LoginPage = ({ type = "login" }) => {
     if (type === "login") {
       // Логин
       try {
-        await loginMutation.mutateAsync({
+        const response = await loginMutation.mutateAsync({
           email,
           password
         });
+
+        // ✅ Проверяем роль пользователя после успешного входа
+        console.log('Login response:', response);
+        
+        // Если роль админа, редирект в админ панель
+        if (response?.role === 'admin' || response?.user?.is_staff || response?.user?.is_superuser) {
+          toast.success('Добро пожаловать в админ панель!');
+          router.push('/camera-catalog'); 
+        } else {
+          // Обычный пользователь - на главную
+          toast.success('Вы успешно вошли!');
+          router.push('/');
+        }
       } catch (error) {
         console.error('Login error:', error);
       }
     } else {
       // Регистрация
       if (!acceptedTerms) {
-        toast.error.email('Необходимо принять условия обслуживания');
+        toast.error('Необходимо принять условия обслуживания'); // ✅ исправлено
         return;
       }
 
@@ -68,12 +80,10 @@ const LoginPage = ({ type = "login" }) => {
     }
   };
 
-  // Определяем состояние загрузки в зависимости от типа
   const isLoading = type === "login" 
     ? loginMutation.isPending 
     : registerMutation.isPending;
 
-  // Определяем ошибку в зависимости от типа
   const error = type === "login"
     ? loginMutation.error
     : registerMutation.error;
