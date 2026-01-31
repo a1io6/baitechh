@@ -1,105 +1,89 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-// Заменяем useNavigate на useRouter из next/navigation
-import { useRouter } from 'next/navigation';
-import './AddProduct.scss';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useProducts } from "@/lib/products/hooks/hooks";
+import "./AddProduct.scss";
 
 const AddProduct = () => {
   const router = useRouter();
-  const [categories, setCategories] = useState(['Камеры', 'Мониторы', 'Аксессуары', 'Кабели']);
-  const [brands, setBrands] = useState(['Ductle', 'Dahua', 'Hikvision', 'Samsung']);
-  const [showNewCategory, setShowNewCategory] = useState(false);
-  const [showNewBrand, setShowNewBrand] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newBrandName, setNewBrandName] = useState('');
+  const { categories, brands, isInitialLoading, addProduct } = useProducts();
 
   const [formData, setFormData] = useState({
-    name: '',
-    article: '',
-    price: '',
-    category: '',
-    brand: '',
-    bonus: '',
-    description: '',
-    specifications: '',
-    images: [null, null, null, null]
+    name: "",
+    article: "",
+    price: "",
+    category: "",
+    brand: "",
+    bonus: "",
+    description: "",
+    characteristics: "",
+    images: [null, null, null, null], // Здесь теперь будут храниться File объекты
   });
 
-  // В Next.js важно очищать созданные URL.createObjectURL, чтобы избежать утечек памяти
-  const handleImageUpload = (e, index) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      const newImages = [...formData.images];
-      
-      // Если там уже было старое изображение (blob), его стоит удалить из памяти
-      if (newImages[index] && newImages[index].startsWith('blob:')) {
-        URL.revokeObjectURL(newImages[index]);
-      }
 
-      newImages[index] = imageUrl;
-      setFormData({ ...formData, images: newImages });
-    }
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      if (!file) return resolve(null);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // .split(',')[1] удаляет "data:image/jpeg;base64," и оставляет только чистый код
+        const base64String = reader.result.split(",")[1];
+        resolve(base64String);
+      };
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === "bonus") {
+      const num = Number(value);
+      if (num > 100 || num < 0) return;
+      setFormData((prev) => ({ ...prev, bonus: num }));
+      return;
+    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCategoryChange = (e) => {
-    const value = e.target.value;
-    if (value === 'add_new') {
-      setShowNewCategory(true);
-      setFormData({ ...formData, category: '' });
-    } else {
-      setShowNewCategory(false);
-      setFormData({ ...formData, category: value });
+  const handleImageUpload = (e, index) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const newImages = [...formData.images];
+      newImages[index] = file; // Сохраняем сам файл
+      setFormData((prev) => ({ ...prev, images: newImages }));
     }
   };
 
-  const handleBrandChange = (e) => {
-    const value = e.target.value;
-    if (value === 'add_new') {
-      setShowNewBrand(true);
-      setFormData({ ...formData, brand: '' });
-    } else {
-      setShowNewBrand(false);
-      setFormData({ ...formData, brand: value });
-    }
-  };
+const handleSubmit = async () => {
+  const formDataPayload = new FormData();
+  formDataPayload.append("name", formData.name);
+  formDataPayload.append("article", formData.article);
+  formDataPayload.append("price", formData.price);
+  formDataPayload.append("category", formData.category);
+  formDataPayload.append("brand", formData.brand);
+  formDataPayload.append("bonus", formData.bonus);
+  formDataPayload.append("description", formData.description);
+  formDataPayload.append("characteristics", formData.characteristics);
+  formDataPayload.append("is_available", "true");
 
-  const addNewCategory = () => {
-    if (newCategoryName.trim()) {
-      setCategories([...categories, newCategoryName.trim()]);
-      setFormData({ ...formData, category: newCategoryName.trim() });
-      setShowNewCategory(false);
-      setNewCategoryName('');
-    }
-  };
+  // Добавляем файлы как объекты File, а не строки
+  formData.images.forEach((file) => {
+    if (file) formDataPayload.append("images", file);
+  });
 
-  const addNewBrand = () => {
-    if (newBrandName.trim()) {
-      setBrands([...brands, newBrandName.trim()]);
-      setFormData({ ...formData, brand: newBrandName.trim() });
-      setShowNewBrand(false);
-      setNewBrandName('');
-    }
-  };
+  await addProduct(formDataPayload);
+};
 
-  const handleSubmit = () => {
-    // Здесь будет логика сохранения товара
-    console.log('Товар добавлен:', formData);
-    // В Next.js используем router.push
-    router.push('/admin/camera-catalog'); 
-  };
+  if (isInitialLoading) return <div className="loading">Загрузка...</div>;
 
   return (
     <div className="add-product-page">
       <div className="page-header">
-        {/* Назад на главную или в каталог */}
-        <button className="back-btn" onClick={() => router.back()}>← Назад</button>
+        <button className="back-btn" onClick={() => router.back()}>
+          ← Назад
+        </button>
         <h2>Добавление товара</h2>
       </div>
 
@@ -113,11 +97,15 @@ const AddProduct = () => {
                   accept="image/*"
                   onChange={(e) => handleImageUpload(e, idx)}
                   id={`thumb-${idx}`}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 />
                 <label htmlFor={`thumb-${idx}`}>
                   {formData.images[idx] ? (
-                    <img src={formData.images[idx]} alt={`Thumbnail ${idx + 1}`} />
+                    /* Используем URL.createObjectURL только для отображения в браузере */
+                    <img
+                      src={URL.createObjectURL(formData.images[idx])}
+                      alt="Превью"
+                    />
                   ) : (
                     <div className="upload-placeholder">📷</div>
                   )}
@@ -132,23 +120,29 @@ const AddProduct = () => {
               accept="image/*"
               onChange={(e) => handleImageUpload(e, 3)}
               id="main-image"
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
             />
             <label htmlFor="main-image">
               {formData.images[3] ? (
-                <img src={formData.images[3]} alt="Main preview" />
+                <img
+                  src={URL.createObjectURL(formData.images[3])}
+                  alt="Главное фото"
+                />
               ) : (
-                <div className="upload-placeholder-main">Загрузить фото</div>
+                <div className="upload-placeholder-main">
+                  Загрузить главное фото
+                </div>
               )}
             </label>
           </div>
         </div>
 
+        {/* ... Остальные поля (Название, Артикул и т.д. остаются без изменений) ... */}
         <div className="form-group">
           <label>Название</label>
           <input
-            type="text"
             name="name"
+            type="text"
             value={formData.name}
             onChange={handleInputChange}
           />
@@ -157,72 +151,60 @@ const AddProduct = () => {
         <div className="form-group">
           <label>Артикул</label>
           <input
-            type="text"
             name="article"
+            type="text"
             value={formData.article}
             onChange={handleInputChange}
           />
         </div>
 
         <div className="form-group">
-          <label>Цена</label>
+          <label>Цена (сом)</label>
           <input
-            type="text"
             name="price"
+            type="number"
             value={formData.price}
             onChange={handleInputChange}
           />
         </div>
 
         <div className="form-group">
-          <label>Категории</label>
-          <select name="category" value={formData.category} onChange={handleCategoryChange}>
+          <label>Категория</label>
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleInputChange}
+          >
             <option value="">Выберите категорию</option>
-            {categories.map((cat, idx) => (
-              <option key={idx} value={cat}>{cat}</option>
+            {categories?.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
             ))}
-            <option value="add_new">+ Добавить новую</option>
           </select>
-          {showNewCategory && (
-            <div className="new-item-input">
-              <input
-                type="text"
-                placeholder="Название категории"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-              />
-              <button type="button" onClick={addNewCategory}>Добавить</button>
-            </div>
-          )}
         </div>
 
         <div className="form-group">
           <label>Бренд</label>
-          <select name="brand" value={formData.brand} onChange={handleBrandChange}>
+          <select
+            name="brand"
+            value={formData.brand}
+            onChange={handleInputChange}
+          >
             <option value="">Выберите бренд</option>
-            {brands.map((brand, idx) => (
-              <option key={idx} value={brand}>{brand}</option>
+            {brands?.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
+              </option>
             ))}
-            <option value="add_new">+ Добавить новый</option>
           </select>
-          {showNewBrand && (
-            <div className="new-item-input">
-              <input
-                type="text"
-                placeholder="Название бренда"
-                value={newBrandName}
-                onChange={(e) => setNewBrandName(e.target.value)}
-              />
-              <button type="button" onClick={addNewBrand}>Добавить</button>
-            </div>
-          )}
         </div>
 
         <div className="form-group">
-          <label>Бонус</label>
+          <label>Бонусные баллы</label>
           <input
-            type="text"
             name="bonus"
+            type="number"
             value={formData.bonus}
             onChange={handleInputChange}
           />
@@ -240,15 +222,28 @@ const AddProduct = () => {
         <div className="form-group1">
           <label>Характеристики</label>
           <textarea
-            name="specifications"
-            value={formData.specifications}
+            name="characteristics"
+            value={formData.characteristics}
             onChange={handleInputChange}
           />
         </div>
 
         <div className="form-actions">
-          <button type="button" className="cancel-btn" onClick={() => router.back()}>Отмена</button>
-          <button type="button" className="submit-btn" onClick={handleSubmit}>Опубликовать</button>
+          <button
+            type="button"
+            className="cancel-btn"
+            onClick={() => router.back()}
+          >
+            Отмена
+          </button>
+          <button
+            type="button"
+            className="submit-btn"
+            onClick={handleSubmit}
+            disabled={addProduct.isPending}
+          >
+            {addProduct.isPending ? "Публикация..." : "Опубликовать"}
+          </button>
         </div>
       </div>
     </div>
