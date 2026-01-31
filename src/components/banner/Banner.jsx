@@ -6,42 +6,13 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import './HeroBanner.scss';
-
-// Импортируйте ваши изображения
-// import banner1 from '../../assets/images/banner1.jpg';
-// import banner2 from '../../assets/images/banner2.jpg';
-// import banner3 from '../../assets/images/banner3.jpg';
+import { useBanners } from '@/lib/banners/hooks/hooks';
 
 export function Banner() {
-  const banners = [
-    {
-      id: 1,
-      // image: banner1,
-      title: 'Летняя распродажа',
-      subtitle: 'Скидки до 50% на все товары',
-      buttonLink: '#'
-    },
-    {
-      id: 2,
-      // image: banner2,
-      title: 'Новая коллекция',
-      subtitle: 'Эксклюзивные товары только у нас',
-      buttonLink: '#'
-    },
-    {
-      id: 3,
-      // image: banner3,
-      title: 'Бесплатная доставка',
-      subtitle: 'При заказе от 1000 сом',
-      buttonLink: '#'
-    },
-    {
-      id: 4,
-      title: 'Специальное предложение',
-      subtitle: 'Акция действует ограниченное время',
-      buttonLink: '#'
-    }
-  ];
+    const { data: banners = [], isLoading, error } = useBanners('main');
+
+    if (isLoading) return <div className="hero-banner-loader">Загрузка...</div>;
+    if (error) return null;
 
   return (
     <div className="hero-banner">
@@ -60,29 +31,35 @@ export function Banner() {
         }}
         effect="fade"
         fadeEffect={{ crossFade: true }}
-        loop={true}
+        loop={banners.length > 1} 
         speed={800}
         className="hero-banner__swiper"
       >
-        {banners.map((banner) => (
-          <SwiperSlide key={banner.id}>
-            <div className="banner-slide">
-              <div 
-                className="banner-slide__background"
-                style={{
-                  backgroundImage: banner.image ? `url(${banner.image})` : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                }}
-              >
-                <div className="banner-slide__overlay"></div>
+        {banners.map((banner) => {
+          const backgroundImage = banner.existing_images?.[0]?.image;
+
+          return (
+            <SwiperSlide key={banner.id}>
+              <div className="banner-slide">
+                <div 
+                  className="banner-slide__background"
+                  style={{
+                    backgroundImage: backgroundImage 
+                      ? `url(${backgroundImage})` 
+                      : 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)'
+                  }}
+                >
+                  <div className="banner-slide__overlay"></div>
+                </div>
+                
+                <div className="banner-slide__content container">
+                  <h1 className="banner-slide__title">{banner.title}</h1>
+                  <p className="banner-slide__subtitle">{banner.description || banner.subtitle}</p>
+                </div>
               </div>
-              
-              <div className="banner-slide__content container">
-                <h1 className="banner-slide__title">{banner.title}</h1>
-                <p className="banner-slide__subtitle">{banner.subtitle}</p>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
     </div>
   );

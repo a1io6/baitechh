@@ -1,8 +1,6 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 
-const BASE_URL = 'https://ayla-diandrous-unobscenely.ngrok-free.dev'; // prod
-// const BASE_URL = 'http://193.176.239.188/api/dashboard/'; // test
+const BASE_URL = 'https://ayla-diandrous-unobscenely.ngrok-free.dev'; 
 export const WSS_URL = 'baitech';
 
 export const $api = axios.create({
@@ -10,10 +8,19 @@ export const $api = axios.create({
 });
 
 $api.interceptors.request.use((config) => {
-  const token = Cookies.get("access");
+  const token = localStorage.getItem("adminToken"); 
 
   if (token) {
-    config.headers.Authorization = `${token}`;
+    config.headers.Authorization = `Bearer ${token}`; 
+    
+    console.log("Запрос ушел с заголовком:", config.headers.Authorization);
+  } else {
+    console.warn("Токен не найден в localStorage!");
   }
+
+  config.headers["ngrok-skip-browser-warning"] = "true";
+
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });

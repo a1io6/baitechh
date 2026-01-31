@@ -13,34 +13,37 @@ export function AdminItem({ banner, handleDelete, handleToggle }) {
         />
         <span className="banner-item__checkmark"></span>
       </label>
-
       {/* Превью изображения */}
-      <div className="banner-item__image">
-        {banner.image ? (
-          <img src={banner.image} alt="Banner" />
-        ) : (
-          <div className="banner-item__image-placeholder">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect
-                x="3"
-                y="3"
-                width="18"
-                height="18"
-                rx="2"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
-              <path
-                d="M21 15L16 10L5 21"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-        )}
-      </div>
+    <div className="banner-item__image">
+  {banner.existing_images && banner.existing_images.length > 0 ? (
+    // Если картинки есть, проходим по массиву и выводим их
+    banner.existing_images.map((item) => (
+      <img src={item.image} alt="Banner" key={item.id} />
+    ))
+  ) : (
+    // Если картинок нет (пустой массив или null), показываем заглушку
+    <div className="banner-item__image-placeholder">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <rect
+          x="3"
+          y="3"
+          width="18"
+          height="18"
+          rx="2"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+        <path
+          d="M21 15L16 10L5 21"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    </div>
+  )}
+</div>
 
       {/* Кнопки действий */}
       <div className="banner-item__actions">
