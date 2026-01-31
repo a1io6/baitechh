@@ -2,17 +2,29 @@
 
 import React, { useState } from 'react';
 import './UsersTable.scss';
+import { useUsers, useDeleteUser } from '@/lib/user/hooks/hooks'; 
+import { Trash2 } from 'lucide-react'; 
 
 const UsersTable = () => {
-  // Пример данных (в реальности придут из API)
-  const users = Array(10).fill({
-    name: 'Аскарова Лейла Тилековна',
-    phone: '708 266 543',
-    email: 'vguu@gmail.com'
-  });
-
+  const { data: users = [], isLoading, error } = useUsers();
+  const { mutate: deleteUser, isLoading: isDeleting } = useDeleteUser(); 
+  
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 40;
+  const itemsPerPage = 15; 
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  if (isLoading) return <div className="p-6">Загрузка пользователей...</div>;
+  if (error) return <div className="p-6 text-red-500">Ошибка загрузки: {error.message}</div>;
+
+  const indexOfLastUser = currentPage * itemsPerPage;
+  const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+  const handleDelete = (id) => {
+    if (window.confirm("Вы уверены, что хотите удалить этого пользователя?")) {
+      deleteUser(id);
+    }
+  };
 
   return (
     <div className="users-container">
@@ -25,32 +37,70 @@ const UsersTable = () => {
               <th>Ф.И.О</th>
               <th>Номер</th>
               <th>Электронная почта</th>
+              <th style={{ width: '50px' }}></th> {/* Колонка для удаления */}
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
-              <tr key={index}>
-                <td>{user.name}</td>
-                <td>{user.phone}</td>
-                <td>{user.email}</td>
+            {currentUsers.length > 0 ? (
+              currentUsers.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.name || user.full_name || 'Не указано'}</td>
+                  <td>{user.number || user.phone_number || '---'}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    <button 
+                      className="delete-btn"
+                      onClick={() => handleDelete(user.id)}
+                      disabled={isDeleting}
+                      title="Удалить пользователя"
+                    >
+                      <Trash2 size={18} color="#ef4444" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
+                  Пользователей пока нет
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      <div className="pagination">
-        <button className="page-btn arrow" disabled>&lt;</button>
-        
-        <button className={`page-btn ${currentPage === 1 ? 'active' : ''}`}>1</button>
-        <button className="page-btn">2</button>
-        <button className="page-btn">3</button>
-        <button className="page-btn">4</button>
-        <span className="dots">...</span>
-        <button className="page-btn">{totalPages}</button>
-        
-        <button className="page-btn arrow">&gt;</button>
-      </div>
+      {/* ПАГИНАЦИЯ */}
+      {users.length > itemsPerPage && (
+        <div className="pagination">
+          <button 
+            className="page-btn arrow" 
+            disabled={currentPage === 1} 
+            onClick={() => setCurrentPage(prev => prev - 1)}
+          >
+            &lt;
+          </button>
+          
+          <button className={`page-btn active`}>{currentPage}</button>
+          
+          {currentPage < totalPages && (
+            <>
+              <span className="dots">...</span>
+              <button className="page-btn" onClick={() => setCurrentPage(totalPages)}>
+                {totalPages}
+              </button>
+            </>
+          )}
+
+          <button 
+            className="page-btn arrow" 
+            disabled={currentPage === totalPages} 
+            onClick={() => setCurrentPage(prev => prev + 1)}
+          >
+            &gt;
+          </button>
+        </div>
+      )}
     </div>
   );
 };
