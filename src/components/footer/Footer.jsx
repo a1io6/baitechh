@@ -102,7 +102,7 @@ function Footer() {
             }`}
           >
             <ul>
-              <li><Link href="/aboutfd">About Us</Link></li>
+              <li><Link href="/about">About Us</Link></li>
               <li><a href="/privacy">Privacy Policy</a></li>
               <li><a href="/terms">Terms & Conditions</a></li>
               <li><a href="/brands">Производители</a></li>

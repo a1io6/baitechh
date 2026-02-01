@@ -70,7 +70,6 @@ const UsersTable = () => {
         </table>
       </div>
 
-      {/* ПАГИНАЦИЯ */}
       {users.length > itemsPerPage && (
         <div className="pagination">
           <button 

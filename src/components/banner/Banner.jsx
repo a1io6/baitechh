@@ -11,7 +11,7 @@ import { useBanners } from '@/lib/banners/hooks/hooks';
 export function Banner() {
     const { data: banners = [], isLoading, error } = useBanners('main');
 
-    if (isLoading) return <div className="hero-banner-loader">Загрузка...</div>;
+    if (isLoading) return <div className="loader"></div>;
     if (error) return null;
 
   return (

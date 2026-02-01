@@ -1,0 +1,102 @@
+.certificates-page {
+  width: 100%;
+  background-color: #f5f7fa;
+  font-family: 'Montserrat', sans-serif;
+  padding: 40px 20px;
+  @media (min-width: 1024px) { padding: 0px 0px 40px 0px; }
+  @media (max-width: 1024px) { padding: 0px 0px 30px 0px; }
+
+  .container-1220 {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 10px;
+  }
+
+  .breadcrumbs {
+    font-size: 14px;
+    color: #00162ACC;
+    margin-bottom: 30px;
+    .sep { margin: 0 5px; }
+    .active { color: #00162A; font-weight: 500; }
+  }
+
+  .title-h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #00162A;
+    margin-bottom: 20px; 
+  }
+
+  .desc-main {
+    font-size: 18px;
+    line-height: 1.4;
+    color: #00162ACC;
+    margin-bottom: 47px; 
+    max-width: 1000px;
+  }
+
+  .title-h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .cert-grid {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 40px 50px; 
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, 1fr); 
+    }
+
+    .cert-card {
+      width: 100%;
+      
+      .cert-card-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #00162ACC;
+        margin-bottom: 15px;
+        min-height: 40px; 
+      }
+
+      .img-wrapper {
+        width: 100%;
+        max-width: 585px; 
+        height: 335px;    
+        background-color: #C4C4C4;
+        border-radius: 8px;
+        overflow: hidden;
+
+        .placeholder-img {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #888;
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover; 
+        }
+      }
+    }
+
+    .cert-footer-text {
+      display: flex;
+      flex-direction: column;
+      gap: 15px; 
+      padding-top: 55px; 
+
+      p {
+        font-size: 15px;
+        color: #475569;
+        line-height: 1.6;
+      }
+    }
+  }
+}
