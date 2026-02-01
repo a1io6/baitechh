@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <body>
         <div
           style={{
@@ -17,6 +17,7 @@ export default function RootLayout({ children }) {
             backgroundColor: "#f8f9fa",
             gap: "20px",
           }}
+          suppressHydrationWarning
         >
           {/* Ваш сайдбар */}
           <AdminPanel />
