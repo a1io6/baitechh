@@ -25,8 +25,8 @@ const AdminPanel = () => {
     { id: 2, text: "Баннеры", path: "/banners" },
     { id: 3, text: "Пользователи", path: "/users-table" },
     { id: 4, text: "Настройки сайта", path: "/setting-web" },
-    { id: 5, text: "Решения", path: "/resalts" },
-    { id: 6, text: "Курсы", path: "/courses" },
+    // { id: 5, text: "Решения", path: "/resalts" },
+    // { id: 6, text: "Курсы", path: "/courses" },
   ];
 
   const updateIndicatorPosition = (index) => {

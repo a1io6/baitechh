@@ -44,6 +44,20 @@ export const useProducts = () => {
         },
     });
 
+    const addCategoryMutation = useMutation({
+        mutationFn: (newCat) => productApi.createCategory(newCat), // Путь: /products/categories/
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] });
+        },
+    });
+
+    const addBrandMutation = useMutation({
+        mutationFn: (newBrand) => productApi.createBrand(newBrand), // Путь: /products/brands/
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['brands'] });
+        },
+    });
+
     const categoriesQuery = useQuery({
         queryKey: ['categories'],
         queryFn: productApi.getCategories,
@@ -65,5 +79,7 @@ export const useProducts = () => {
         categories: categoriesQuery.data?.results || (Array.isArray(categoriesQuery.data) ? categoriesQuery.data : []),
         brands: brandsQuery.data?.results || (Array.isArray(brandsQuery.data) ? brandsQuery.data : []),
         isInitialLoading: categoriesQuery.isLoading || brandsQuery.isLoading,
+        addCategory: addCategoryMutation.mutateAsync,
+        addBrand: addBrandMutation.mutateAsync,
     };
 };

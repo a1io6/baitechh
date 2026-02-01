@@ -113,7 +113,7 @@ const EditProduct = () => {
     }
   };
 
-  if (isInitialLoading || isLoading) return <div className="loading">Загрузка данных...</div>;
+  if (isInitialLoading || isLoading) return  <div className="loader"/>;
 
   return (
     <div className="edit-product-page">

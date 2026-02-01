@@ -40,4 +40,12 @@ export const productApi = {
         const { data } = await apiClient.post('products/products/', payload);
         return data;
     },
+    createCategory: async (payload) => {
+        const { data } = await apiClient.post('products/categories/', payload);
+        return data;
+    },
+    createBrand: async (payload) => {
+        const { data } = await apiClient.post('products/brands/', payload);
+        return data;
+    },
 };

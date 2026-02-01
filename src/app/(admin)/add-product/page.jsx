@@ -7,8 +7,16 @@ import "./AddProduct.scss";
 
 const AddProduct = () => {
   const router = useRouter();
-  const { categories, brands, isInitialLoading, addProduct } = useProducts();
+  const { 
+    categories, 
+    brands, 
+    isInitialLoading, 
+    addProduct, 
+    addCategory, 
+    addBrand 
+  } = useProducts();
 
+  // Основное состояние формы товара
   const [formData, setFormData] = useState({
     name: "",
     article: "",
@@ -18,24 +26,15 @@ const AddProduct = () => {
     bonus: "",
     description: "",
     characteristics: "",
-    images: [null, null, null, null], // Здесь теперь будут храниться File объекты
+    images: [null, null, null, null], // Массив для объектов File
   });
 
+  // Состояния для модальных окон (Категории/Бренды)
+  const [modalType, setModalType] = useState(null); // 'category' | 'brand' | null
+  const [modalData, setModalData] = useState({ name: "", description: "" });
+  const [isSubmittingModal, setIsSubmittingModal] = useState(false);
 
-  const fileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      if (!file) return resolve(null);
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        // .split(',')[1] удаляет "data:image/jpeg;base64," и оставляет только чистый код
-        const base64String = reader.result.split(",")[1];
-        resolve(base64String);
-      };
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
+  // Обработка текстовых полей
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "bonus") {
@@ -47,39 +46,114 @@ const AddProduct = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Обработка загрузки файлов
   const handleImageUpload = (e, index) => {
     const file = e.target.files?.[0];
     if (file) {
       const newImages = [...formData.images];
-      newImages[index] = file; // Сохраняем сам файл
+      newImages[index] = file;
       setFormData((prev) => ({ ...prev, images: newImages }));
     }
   };
 
-const handleSubmit = async () => {
-  const formDataPayload = new FormData();
-  formDataPayload.append("name", formData.name);
-  formDataPayload.append("article", formData.article);
-  formDataPayload.append("price", formData.price);
-  formDataPayload.append("category", formData.category);
-  formDataPayload.append("brand", formData.brand);
-  formDataPayload.append("bonus", formData.bonus);
-  formDataPayload.append("description", formData.description);
-  formDataPayload.append("characteristics", formData.characteristics);
-  formDataPayload.append("is_available", "true");
+  // Удаление выбранного фото
+  const removeImage = (index) => {
+    const newImages = [...formData.images];
+    newImages[index] = null;
+    setFormData((prev) => ({ ...prev, images: newImages }));
+  };
 
-  // Добавляем файлы как объекты File, а не строки
-  formData.images.forEach((file) => {
-    if (file) formDataPayload.append("images", file);
-  });
+  // Сохранение нового бренда или категории
+  const handleAddQuickInfo = async () => {
+    if (!modalData.name.trim()) return alert("Название обязательно");
+    
+    setIsSubmittingModal(true);
+    try {
+      if (modalType === 'category') {
+        await addCategory({ 
+          name: modalData.name, 
+          description: modalData.description, 
+          root: null 
+        });
+      } else if (modalType === 'brand') {
+        await addBrand({ 
+          name: modalData.name, 
+          description: modalData.description 
+        });
+      }
+      setModalType(null);
+      setModalData({ name: "", description: "" });
+    } catch (error) {
+      console.error("Ошибка при создании:", error);
+    } finally {
+      setIsSubmittingModal(false);
+    }
+  };
 
-  await addProduct(formDataPayload);
-};
+  // Финальная отправка товара
+  const handleSubmit = async () => {
+    const payload = new FormData();
+    payload.append("name", formData.name);
+    payload.append("article", formData.article);
+    payload.append("price", formData.price);
+    payload.append("category", formData.category);
+    payload.append("brand", formData.brand);
+    payload.append("bonus", formData.bonus);
+    payload.append("description", formData.description);
+    payload.append("characteristics", formData.characteristics);
+    payload.append("is_available", "true");
 
-  if (isInitialLoading) return <div className="loading">Загрузка...</div>;
+    formData.images.forEach((file) => {
+      if (file) payload.append("images", file);
+    });
+
+    try {
+      await addProduct(payload);
+      router.push("/admin/products"); // Или ваш путь к списку
+    } catch (err) {
+      console.error("Ошибка публикации:", err);
+    }
+  };
+
+  if (isInitialLoading) return <div className="loader"/>;
 
   return (
     <div className="add-product-page">
+      {/* --- МОДАЛЬНОЕ ОКНО (Category/Brand) --- */}
+      {modalType && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Добавить {modalType === 'category' ? 'категорию' : 'бренд'}</h3>
+            <div className="modal-fields">
+              <label>Название *</label>
+              <input
+                type="text"
+                value={modalData.name}
+                onChange={(e) => setModalData({ ...modalData, name: e.target.value })}
+                placeholder="Введите название..."
+              />
+              <label>Описание</label>
+              <textarea
+                value={modalData.description}
+                onChange={(e) => setModalData({ ...modalData, description: e.target.value })}
+                placeholder="Необязательное описание..."
+              />
+            </div>
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={() => setModalType(null)}>Отмена</button>
+              <button 
+                className="confirm-btn" 
+                onClick={handleAddQuickInfo}
+                disabled={isSubmittingModal}
+              >
+                {isSubmittingModal ? "..." : "Добавить"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- ШАПКА --- */}
       <div className="page-header">
         <button className="back-btn" onClick={() => router.back()}>
           ← Назад
@@ -88,6 +162,7 @@ const handleSubmit = async () => {
       </div>
 
       <div className="form-container">
+        {/* СЕКЦИЯ ИЗОБРАЖЕНИЙ */}
         <div className="image-upload-section">
           <div className="thumbnail-grid">
             {[0, 1, 2].map((idx) => (
@@ -101,11 +176,10 @@ const handleSubmit = async () => {
                 />
                 <label htmlFor={`thumb-${idx}`}>
                   {formData.images[idx] ? (
-                    /* Используем URL.createObjectURL только для отображения в браузере */
-                    <img
-                      src={URL.createObjectURL(formData.images[idx])}
-                      alt="Превью"
-                    />
+                    <div className="preview-container">
+                      <img src={URL.createObjectURL(formData.images[idx])} alt="Превью" />
+                      <div className="remove-overlay" onClick={(e) => { e.preventDefault(); removeImage(idx); }}>✕</div>
+                    </div>
                   ) : (
                     <div className="upload-placeholder">📷</div>
                   )}
@@ -124,116 +198,80 @@ const handleSubmit = async () => {
             />
             <label htmlFor="main-image">
               {formData.images[3] ? (
-                <img
-                  src={URL.createObjectURL(formData.images[3])}
-                  alt="Главное фото"
-                />
-              ) : (
-                <div className="upload-placeholder-main">
-                  Загрузить главное фото
+                <div className="preview-container main">
+                  <img src={URL.createObjectURL(formData.images[3])} alt="Главное фото" />
+                  <div className="remove-overlay" onClick={(e) => { e.preventDefault(); removeImage(3); }}>✕</div>
                 </div>
+              ) : (
+                <div className="upload-placeholder-main">Загрузить главное фото</div>
               )}
             </label>
           </div>
         </div>
 
-        {/* ... Остальные поля (Название, Артикул и т.д. остаются без изменений) ... */}
-        <div className="form-group">
-          <label>Название</label>
-          <input
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={handleInputChange}
-          />
+        {/* ОСНОВНЫЕ ПОЛЯ */}
+        <div className="form-grid">
+          <div className="form-group">
+            <label>Название</label>
+            <input name="name" type="text" value={formData.name} onChange={handleInputChange} />
+          </div>
+
+          <div className="form-group">
+            <label>Артикул</label>
+            <input name="article" type="text" value={formData.article} onChange={handleInputChange} />
+          </div>
+
+          <div className="form-group">
+            <label>Цена (сом)</label>
+            <input name="price" type="number" value={formData.price} onChange={handleInputChange} />
+          </div>
+
+          <div className="form-group">
+            <label>Категория</label>
+            <div className="select-wrapper">
+              <select name="category" value={formData.category} onChange={handleInputChange}>
+                <option value="">Выберите категорию</option>
+                {categories?.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <button type="button" className="add-small-btn" onClick={() => setModalType('category')}>+</button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Бренд</label>
+            <div className="select-wrapper">
+              <select name="brand" value={formData.brand} onChange={handleInputChange}>
+                <option value="">Выберите бренд</option>
+                {brands?.map((b) => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
+                ))}
+              </select>
+              <button type="button" className="add-small-btn" onClick={() => setModalType('brand')}>+</button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Бонусные баллы (%)</label>
+            <input name="bonus" type="number" value={formData.bonus} onChange={handleInputChange} />
+          </div>
         </div>
 
-        <div className="form-group">
-          <label>Артикул</label>
-          <input
-            name="article"
-            type="text"
-            value={formData.article}
-            onChange={handleInputChange}
-          />
-        </div>
+        <div className="full-width-fields">
+          <div className="form-group">
+            <label>Описание</label>
+            <textarea name="description" value={formData.description} onChange={handleInputChange} />
+          </div>
 
-        <div className="form-group">
-          <label>Цена (сом)</label>
-          <input
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Категория</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
-          >
-            <option value="">Выберите категорию</option>
-            {categories?.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Бренд</label>
-          <select
-            name="brand"
-            value={formData.brand}
-            onChange={handleInputChange}
-          >
-            <option value="">Выберите бренд</option>
-            {brands?.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Бонусные баллы</label>
-          <input
-            name="bonus"
-            type="number"
-            value={formData.bonus}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div className="form-group1">
-          <label>Описание</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div className="form-group1">
-          <label>Характеристики</label>
-          <textarea
-            name="characteristics"
-            value={formData.characteristics}
-            onChange={handleInputChange}
-          />
+          <div className="form-group">
+            <label>Характеристики</label>
+            <textarea name="characteristics" value={formData.characteristics} onChange={handleInputChange} />
+          </div>
         </div>
 
         <div className="form-actions">
-          <button
-            type="button"
-            className="cancel-btn"
-            onClick={() => router.back()}
-          >
+          <button type="button" className="cancel-btn" onClick={() => router.back()}>
             Отмена
           </button>
           <button

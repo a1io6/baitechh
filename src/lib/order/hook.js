@@ -12,14 +12,14 @@ export const useOrders = (filters = {}) => {
   const ordersQuery = useQuery({
     queryKey: ["orders", activeFilters],
     queryFn: async () => {
-      const { data } = await $api.get("/ordering/", { params: activeFilters });
+      const { data } = await $api.get("/ordering/ordering/", { params: activeFilters });
       return data;
     },
-    placeholderData: (prev) => prev, // Сохраняем старые данные пока грузятся новые
+    placeholderData: (prev) => prev,
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => $api.patch(`/ordering/${id}/`, { status }),
+    mutationFn: ({ id, status }) => $api.put(`/or dering/${id}/`, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
