@@ -3,73 +3,42 @@
 import React, { useState } from "react";
 import "./OrderTable.scss";
 import StatsCards from "./ui/StatsCards.jsx";
-import { Settings2 } from "lucide-react";
-
-// Варианты статусов для Select
-const STATUS_OPTIONS = [
-  { value: "returns", label: "Возвраты" },
-  { value: "delivered", label: "Доставлено" },
-  { value: "stock", label: "На складе" },
-  { value: "transit", label: "В пути" },
-];
+import { Settings2, X } from "lucide-react";
+import { useOrders } from "@/lib/order/hook";
 
 const OrderTable = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      number: "122222",
-      client: "Асан",
-      phone: "708 26 37 04",
-      address: "г. Москва, ул. Ленина, д. 12, кв. 45",
-      payment: "QR оплачено",
-      amount: "5 200 сом",
-      status: "returns",
-      date: "12.12.25",
-    },
-    {
-      id: 2,
-      number: "122222",
-      client: "Асан",
-      phone: "708 26 37 04",
-      address: "г. Москва, ул. Ленина, д. 12, кв. 45",
-      payment: "QR оплачено",
-      amount: "5 200 сом",
-      status: "delivered",
-      date: "12.12.25",
-    },
-    {
-      id: 3,
-      number: "122222",
-      client: "Асан",
-      phone: "708 26 37 04",
-      address: "г. Москва, ул. Ленина, д. 12, кв. 45",
-      payment: "QR оплачено",
-      amount: "5 200 сом",
-      status: "stock",
-      date: "12.12.25",
-    },
-    {
-      id: 4,
-      number: "122222",
-      client: "Асан",
-      phone: "708 26 37 04",
-      address: "г. Москва, ул. Ленина, д. 12, кв. 45",
-      payment: "QR оплачено",
-      amount: "5 200 сом",
-      status: "transit",
-      date: "12.12.25",
-    },
-  ]);
+  
+  // Начальные фильтры согласно Swagger
+  const [filters, setFilters] = useState({
+    date_from: "01.12.2008",
+    date_to: "01.12.2027",
+    order_number: "",
+    payment_method: "", // 'cash' или 'qr'
+    status: "", // 'on_the_way', 'delivered', 'in_stock', 'returned'
+  });
 
-  // Изменение статуса через неизменяемое состояние (Immutable)
-  const updateStatus = (id, newStatus) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === id ? { ...order, status: newStatus } : order,
-      ),
-    );
+  const { orders, stats, totalCount, isLoading, updateStatus } = useOrders(filters);
+
+  const updateFilter = (key, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: prev[key] === value ? "" : value
+    }));
   };
+
+  const resetFilters = () => {
+    setFilters({
+      date_from: "01.12.2008",
+      date_to: "01.12.2027",
+      order_number: "",
+      payment_method: "",
+      status: "",
+    });
+  };
+
+console.log(stats);
+
 
   return (
     <div className="dashboard">
@@ -77,67 +46,97 @@ const OrderTable = () => {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Поиск"
-            className="search-bar__input"
+            placeholder="Номер заказа..."
+            value={filters.order_number}
+            onChange={(e) => updateFilter("order_number", e.target.value)}
           />
         </div>
 
-        {/* Контейнер для кнопки и окна */}
         <div className="filter-wrapper">
-          <button
-            className={`settings-button ${isFilterOpen ? "active" : ""}`}
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-          >
+          <button onClick={() => setIsFilterOpen(!isFilterOpen)} className="settings-button">
             <Settings2 size={20} />
           </button>
 
-          {/* Всплывающее окно */}
           {isFilterOpen && (
             <div className="filter-modal">
               <div className="filter-modal__header">
-                <h3>Фильтр заказов</h3>
+                <h3>Фильтры</h3>
+                <button onClick={resetFilters} className="reset-btn">Сбросить</button>
               </div>
 
+              {/* Статус из Swagger */}
               <div className="filter-modal__section">
                 <h4>Статус</h4>
                 <div className="filter-modal__chips">
-                  <button className="chip">Доставлен</button>
-                  <button className="chip">В пути</button>
-                  <button className="chip">На складе</button>
+                  {[
+                    { val: "on_the_way", label: "В пути" },
+                    { val: "delivered", label: "Доставлено" },
+                    { val: "in_stock", label: "На складе" },
+                    { val: "returned", label: "Возвраты" }
+                  ].map(s => (
+                    <button 
+                      key={s.val}
+                      className={`chip ${filters.status === s.val ? "active" : ""}`}
+                      onClick={() => updateFilter("status", s.val)}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
+              {/* Оплата из Swagger */}
               <div className="filter-modal__section">
-                <h4>Способ оплаты</h4>
+                <h4>Оплата</h4>
                 <div className="filter-modal__chips">
-                  <button className="chip">Наличными</button>
-                  <button className="chip">QR</button>
+                  <button 
+                    className={`chip ${filters.payment_method === "cash" ? "active" : ""}`}
+                    onClick={() => updateFilter("payment_method", "cash")}
+                  >
+                    Наличными
+                  </button>
+                  <button 
+                    className={`chip ${filters.payment_method === "qr" ? "active" : ""}`}
+                    onClick={() => updateFilter("payment_method", "qr")}
+                  >
+                    QR-код
+                  </button>
                 </div>
               </div>
 
               <div className="filter-modal__section">
-                <h4>Дата</h4>
+                <h4>Период</h4>
                 <div className="filter-modal__dates">
-                  <input type="text" defaultValue="12.10.24" />
-                  <input type="text" defaultValue="22.10.25" />
+                  <input 
+                    type="text" 
+                    value={filters.date_from} 
+                    onChange={(e) => updateFilter("date_from", e.target.value)} 
+                  />
+                  <input 
+                    type="text" 
+                    value={filters.date_to} 
+                    onChange={(e) => updateFilter("date_to", e.target.value)} 
+                  />
                 </div>
               </div>
 
-              <button className="filter-modal__apply">Показать (202)</button>
+              <button className="filter-modal__apply" onClick={() => setIsFilterOpen(false)}>
+                Показать ({totalCount})
+              </button>
             </div>
           )}
         </div>
       </div>
-      <StatsCards />
+
+      <StatsCards stats={stats} />
+
       <main className="dashboard__content">
         <table className="table">
           <thead>
-            <tr className="table__header">
+            <tr>
               <th>№ заказа</th>
               <th>Клиент</th>
-              <th>Телефон</th>
-              <th>Адрес доставки</th>
-              <th>Способ оплаты</th>
+              <th>Оплата</th>
               <th>Сумма</th>
               <th>Статус</th>
               <th>Дата</th>
@@ -146,30 +145,23 @@ const OrderTable = () => {
           <tbody>
             {orders.map((order) => (
               <tr key={order.id} className="table__row">
-                <td>{order.number}</td>
-                <td>{order.client}</td>
-                <td>{order.phone}</td>
-                <td className="table__address">{order.address}</td>
-                <td>{order.payment}</td>
-                <td>{order.amount}</td>
+                <td>{order.order_number}</td>
+                <td>{order.first_name} {order.last_name}</td>
+                <td>{order.payment_method === "cash" ? "Наличными" : "QR"}</td>
+                <td>{order.total_price} сом</td>
                 <td>
-                  <div
-                    className={`status-wrapper status-wrapper--${order.status}`}
+                  {/* Селект для изменения статуса */}
+                  <select 
+                    value={order.status} 
+                    onChange={(e) => updateStatus({ id: order.id, status: e.target.value })}
                   >
-                    <select
-                      value={order.status}
-                      onChange={(e) => updateStatus(order.id, e.target.value)}
-                      className="status-wrapper__select"
-                    >
-                      {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    <option value="on_the_way">В пути</option>
+                    <option value="delivered">Доставлено</option>
+                    <option value="in_stock">На складе</option>
+                    <option value="returned">Возвраты</option>
+                  </select>
                 </td>
-                <td>{order.date}</td>
+                <td>{order.formatted_date}</td>
               </tr>
             ))}
           </tbody>

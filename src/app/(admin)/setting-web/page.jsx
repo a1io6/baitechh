@@ -1,12 +1,13 @@
-"use client"; // Обязательно для использования useState и useRouter
+"use client";
 
-import React, { useState } from 'react';
-// Импортируем useRouter из next/navigation вместо react-router-dom
+import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
+import { useSiteSettings } from '@/lib/settings/hook';
 import './SettingWeb.scss';
 
 const SettingWeb = () => {
   const router = useRouter();
+  const { settings, isLoading, updateSettings, isUpdating } = useSiteSettings();
   
   const [formData, setFormData] = useState({
     phone: '',
@@ -14,8 +15,21 @@ const SettingWeb = () => {
     email: '',
     instagram: '',
     whatsapp: '',
-    workTime: ''
+    work_hours: '' 
   });
+
+  useEffect(() => {
+    if (settings) {
+      setFormData({
+        phone: settings.phone || '',
+        address: settings.address || '',
+        email: settings.email || '',
+        instagram: settings.instagram || '',
+        whatsapp: settings.whatsapp || '',
+        work_hours: settings.work_hours || ''
+      });
+    }
+  }, [settings]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,10 +38,27 @@ const SettingWeb = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Данные отправлены:', formData);
-    // В Next.js используем router.push
-    // router.push("/admin/updatesetting");
+
+    // Создаем объект только с измененными полями
+    const changedFields = Object.keys(formData).reduce((acc, key) => {
+      // Сравниваем текущее значение в форме с тем, что пришло из API
+      if (formData[key] !== (settings[key] || '')) {
+        acc[key] = formData[key];
+      }
+      return acc;
+    }, {});
+
+    // Если изменений нет, просто выходим или уведомляем пользователя
+    if (Object.keys(changedFields).length === 0) {
+      console.log("Изменений не обнаружено");
+      return;
+    }
+
+    // Отправляем только патч (измененные поля)
+    updateSettings(changedFields);
   };
+
+  if (isLoading) return <div>Загрузка настроек...</div>;
 
   return (
     <div className="settings-web">
@@ -35,12 +66,13 @@ const SettingWeb = () => {
         <h2 className="form-title">Настройки сайта</h2>
         
         <form onSubmit={handleSubmit} className="product-form">
+          {/* Инпуты остаются без изменений */}
           <div className="input-group">
             <label>* Номер телефона</label>
             <input 
               type="text" 
               name="phone"
-              placeholder="tel" 
+              placeholder="Например: +996..." 
               onChange={handleChange}
               value={formData.phone}
             />
@@ -51,7 +83,7 @@ const SettingWeb = () => {
             <input 
               type="text" 
               name="address"
-              placeholder="Фактический адрес, отображаемый в футере сайта." 
+              placeholder="Фактический адрес" 
               onChange={handleChange}
               value={formData.address}
             />
@@ -62,31 +94,31 @@ const SettingWeb = () => {
             <input 
               type="email" 
               name="email"
-              placeholder="Email address" 
+              placeholder="example@mail.com" 
               onChange={handleChange}
               value={formData.email}
             />
           </div>
 
           <div className="input-group">
-            <label>* Instagram</label>
+            <label>Instagram (ссылка)</label>
             <input 
               type="text" 
               name="instagram"
-              placeholder="Ссылка на официальный аккаунт компании." 
+              placeholder="https://instagram.com/..." 
               onChange={handleChange}
-              value={formData.instagram}
+              value={formData.instagram || ''}
             />
           </div>
 
           <div className="input-group">
-            <label>* WhatsApp</label>
+            <label>WhatsApp (номер или ссылка)</label>
             <input 
               type="text" 
               name="whatsapp"
-              placeholder="ссылка" 
+              placeholder="https://wa.me/..." 
               onChange={handleChange}
-              value={formData.whatsapp}
+              value={formData.whatsapp || ''}
             />
           </div>
 
@@ -94,24 +126,27 @@ const SettingWeb = () => {
             <label>* Время работы</label>
             <input 
               type="text" 
-              name="workTime"
-              placeholder="График работы компании." 
+              name="work_hours"
+              placeholder="Пн-Пт 9:00 - 18:00" 
               onChange={handleChange}
-              value={formData.workTime}
+              value={formData.work_hours}
             />
           </div>
 
           <div className="form-actions">
-            {/* Заменяем navigate на router.push */}
             <button 
               type="button" 
               className="cancel-btn" 
-              onClick={() => router.push('/admin/camera-catalog')}
+              onClick={() => router.back()}
             >
               Отмена
             </button>
-            <button type="submit" className="submit-btn">
-              Сохранить настройки
+            <button 
+              type="submit" 
+              className="submit-btn" 
+              disabled={isUpdating || Object.keys(formData).every(key => formData[key] === (settings[key] || ''))}
+            >
+              {isUpdating ? "Сохранение..." : "Сохранить настройки"}
             </button>
           </div>
         </form>

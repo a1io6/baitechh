@@ -148,7 +148,7 @@ const CamerCatalog = () => {
               <div key={product.id} className="product-card">
                 <div className="card-header">
                   <div className="product-image">
-                    {/* Безопасная проверка наличия картинки */}
+                  
                     {product.existing_images &&
                     product.existing_images.length > 0 ? (
                       <img
