@@ -40,7 +40,7 @@ const LoginPage = ({ type = "login" }) => {
         // Если роль админа, редирект в админ панель
         if (response?.role === 'admin' || response?.user?.is_staff || response?.user?.is_superuser) {
           toast.success('Добро пожаловать в админ панель!');
-          router.push('/camera-catalog'); 
+          router.push('/camera'); 
         } else {
           // Обычный пользователь - на главную
           toast.success('Вы успешно вошли!');
