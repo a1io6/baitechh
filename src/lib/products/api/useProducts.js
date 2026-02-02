@@ -7,6 +7,11 @@ export const productApi = {
         const { data } = await apiClient.get('products/products/');
         return data;
     },
+    
+ getById: async (id) => {
+        const { data } = await apiClient.get(`products/products/${id}/`);
+        return data;
+    },
 
     // Удаление товара
     delete: async (id) => {

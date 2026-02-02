@@ -25,8 +25,8 @@ const CorporateBlock = () => {
   ];
 
   return (
-    <div className="w-full flex flex-col gap-[40px] bg-[#F5F7FA] py-4 mt-[100] container">
-        <h1 style={{marginTop:'30px'}} className='text-[24px] font-medium text-[#00162A]'>Комплексные решения под ключ</h1>
+    <div className="w-full flex flex-col gap-[40px] bg-[#F5F7FA]  container">
+        <h1 style={{marginLeft:'20px'}} className='text-[24px] font-medium text-[#00162A]'>Комплексные решения под ключ</h1>
       {data.map((item) => (
         <div key={item.id} className="flex flex-col lg:flex-row w-full px-4 lg:px-0">
           

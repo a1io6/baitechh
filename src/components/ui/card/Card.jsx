@@ -3,34 +3,43 @@ import React from 'react'
 import { HiOutlinePlus } from "react-icons/hi";
 import { LuMinus } from "react-icons/lu";
 import img from '../../../../assets/svg/Vector (43).svg';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 function Card({product}) {
   return (
     <div>
-      <Link href={`/productdetail`}>
+      <Link href={`/productdetail/${product.id}`}>
         <div className='product-card'>
                 <div className="product-card__badge">
-                  {product.badge}
+                  {product.characteristics}
                 </div>  
                 
                 <div className="product-card__image w-full h-[10px]">
-                  {product.image && product.image.length > 0 ? (
-                          <Image src={product.image} alt={product.title} width={300} height={300}/>
-                  ) : (
-                    <div className="image-placeholder">
-                      <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-                        <circle cx="50" cy="40" r="15" stroke="#ccc" strokeWidth="2"/>
-                        <path d="M30 80 Q50 60 70 80" stroke="#ccc" strokeWidth="2" fill="none"/>
-                      </svg>
-                    </div>
-                  )}
+                 {product?.existing_images?.length > 0 ? (
+  product.existing_images.map((img) => (
+    <Image
+      key={img.id}
+      src={img.image}
+      alt={product.title}
+      width={300}
+      height={300}
+    />
+  ))
+) : (
+  <div className="image-placeholder">
+    <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="40" r="15" stroke="#ccc" strokeWidth="2" />
+      <path d="M30 80 Q50 60 70 80" stroke="#ccc" strokeWidth="2" fill="none" />
+    </svg>
+  </div>
+)}
+
                 </div>
                 
-                <h3 className="product-card__title">{product.title}</h3>
+                <h3 className="product-card__title">{product.name}</h3>
                 
                 <ul className="product-card__features">
-                   {product.features} 
+                   {product.description} 
                 </ul>
                 
                 <div className="product-card__footer">

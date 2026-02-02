@@ -64,10 +64,10 @@ const CourseDetails = () => {
             <p>ОПС- Охранно-Пожарная Сигнализация</p>
             <p>Подготовка и обучение реализации проектных объектов</p>
           </div>
-          <div className="footer-contact">
+          {/* <div className="footer-contact">
             <p>Звоните проконсультируем:</p>
             <a href="tel:+996503406805">+996 503 406 805</a>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

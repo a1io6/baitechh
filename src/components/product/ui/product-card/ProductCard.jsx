@@ -1,27 +1,47 @@
 'use client'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./ProductCard.scss";
-import { ShoppingCart  } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
-const images = [
-  "https://www.delta.kg/images/detailed/4069/33603.jpg",
-  "https://www.delta.kg/images/detailed/4069/33603_1.jpg",
-  "https://www.delta.kg/images/detailed/4069/33603_2.jpg",
-];
+import { productApi } from "../../../../API/productApi"; // путь подставьте свой
 
-const ProductCard = () => {
-  const [activeImage, setActiveImage] = useState(images[0]);
+const ProductCard = ({ productId }) => {
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState(null);
   const [count, setCount] = useState(1);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const data = await productApi.getById(productId);
+        setProduct(data);
+        const images = data.existing_images?.map((img) => img.image) || [];
+        setActiveImage(images[0] || null);
+      } catch (err) {
+        console.error("Ошибка загрузки товара:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) fetchProduct();
+  }, [productId]);
+
+  const images = product?.existing_images?.map((img) => img.image) || [];
 
   const increment = () => setCount((c) => c + 1);
   const decrement = () => count > 1 && setCount((c) => c - 1);
 
   const addToCart = () => {
     console.log({
-      product: "Dahua DH-IPC-HFW2431S-S",
+      product: product?.name,
       quantity: count,
     });
   };
+
+  if (loading) return <div className="product">Загрузка...</div>;
+  if (!product) return <div className="product">Товар не найден</div>;
 
   return (
     <div className="product">
@@ -30,30 +50,25 @@ const ProductCard = () => {
           {images.map((img) => (
             <button
               key={img}
-              className={`product__thumb ${
-                activeImage === img ? "active" : ""
-              }`}
+              className={`product__thumb ${activeImage === img ? "active" : ""}`}
               onClick={() => setActiveImage(img)}
             >
-              <Image src={img} alt="preview" width={82} height={82}/>
+              <Image src={img} alt="preview" width={82} height={82} />
             </button>
           ))}
         </div>
 
         <div className="product__image">
-          <Image src={activeImage} alt="camera" width={471} height={471}/>
+          {activeImage && (
+            <Image src={activeImage} alt={product.name} width={471} height={471} />
+          )}
         </div>
       </div>
 
       <div className="product__info">
-        <h3>IP-камера видеонаблюдения 4MP Dahua DH-IPC-HFW2431S-S</h3>
-
-        <p className="product__desc">
-          Современная IP-камера для внутреннего и наружного видеонаблюдения
-          с высоким качеством изображения и поддержкой удалённого доступа.
-        </p>
-
-        <div className="product__price">10 000 сом</div>
+        <h3>{product.name}</h3>
+        <p className="product__desc">{product.description}</p>
+        <div className="product__price">{product.price.toLocaleString()} сом</div>
         <div className="product__bonus">200 бонусов</div>
 
         <div className="product__actions">

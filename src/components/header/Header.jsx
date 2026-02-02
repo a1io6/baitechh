@@ -14,12 +14,33 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [isAuth, setIsAuth] = useState(false)
   const modalRef = useRef(null)
-  const router = useRouter();
+  const router = useRouter()
 
   // Проверяем токен при загрузке хедера
   useEffect(() => {
-    const token = localStorage.getItem('accessToken')
-    setIsAuth(!!token)
+    const checkAuth = () => {
+      // Проверяем только пользовательский токен (админы работают в админ панели)
+      const userToken = localStorage.getItem('access_token')
+      
+      setIsAuth(!!userToken)
+      
+      console.log('Auth check:', { 
+        isAuth: !!userToken
+      })
+    }
+
+    checkAuth()
+
+    // Слушаем изменения в localStorage (для синхронизации между вкладками)
+    window.addEventListener('storage', checkAuth)
+    
+    // Также можем слушать кастомное событие для обновления после логина
+    window.addEventListener('authChange', checkAuth)
+
+    return () => {
+      window.removeEventListener('storage', checkAuth)
+      window.removeEventListener('authChange', checkAuth)
+    }
   }, [])
 
   // Закрытие модалки при клике вне её
@@ -37,7 +58,7 @@ export default function Header() {
 
   const handleUserClick = () => {
     if (isAuth) {
-      setIsOpen(!isOpen) // если авторизован — показываем ModalAuth
+      setIsOpen(!isOpen) 
     } else {
       router.push('/login')
       console.log('Пользователь не авторизован')
@@ -49,7 +70,9 @@ export default function Header() {
       <div className="header__container">
         <div className="header__logo">
           <div>
-            <Link href="/"><Image src={logo} alt="Байтех" width={150} height={50} /></Link>
+            <Link href="/">
+              <Image src={logo} alt="Байтех" width={150} height={50} />
+            </Link>
           </div>
           <button className="header__contacts">Контакты</button>
         </div>
@@ -66,7 +89,12 @@ export default function Header() {
           </Link>
           <div className="relative">
             <FiUser onClick={handleUserClick} />
-            {isAuth && isOpen && <ModalAuth onClose={() => setIsOpen(false)} ref={modalRef} />}
+            {isAuth && isOpen && (
+              <ModalAuth 
+                onClose={() => setIsOpen(false)} 
+                ref={modalRef}
+              />
+            )}
           </div>
         </div>
       </div>

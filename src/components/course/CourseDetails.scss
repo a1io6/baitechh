@@ -17,10 +17,11 @@
   color: #0f172a;
 
   .course-title {
-    font-size: clamp(24px, 5vw, 32px);
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 500;
     margin-bottom: 24px;
     color: #00162A;
+    @media (max-width: 768px) { font-size: 20px; }
   }
 
   .course-description {
@@ -77,7 +78,7 @@
       h3 {
         font-size: 24px;
         margin-bottom: 15px;
-        font-weight: 600;
+        font-weight: 500;
         color: #00162A;
       }
 
@@ -90,8 +91,8 @@
           font-size: 20px;
           color: #00162ACC;
           margin: 0;
-          padding: 4px 0;
-          line-height: 1.2; // line-height бир аз көбөйтүлдү, тексттер жабышпашы үчүн
+          padding: 1px 0;
+          line-height: 1; // line-height бир аз көбөйтүлдү, тексттер жабышпашы үчүн
           position: relative;
 
           @media (max-width: 768px) {
@@ -166,6 +167,7 @@
     align-items: flex-end;
     border-top: 1px solid #e2e8f0;
     padding-top: 40px;
+    padding-bottom: 30px;
     gap: 20px;
 
     // Телефондо футерди тигинен тизүү
