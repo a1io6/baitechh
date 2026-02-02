@@ -14,13 +14,11 @@ export function CodeVerifyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  // ✅ Сохраняем email в state чтобы не потерять при ре-рендерах
   const [email, setEmail] = useState('');
 
   const verifyMutation = useVerifyRegistration();
   const resendMutation = useResendActivationCode();
 
-  // ✅ Получаем email из URL один раз при загрузке
   useEffect(() => {
     const emailFromUrl = searchParams.get('email');
     console.log('📧 Email из URL:', emailFromUrl);
@@ -134,11 +132,6 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   const fullCode = code.join('');
   
-  console.log('🔍 Проверка данных перед отправкой:');
-  console.log('Email:', email);
-  console.log('OTP:', fullCode);
-  console.log('Длина OTP:', fullCode.length);
-  
   if (fullCode.length !== 4) {
     toast.error('Пожалуйста, введите все 4 цифры');
     return;
@@ -160,6 +153,29 @@ const handleSubmit = async (e) => {
     console.log('📤 Отправка запроса...');
     const result = await verifyMutation.mutateAsync(payload);
     console.log('✅ Результат:', result);
+    
+    // Сохраняем токены в localStorage
+    if (result?.access) {
+      localStorage.setItem('access_token', result.access);
+      console.log('✅ Access токен сохранен в localStorage');
+    }
+    
+    if (result?.refresh) {
+      localStorage.setItem('refresh_token', result.refresh);
+      console.log('✅ Refresh токен сохранен в localStorage');
+    }
+    
+    // Можно также сохранить информацию о пользователе, если она приходит
+    if (result?.user) {
+      localStorage.setItem('user', JSON.stringify(result.user));
+      console.log('✅ Данные пользователя сохранены');
+    }
+    
+    toast.success('Код подтвержден успешно!');
+    
+    // Перенаправление на главную страницу или dashboard
+    setTimeout(() => router.push('/'), 1500);
+    
   } catch (error) {
     console.error('❌ Ошибка:', error);
     console.error('Response data:', error?.response?.data);
@@ -176,9 +192,7 @@ const handleSubmit = async (e) => {
     setTimeout(() => inputRefs.current[0]?.focus(), 0);
   }
 };
-
   const handleResendCode = async () => {
-    console.log('🔥 Клик на повторную отправку');
     console.log('📧 Email:', email);
     
     if (!email) {

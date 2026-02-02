@@ -1,9 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productApi } from '../api/useProducts';
 
+export const useProductById = (id) => {
+    const productQuery = useQuery({
+        queryKey: ['product', id],
+        queryFn: () => productApi.getById(id),
+        enabled: !!id, // запрос не идёт, если id не передан
+    });
+
+    return {
+        product: productQuery.data,
+        isLoading: productQuery.isLoading,
+        isError: productQuery.isError,
+    };
+};
 export const useProducts = () => {
     const queryClient = useQueryClient();
-
+ 
     // Запрос на получение данных
     const productsQuery = useQuery({
         queryKey: ['products'],

@@ -23,6 +23,18 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**', // разрешить ВСЕ HTTPS домены
       },
+      {
+        protocol: 'https',
+        hostname: 'ayla-diandrous-unobscenely.ngrok-free.dev',
+        port: '',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'ayla-diandrous-unobscenely.ngrok-free.dev',
+        port: '',
+        pathname: '/media/**',
+      },
     ],
   },
 };

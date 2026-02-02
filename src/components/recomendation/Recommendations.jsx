@@ -6,92 +6,38 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import './recommendations.scss';
 import Card from '../ui/card/Card';
-import Under from '../ui/under/Under';
+import { useProducts } from '@/lib/products/hooks/hooks';
 
-
-// Импортируйте изображения продуктов
-// import product1 from '../../assets/images/products/camera1.jpg';
+// Скелетон для загрузки
+const CardSkeleton = () => (
+  <div className="card-skeleton animate-pulse">
+    <div className="bg-gray-200 h-48 rounded-lg mb-3"></div>
+    <div className="space-y-2">
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+    </div>
+  </div>
+);
 
 export function Recommendations() {
-  const products = [
-    {
-      id: 1,
-      badge: 'Хит продаж',
-      image: 'https://avatars.mds.yandex.net/i?id=42dfc155cc47de07e28fe6289b339e3dc9ece450-4902913-images-thumbs&n=13',
-      title: 'IP-камера поворотная 4МР Dahua-IMOU-IPC-A42P-S',
-      features: 'Видеонаблюдение в помещение Сверхчеткое изображение 4 МП',
-      price: 10000,
-      currency: 'сом',
-      rating: 5
-    },
-    {
-      id: 2,
-      badge: 'Новинка',
-       image: 
-        'https://img.championat.com/c/1200x900/news/big/g/k/v-anime-po-skottu-piligrimu-vernutsya-aktyory-iz-filma-edgara-rajta_16801858041715086869.jpg',
-      title: 'IP-камера поворотная 4МР Dahua-IMOU-IPC-A42P-S',
-      features: 'Видеонаблюдение в помещение Сверхчеткое изображение 4 МП',
-      price: 10000,
-      currency: 'сом',
-      rating: 5
-    },
-    {
-      id: 3,
-      badge: 'Хит продаж',
-       image: 
-        'https://img.championat.com/c/1200x900/news/big/g/k/v-anime-po-skottu-piligrimu-vernutsya-aktyory-iz-filma-edgara-rajta_16801858041715086869.jpg',
-      title: 'IP-камера поворотная 4МР Dahua-IMOU-IPC-A42P-S',
-      features: 'Видеонаблюдение в помещение Сверхчеткое изображение 4 МП',
-      price: 10000,
-      currency: 'сом',
-      rating: 4
-    },
-    {
-      id: 4,
-      badge: 'Скидка',
-       image: 'https://avatars.mds.yandex.net/i?id=686a9be56666517d45d63247208696bc1fa73646-5870379-images-thumbs&n=13',
-      title: 'IP-камера поворотная 4МР Dahua-IMOU-IPC-A42P-S',
-      features: 'Видеонаблюдение в помещение Сверхчеткое изображение 4 МП',
-      price: 10000,
-      currency: 'сом',
-      rating: 5
-    },
-    {
-      id: 5,
-      badge: 'Хит продаж',
-       image: 
-        'https://avatars.mds.yandex.net/i?id=686a9be56666517d45d63247208696bc1fa73646-5870379-images-thumbs&n=13',
-      title: 'IP-камера поворотная 4МР Dahua-IMOU-IPC-A42P-S',
-      features: 'Видеонаблюдение в помещение Сверхчеткое изображение 4 МП',
-      price: 10000,
-      currency: 'сом',
-      rating: 5
-    },
-    {
-      id: 6,
-      badge: 'Новинка',
-       image:
-        'https://news.store.rambler.ru/img/20e178476af45c859358e80fd4a7190d?img-1-resize=width%3A1280%2Cheight%3A720%2Cfit%3Acover&img-format=auto',
-        
-      title: 'IP-камера поворотная 4МР Dahua-IMOU-IPC-A42P-S',
-      features: 'Видеонаблюдение в помещение Сверхчеткое изображение 4 МП',
-      price: 10000,
-      currency: 'сом',
-      rating: 4
-    }
-  ];
+  // Используем ваш существующий хук
+  const { products, isLoading, isError } = useProducts();
 
-  // const renderStars = (rating) => {
-  //   return (
-  //     <div className="stars">
-  //       {[...Array(5)].map((_, index) => (
-  //         <span key={index} className={index < rating ? 'star filled' : 'star'}>
-  //           ★
-  //         </span>
-  //       ))}
-  //     </div>
-  //   );
-  // };
+  // Берем только первые 10 продуктов для рекомендаций
+  const recommendedProducts = products.slice(0, 10);
+
+  if (isError) {
+    return (
+      <div className='recommendations'>
+        <h2 className="recommendations__title">Рекомендации</h2>
+        <div className="recommendations__error">
+          <p className="text-center text-red-500 py-8">
+            Ошибка загрузки рекомендаций
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='recommendations'>
@@ -128,11 +74,26 @@ export function Recommendations() {
           }}
           className="recommendationsSwiper" 
         >
-          {products.map((product) => (
-            <SwiperSlide key={product.id}>
-              <Card product={product} />
-            </SwiperSlide>
-          ))}
+          {isLoading ? (
+            // Скелетоны во время загрузки
+            [...Array(6)].map((_, index) => (
+              <SwiperSlide key={`skeleton-${index}`}>
+                <CardSkeleton />
+              </SwiperSlide>
+            ))
+          ) : recommendedProducts.length === 0 ? (
+            // Если нет продуктов
+            <div className="w-full text-center py-8 text-gray-500">
+              Нет доступных рекомендаций
+            </div>
+          ) : (
+            // Отображаем продукты
+            recommendedProducts.map((product) => (
+              <SwiperSlide key={product.id}>
+                <Card product={product} />
+              </SwiperSlide>
+            ))
+          )}
         </Swiper>
       </div>
     </div>

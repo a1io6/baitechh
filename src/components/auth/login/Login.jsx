@@ -23,62 +23,91 @@ const LoginPage = ({ type = "login" }) => {
   const loginMutation = useLogin();
   const registerMutation = useRegister();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (type === "login") {
-      // Логин
-      try {
-        const response = await loginMutation.mutateAsync({
-          email,
-          password
-        });
+  if (type === "login") {
+    // Логин
+    try {
+      const response = await loginMutation.mutateAsync({
+        email,
+        password
+      });
 
-        // ✅ Проверяем роль пользователя после успешного входа
-        console.log('Login response:', response);
-        
-        // Если роль админа, редирект в админ панель
-        if (response?.role === 'admin' || response?.user?.is_staff || response?.user?.is_superuser) {
-          toast.success('Добро пожаловать в админ панель!');
-          router.push('/camera'); 
-        } else {
-          // Обычный пользователь - на главную
-          toast.success('Вы успешно вошли!');
-          router.push('/');
+      // ✅ Проверяем роль пользователя после успешного входа
+      console.log('Login response:', response);
+      
+      // Определяем роль
+      const isAdmin = response?.role === 'admin' || 
+                      response?.user?.is_staff === true || 
+                      response?.user?.is_superuser === true;
+      
+      // Сохраняем токены в зависимости от роли
+      if (isAdmin) {
+        // Для администратора
+        if (response?.access) {
+          localStorage.setItem('adminToken', response.access);
+          console.log('✅ Admin токен сохранен');
         }
-      } catch (error) {
-        console.error('Login error:', error);
+        if (response?.refresh) {
+          localStorage.setItem('adminRefreshToken', response.refresh);
+          console.log('✅ Admin refresh токен сохранен');
+        }
+        toast.success('Добро пожаловать в админ панель!');
+        router.push('/camera');
+      } else {
+        // Для обычного пользователя
+        if (response?.access) {
+          localStorage.setItem('access_token', response.access);
+          console.log('✅ User access токен сохранен');
+        }
+        if (response?.refresh) {
+          localStorage.setItem('refresh_token', response.refresh);
+          console.log('✅ User refresh токен сохранен');
+        }
+        toast.success('Вы успешно вошли!');
+        router.push('/');
       }
-    } else {
-      // Регистрация
-      if (!acceptedTerms) {
-        toast.error('Необходимо принять условия обслуживания'); // ✅ исправлено
-        return;
+      
+      // Сохраняем информацию о пользователе
+      if (response?.user) {
+        localStorage.setItem('user', JSON.stringify(response.user));
+        console.log('✅ Данные пользователя сохранены');
       }
-
-      if (password.length < 8) {
-        toast.error('Пароль должен содержать минимум 8 символов');
-        return;
-      }
-
-      try {
-        const formData = {
-          name: name,
-          surname: surname,
-          number,
-          email,
-          password
-        };
-
-        // Регистрация
-        await registerMutation.mutateAsync(formData);
-        
-        router.push(`/codeverify?email=${encodeURIComponent(email)}`);
-      } catch (error) {
-        console.error('Registration error:', error);
-      }
+      
+    } catch (error) {
+      console.error('Login error:', error);
     }
-  };
+  } else {
+    // Регистрация
+    if (!acceptedTerms) {
+      toast.error('Необходимо принять условия обслуживания');
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error('Пароль должен содержать минимум 8 символов');
+      return;
+    }
+
+    try {
+      const formData = {
+        name: name,
+        surname: surname,
+        number,
+        email,
+        password
+      };
+
+      // Регистрация
+      await registerMutation.mutateAsync(formData);
+      
+      router.push(`/codeverify?email=${encodeURIComponent(email)}`);
+    } catch (error) {
+      console.error('Registration error:', error);
+    }
+  }
+};
 
   const isLoading = type === "login" 
     ? loginMutation.isPending 
