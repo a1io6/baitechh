@@ -93,9 +93,7 @@ const CamerCatalog = () => {
 
   if (!mounted || isLoading)
     return (
-      <div className="admin-content">
-        <p>Загрузка...</p>
-      </div>
+     <div className="loader"/>
     );
 
   return (

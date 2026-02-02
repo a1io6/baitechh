@@ -50,7 +50,7 @@ const SettingWeb = () => {
 
     // Если изменений нет, просто выходим или уведомляем пользователя
     if (Object.keys(changedFields).length === 0) {
-      console.log("Изменений не обнаружено");
+      
       return;
     }
 
@@ -58,7 +58,7 @@ const SettingWeb = () => {
     updateSettings(changedFields);
   };
 
-  if (isLoading) return <div>Загрузка настроек...</div>;
+  if (isLoading) return  <div className="loader"/>;
 
   return (
     <div className="settings-web">
