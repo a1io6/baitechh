@@ -80,7 +80,7 @@ export default function AdminBannerPage() {
             Главный баннер
           </button>
           <button
-            onClick={() => setActiveTab("events")}
+            onClick={() => setActiveTab("event")}
             disabled={isLoading}
             className={`admin-banner__tab ${
               activeTab === "events" ? "admin-banner__tab--active" : ""

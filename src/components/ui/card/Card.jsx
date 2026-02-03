@@ -6,25 +6,24 @@ import img from '../../../../assets/svg/Vector (43).svg';
 import Link from 'next/link';
 import Image from 'next/image';
 function Card({product}) {
+  const imageSrc = product?.existing_images?.[0]?.image;
   return (
     <div>
       <Link href={`/productdetail/${product.id}`}>
         <div className='product-card'>
                 <div className="product-card__badge">
-                  {product.characteristics}
+                  {product.bar || 'Новинка'}
                 </div>  
                 
                 <div className="product-card__image w-full h-[10px]">
-                 {product?.existing_images?.length > 0 ? (
-  product.existing_images.map((img) => (
-    <Image
-      key={img.id}
-      src={img.image}
-      alt={product.title}
-      width={300}
-      height={300}
-    />
-  ))
+ {imageSrc ? (
+  <Image
+    
+    src={imageSrc}
+    alt={product.name || 'product'}
+    width={300}
+    height={300}
+  />
 ) : (
   <div className="image-placeholder">
     <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -36,10 +35,11 @@ function Card({product}) {
 
                 </div>
                 
-                <h3 className="product-card__title">{product.name}</h3>
+                <h3 className="product-card__article">Артикул:{product.article}</h3>
+                <h3 className="product-card__title">{product.name?.slice(0, 80)}{product.name?.length > 80 ? '...' : ''}</h3>
                 
-                <ul className="product-card__features">
-                   {product.description} 
+                <ul className="product-card__features h-[50px]">
+                   {product.description?.slice(0, 85)}{product.description?.length > 85 ? '...' : ''}
                 </ul>
                 
                 <div className="product-card__footer">

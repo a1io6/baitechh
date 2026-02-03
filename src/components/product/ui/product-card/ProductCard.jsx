@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import "./ProductCard.scss";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
-import { productApi } from "../../../../API/productApi"; // путь подставьте свой
+import { productApi } from "@/lib/products/api/useProducts";
 
 const ProductCard = ({ productId }) => {
   const [product, setProduct] = useState(null);
@@ -66,10 +66,10 @@ const ProductCard = ({ productId }) => {
       </div>
 
       <div className="product__info">
-        <h3>{product.name}</h3>
-        <p className="product__desc">{product.description}</p>
+        <h1>Артикул: {product.article}</h1>
+        <p className="product__desc">{product.name}</p>
         <div className="product__price">{product.price.toLocaleString()} сом</div>
-        <div className="product__bonus">200 бонусов</div>
+        <div className="product__bonus">{product.bonus || 0} бонусов</div>
 
         <div className="product__actions">
           <div className="counter">

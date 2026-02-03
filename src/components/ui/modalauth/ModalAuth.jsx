@@ -34,12 +34,12 @@ function ModalAuth({ onClose }) {
 
   return (
     <div className='modal-auth'>
-      <Link href="/profile">
+      <a href="/profile">
         <div className='flex gap-[15px] items-center justify-start cursor-pointer'>
           <Image src={img} alt="Личный кабинет" />
           <h2 className='text-[16px] font-[400]'>Личный кабинет</h2>
         </div>
-      </Link>
+      </a>
       
       <div 
         className='flex gap-[15px] items-center justify-start cursor-pointer' 

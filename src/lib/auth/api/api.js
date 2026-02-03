@@ -78,5 +78,36 @@ verifyRegistration: async (email, otp) => {
       new_password
     });
     return data;
+  },
+    // ========== ПРОФИЛЬ ==========
+
+  // Получить все профили (админ)
+  getAllProfiles: async () => {
+    const { data } = await $api.get('/api/profile/all/');
+    return data;
+  },
+
+  // Получить профиль текущего пользователя
+  getMyProfile: async () => {
+    const { data } = await $api.get('/api/profile/me/');
+    return data;
+  },
+
+  // Полное обновление профиля
+  updateProfile: async (profileData) => {
+    const { data } = await $api.put('/api/profile/me/', profileData);
+    return data;
+  },
+
+  // Частичное обновление профиля
+  patchProfile: async (profileData) => {
+    const { data } = await $api.patch('/api/profile/me/', profileData);
+    return data;
+  },
+
+  // Удалить пользователя по ID (админ)
+  deleteUser: async (userId) => {
+    const { data } = await $api.delete(`/api/users/${userId}/`);
+    return data;
   }
 };

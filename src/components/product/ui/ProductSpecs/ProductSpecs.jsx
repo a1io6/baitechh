@@ -1,9 +1,40 @@
 'use client'
+import { productApi } from "@/lib/products/api/useProducts";
 import "./ProductSpecs.scss";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const ProductSpecs = () => {
+const ProductSpecs = ({ productId }) => {
   const [open, setOpen] = useState(true);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const data = await productApi.getById(productId);
+        setProduct(data);
+      } catch (err) {
+        console.error("Ошибка загрузки товара:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) fetchProduct();
+  }, [productId]);
+
+  // Функция для форматирования характеристик
+  const formatCharacteristics = (text) => {
+    if (!text) return null;
+    
+    // Заменяем \r\n на <br/> и сохраняем пробелы
+    return text.split('\r\n').map((line, index) => (
+      <span key={index}>
+        {line}
+        <br />
+      </span>
+    ));
+  };
 
   return (
     <div className="specs">
@@ -29,99 +60,15 @@ const ProductSpecs = () => {
       </button>
 
       <div className={`specs__content ${open ? "specs__content--open" : "specs__content--closed"}`}>
-        <div className="specs__content-inner">
-          <div className="specs__block">
-            <div className="specs__block-header">
-              <p className="specs__block-title">Комплектация:</p>
-            </div>
-            <ul className="specs__list">
-              <li className="specs__item">
-                <span className="specs__item-dot">•</span>
-                <span>Количество: <strong>3 шт.</strong></span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-dot">•</span>
-                <span>Вес: <strong>150 г</strong></span>
-              </li>
-            </ul>
+        {loading ? (
+          <p>Загрузка...</p>
+        ) : product?.characteristics ? (
+          <div style={{ whiteSpace: 'pre-line' }}>
+           <p>{formatCharacteristics(product.characteristics)}</p> 
           </div>
-
-          <div className="specs__divider"></div>
-
-          <div className="specs__block">
-            <div className="specs__block-header">
-              <p className="specs__block-title">Основные параметры вентилятора:</p>
-            </div>
-            <ul className="specs__list">
-              <li className="specs__item">
-                <span className="specs__item-label">Размер:</span>
-                <span className="specs__item-value">120×120×25 мм</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Тип подшипника:</span>
-                <span className="specs__item-value">гидродинамический</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Скорость вращения:</span>
-                <span className="specs__item-value">1000–2000 RPM (±10%)</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Статическое давление:</span>
-                <span className="specs__item-value">1.59 mmH₂O</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Уровень шума:</span>
-                <span className="specs__item-value">18–33 dBA</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Разъём питания:</span>
-                <span className="specs__item-value">4-pin</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Номинальное напряжение:</span>
-                <span className="specs__item-value">12 V DC</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Номинальный ток:</span>
-                <span className="specs__item-value">0.12 A (±0.03 A)</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Потребляемая мощность:</span>
-                <span className="specs__item-value">1.44 W</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="specs__divider"></div>
-
-          <div className="specs__block">
-            <div className="specs__block-header">
-              <p className="specs__block-title">Подсветка (ARGB):</p>
-            </div>
-            <ul className="specs__list">
-              <li className="specs__item">
-                <span className="specs__item-label">Тип:</span>
-                <span className="specs__item-value">адресная RGB-подсветка</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Разъём:</span>
-                <span className="specs__item-value">3-pin (+5V-D-G)</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Напряжение:</span>
-                <span className="specs__item-value">5 V DC</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Ток:</span>
-                <span className="specs__item-value">0.20 A (±10%)</span>
-              </li>
-              <li className="specs__item">
-                <span className="specs__item-label">Потребляемая мощность:</span>
-                <span className="specs__item-value">1.0 W</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+        ) : (
+          <p>Характеристики отсутствуют</p>
+        )}
       </div>
     </div>
   );

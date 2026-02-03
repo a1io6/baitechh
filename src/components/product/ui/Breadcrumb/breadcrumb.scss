@@ -22,34 +22,7 @@
     padding-bottom: 4px;
     transition: color 0.2s ease;
 
-    &::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 0;
-      height: 2.5px;
-      background-color: #111827;
-      
-      transition: all 0.25s ease;
-    }
-
-    &:hover {
-      color: #111827;
-
-      &::after {
-        width: 100%;
-      }
-    }
-
-    &--active {
-      color: #111827;
-      font-weight: 500;
-
-      &::after {
-        width: 100%;
-      }
-    }
+   
   }
 
   &__separator {

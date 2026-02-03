@@ -12,18 +12,17 @@ function ProductDetail() {
   const { id } = useParams(); // <-- берём id из URL
 
   return (
-    <div style={{ maxWidth: "1279px", margin: "0 auto" }}>
+    <div className="p-[20px]" style={{ maxWidth: "1279px", margin: "0 auto" }}>
       <Breadcrumb
         items={[
           { label: "Главная", path: "/" },
-          { label: "Личный кабинет", path: "/profile" },
-          { label: "История заказов", path: "/orders" },
+          { label: "Информация", path: "" },
         ]}
       />
-      <ProductCard productId={id} /> {/* передаём id как пропс */}
+      <ProductCard productId={id} /> 
       <Description productId={id} />
       <ProductSpecs productId={id} />
-      <PopularCard />
+      <PopularCard  productId={id} />
     </div>
   );
 }
