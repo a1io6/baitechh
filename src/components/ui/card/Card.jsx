@@ -18,7 +18,6 @@ function Card({product}) {
                 <div className="product-card__image w-full h-[10px]">
  {imageSrc ? (
   <Image
-    
     src={imageSrc}
     alt={product.name || 'product'}
     width={300}
@@ -36,20 +35,20 @@ function Card({product}) {
                 </div>
                 
                 <h3 className="product-card__article">Артикул:{product.article}</h3>
-                <h3 className="product-card__title">{product.name?.slice(0, 80)}{product.name?.length > 80 ? '...' : ''}</h3>
+                <h3 className="product-card__title mt-[3px]">{product.name?.slice(0, 80)}{product.name?.length > 80 ? '...' : ''}</h3>
                 
-                <ul className="product-card__features h-[50px]">
+                <ul className="product-card__features mt-[5px] h-[60px]">
                    {product.description?.slice(0, 85)}{product.description?.length > 85 ? '...' : ''}
                 </ul>
                 
                 <div className="product-card__footer">
                   <div className="product-card__price">
-                     <span className='currency'>200 бонусов</span>
+                     <span className='currency'>{product.bonus || 0} бонусов</span>
                     <span className="amount">{product.price.toLocaleString()} сом</span>
                   </div>
                   
                   <button className="product-card__cart" aria-label="Добавить в корзину">
-                   <Image src={img} alt="" />
+                   <Image src={img} alt="" width={20} height={20}/>
                   </button>
                 </div>
               </div>

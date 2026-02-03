@@ -35,12 +35,13 @@ $star-color: #FFD700;
   max-width: 1350px;
   margin: 0 auto;
   animation: fadeInUp 0.8s ease-out;
-
+   padding: 40px 0px 40px 0px;
   &__title {
     font-size: 32px;
     font-weight: 600;
     color: $text-dark;
     margin-bottom: 30px;
+    
   }
 
   &-carousel {
@@ -279,7 +280,7 @@ font-size: 30px;
 
   .product-card {
     &__image {
-      height: 200px;
+      // height: 200px;
     }
   }
 }

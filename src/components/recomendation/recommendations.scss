@@ -182,7 +182,7 @@ $star-color: #FFD700;
     font-weight: 400;
     color: #5E5E5E;
     padding: 0;
-    margin: -10px 0 5px 0;
+    margin: 0px 0 5px 0;
     flex-grow: 1;
 
     li {
@@ -269,9 +269,9 @@ font-size: 30px;
       transform: scale(0.95);
     }
 
-    svg {
-      width: 20px;
-      height: 20px;
+    img {
+      width: 30px;
+      height: 30px;
     }
   }
 }
