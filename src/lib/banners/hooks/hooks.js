@@ -32,6 +32,7 @@ export const useCreateBanner = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
       toast.success('Баннер успешно добавлен!');
+      console.log(bannerData);
     },
     onError: (error) => {
       console.error('Create banner error:', error);

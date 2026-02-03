@@ -1,7 +1,7 @@
 import { Edit2, Trash2 } from "lucide-react";
 import "./BannerCard.scss";
 
-export function AdminItem({ banner, handleDelete, handleToggle }) {
+export function AdminItem({ banner, handleDelete, handleToggle, handleEdit }) {
   return (
     <div key={banner.id} className="banner-item">
       {/* Чекбокс */}
@@ -47,7 +47,7 @@ export function AdminItem({ banner, handleDelete, handleToggle }) {
 
       {/* Кнопки действий */}
       <div className="banner-item__actions">
-        <button className="banner-item__action-btn banner-item__action-btn--edit">
+        <button onClick={() => handleEdit(banner)} className="banner-item__action-btn banner-item__action-btn--edit">
           <Edit2 size={16} />
         </button>
         <button

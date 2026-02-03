@@ -1,93 +1,89 @@
-// AdminBannerPage.jsx
-"use client"; 
+"use client";
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import dynamic from "next/dynamic";
-
-const ImageCropModal = dynamic(() => import("./ui/ImageCropModal"), { 
-  ssr: false 
-});
-
-import { AdminItem } from "@/components/admin/item/BannreCard"; 
+import { AdminItem } from "@/components/admin/item/BannreCard";
+import {
+  useBanners,
+  useCreateBanner,
+  useDeleteBanner,
+  useUpdateBanner,
+} from "@/lib/banners/hooks/hooks";
 import "./AdminBannerPage.scss";
-import { useBanners, useCreateBanner, useDeleteBanner } from "@/lib/banners/hooks/hooks";
+
+const ImageCropModal = dynamic(() => import("./ui/ImageCropModal"), {
+  ssr: false,
+});
 
 export default function AdminBannerPage() {
   const [activeTab, setActiveTab] = useState("main");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingBanner, setEditingBanner] = useState(null);
 
-  // Хуки для работы с API
   const { data: banners = [], isLoading, error } = useBanners(activeTab);
   const createBannerMutation = useCreateBanner();
   const deleteBannerMutation = useDeleteBanner();
+  const updateBannerMutation = useUpdateBanner();
+
+  const handleOpenAddModal = () => {
+    setEditingBanner(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (banner) => {
+    setEditingBanner(banner);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingBanner(null);
+  };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Вы уверены что хотите удалить этот баннер?')) {
+    if (window.confirm("Вы уверены, что хотите удалить этот баннер?")) {
       try {
         await deleteBannerMutation.mutateAsync(id);
-      } catch (error) {
-        console.error('Delete error:', error);
+      } catch (err) {
+        console.error("Delete error:", err);
       }
     }
   };
 
-  const handleToggle = (id) => {
-    // Если в будущем добавится поле is_active, можно будет реализовать
-    console.log('Toggle banner:', id);
-  };
-
-  const handleAdd = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleSaveBanner = async (bannerData) => {
-    console.log('Сохранение баннера:', bannerData);
-
+  const handleSaveBanner = async (formData) => {
     try {
-      await createBannerMutation.mutateAsync(bannerData);
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('Upload error:', error);
+      if (editingBanner) {
+        // ВАЖНО: передаем объект согласно структуре в твоем хуке
+        await updateBannerMutation.mutateAsync({
+          id: editingBanner.id,
+          bannerData: formData,
+        });
+      } else {
+        await createBannerMutation.mutateAsync(formData);
+      }
+      handleCloseModal();
+    } catch (err) {
+      console.error("Save error:", err);
     }
   };
 
-  if (error) {
-    return (
-      <div className="admin-banner">
-        <div className="admin-banner__container">
-          <div className="admin-banner__error">
-            <p className="text-red-600 text-center p-4">
-              Ошибка загрузки баннеров: {error.message}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (error)
+    return <div className="p-4 text-red-600">Ошибка: {error.message}</div>;
 
   return (
     <div className="admin-banner">
       <div className="admin-banner__container">
         <div className="admin-banner__tabs">
-          <button
-            onClick={() => setActiveTab("main")}
-            disabled={isLoading}
-            className={`admin-banner__tab ${
-              activeTab === "main" ? "admin-banner__tab--active" : ""
-            }`}
-          >
-            Главный баннер
-          </button>
-          <button
-            onClick={() => setActiveTab("events")}
-            disabled={isLoading}
-            className={`admin-banner__tab ${
-              activeTab === "events" ? "admin-banner__tab--active" : ""
-            }`}
-          >
-            Мероприятия
-          </button>
+          {["main", "events"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`admin-banner__tab ${activeTab === tab ? "admin-banner__tab--active" : ""}`}
+            >
+              {tab === "main" ? "Главный баннер" : "Мероприятия"}
+            </button>
+          ))}
         </div>
 
         <div className="admin-banner__content">
@@ -98,36 +94,25 @@ export default function AdminBannerPage() {
                 Действия
               </span>
             </div>
-            <button 
-              className="admin-banner__add-btn" 
-              onClick={handleAdd}
-              disabled={createBannerMutation.isPending || isLoading}
+            <button
+              className="admin-banner__add-btn"
+              onClick={handleOpenAddModal}
+              disabled={isLoading}
             >
-              <Plus size={16} />
-              {createBannerMutation.isPending ? 'Загрузка...' : 'добавить'}
+              <Plus size={16} /> добавить
             </button>
           </div>
 
           <div className="admin-banner__list">
             {isLoading ? (
-              <div className="admin-banner__loading">
-                <p className="text-center text-gray-500 py-8">Загрузка баннеров...</p>
-              </div>
-            ) : banners.length === 0 ? (
-              <div className="admin-banner__empty">
-                <p className="text-center text-gray-500 py-8">
-                  Нет баннеров в категории "{activeTab === 'main' ? 'Главный баннер' : 'Мероприятия'}".
-                  <br />
-                  Нажмите "добавить" чтобы создать новый баннер.
-                </p>
-              </div>
+              <p className="text-center py-8">Загрузка...</p>
             ) : (
               banners.map((banner) => (
                 <AdminItem
                   key={banner.id}
                   banner={banner}
                   handleDelete={() => handleDelete(banner.id)}
-                  handleToggle={() => handleToggle(banner.id)}
+                  handleEdit={() => handleOpenEditModal(banner)}
                   isDeleting={deleteBannerMutation.isPending}
                 />
               ))
@@ -137,19 +122,17 @@ export default function AdminBannerPage() {
       </div>
 
       {isModalOpen && (
-        <div
-          className="admin-banner__overlay"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div 
-            onClick={(e) => e.stopPropagation()} 
+        <div className="admin-banner__overlay" onClick={handleCloseModal}>
+          <div
+            onClick={(e) => e.stopPropagation()}
             className="admin-banner__modal"
           >
-            <ImageCropModal 
-              isOpen={isModalOpen} 
-              setIsOpen={setIsModalOpen}
+            <ImageCropModal
+              isOpen={isModalOpen}
+              setIsOpen={handleCloseModal}
               onSave={handleSaveBanner}
               category={activeTab}
+              initialData={editingBanner} // Передаем данные для редактирования
             />
           </div>
         </div>

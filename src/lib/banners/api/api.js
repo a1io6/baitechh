@@ -14,7 +14,7 @@ export const bannerService = {
     formData.append('title', bannerData.title);
     formData.append('description', bannerData.description || '');
     formData.append('category', bannerData.category);
-    
+
     // Добавляем все изображения
     bannerData.images.forEach((image) => {
       formData.append('images', image);
@@ -35,33 +35,27 @@ export const bannerService = {
   },
 
   // Обновить баннер (полностью)
-  updateBanner: async (id, bannerData) => {
+  updateBanner: async (id, data) => {
     const formData = new FormData();
-    formData.append('title', bannerData.title);
-    formData.append('description', bannerData.description || '');
-    formData.append('category', bannerData.category);
-    
-    // Если есть новые изображения
-    if (bannerData.images && bannerData.images.length > 0) {
-      bannerData.images.forEach((image) => {
-        if (image instanceof File) {
-          formData.append('images', image);
-        }
-      });
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('category', data.category);
+
+    // Отправляем файл только если он был выбран (объект File)
+    if (data.images && data.images[0] instanceof File) {
+      formData.append('images', data.images[0]);
     }
 
-    const { data } = await $api.put(`/banners/banners/${id}/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+    const response = await $api.put(`/banners/banners/${id}/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
-    return data;
+    return response.data;
   },
 
   // Частичное обновление баннера
   partialUpdateBanner: async (id, updates) => {
     const formData = new FormData();
-    
+
     Object.keys(updates).forEach(key => {
       if (key === 'images' && Array.isArray(updates[key])) {
         updates[key].forEach((image) => {
