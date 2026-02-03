@@ -19,7 +19,7 @@ export const useOrders = (filters = {}) => {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => $api.put(`/or dering/${id}/`, { status }),
+    mutationFn: ({ id, status }) => $api.put(`ordering/statuses/${id}`, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
