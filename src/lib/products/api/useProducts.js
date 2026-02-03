@@ -7,7 +7,57 @@ export const productApi = {
         const { data } = await apiClient.get('products/products/');
         return data;
     },
-    
+     getSimilar: async (productId) => {
+    const response = await apiClient.get('/products/products/', {
+      params: {
+        similar_features: productId
+      }
+    });
+    return response.data;
+  },
+
+  // Фильтрация по бренду
+  getByBrand: async (brandId, page = 1) => {
+    const response = await apiClient.get('/products/products/', {
+      params: {
+        brand: brandId,
+        page
+      }
+    });
+    return response.data;
+  },
+
+  // Фильтрация по категории
+  getByCategory: async (category, page = 1) => {
+    const response = await apiClient.get('/products/products/', {
+      params: {
+        category,
+        page
+      }
+    });
+    return response.data;
+  },
+
+  // Поиск по артикулу
+  getByArticle: async (article) => {
+    const response = await apiClient.get('/products/products/', {
+      params: {
+        article
+      }
+    });
+    return response.data;
+  },
+
+  // Фильтрация по цене
+  getByPrice: async (price, page = 1) => {
+    const response = await apiClient.get('/products/products/', {
+      params: {
+        price,
+        page
+      }
+    });
+    return response.data;
+  },
  getById: async (id) => {
         const { data } = await apiClient.get(`products/products/${id}/`);
         return data;

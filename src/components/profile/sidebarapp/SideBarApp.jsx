@@ -8,9 +8,61 @@ import Image from 'next/image';
 import TransactionHistory from '../transitionhistory/TransitionHistory';
 import { Returns } from '../return/Returns';
 import AddressBook from '../adressbook/AdressBook';
+import { useMyProfile, usePatchProfile } from '@/lib/auth/hooks/hooks';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
+
 export default function SidebarApp() {
   const [activePage, setActivePage] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
+
+  // Получаем данные профиля
+  const { data: profile, isLoading: profileLoading } = useMyProfile();
+  const patchMutation = usePatchProfile();
+
+  // Стейты для формы профиля
+  const [profileForm, setProfileForm] = useState({
+    name: '',
+    surname: '',
+    email: '',
+    number: ''
+  });
+
+  // Обновляем форму когда приходят данные профиля
+  React.useEffect(() => {
+    if (profile) {
+      setProfileForm({
+        name: profile.name || '',
+        surname: profile.surname || '',
+        email: profile.email || '',
+        number: profile.number || ''
+      });
+    }
+  }, [profile]);
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    
+    try {
+      await patchMutation.mutateAsync(profileForm);
+    } catch (error) {
+      console.error('Ошибка обновления профиля:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    // Удаляем токены
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+    
+    // Уведомляем об изменении авторизации
+    window.dispatchEvent(new Event('authChange'));
+    
+    toast.success('Вы вышли из аккаунта');
+    router.push('/');
+  };
 
   const menuItems = [
     { id: 'profile', label: 'Моя информация', icon: User },
@@ -29,23 +81,63 @@ export default function SidebarApp() {
         return (
           <div>
             <h1 className="text-[30px] font-bold mb-6">Моя информация</h1>
-            <div className="space-y-4 max-w-md">
-              <div>
-                <label className="block text-sm font-medium mb-2">Имя</label>
-                <input type="text" className="w-full px-4 py-2 border rounded-lg" placeholder="Ваше имя" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Email</label>
-                <input type="email" className="w-full px-4 py-2 border rounded-lg" placeholder="email@example.com" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Телефон</label>
-                <input type="tel" className="w-full px-4 py-2 border rounded-lg" placeholder="+996 XXX XXX XXX" />
-              </div>
-              <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                Сохранить
-              </button>
-            </div>
+            {profileLoading ? (
+              <div>Загрузка профиля...</div>
+            ) : (
+              <form onSubmit={handleProfileUpdate} className="space-y-4 max-w-md">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Имя</label>
+                  <input 
+                    type="text" 
+                    className="w-full px-4 py-2 border rounded-lg" 
+                    placeholder="Ваше имя"
+                    value={profileForm.name}
+                    onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                    disabled={patchMutation.isPending}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Фамилия</label>
+                  <input 
+                    type="text" 
+                    className="w-full px-4 py-2 border rounded-lg" 
+                    placeholder="Ваша фамилия"
+                    value={profileForm.surname}
+                    onChange={(e) => setProfileForm({...profileForm, surname: e.target.value})}
+                    disabled={patchMutation.isPending}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Email</label>
+                  <input 
+                    type="email" 
+                    className="w-full px-4 py-2 border rounded-lg bg-gray-100" 
+                    placeholder="email@example.com"
+                    value={profileForm.email}
+                    disabled
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Email нельзя изменить</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Телефон</label>
+                  <input 
+                    type="tel" 
+                    className="w-full px-4 py-2 border rounded-lg" 
+                    placeholder="+996 XXX XXX XXX"
+                    value={profileForm.number}
+                    onChange={(e) => setProfileForm({...profileForm, number: e.target.value})}
+                    disabled={patchMutation.isPending}
+                  />
+                </div>
+                <button 
+                  type="submit"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  disabled={patchMutation.isPending}
+                >
+                  {patchMutation.isPending ? 'Сохранение...' : 'Сохранить'}
+                </button>
+              </form>
+            )}
           </div>
         );
       case 'password':
@@ -84,7 +176,7 @@ export default function SidebarApp() {
             <h1 className="text-[30px] font-bold mb-6">Бонусы</h1>
             <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-6 text-white mb-6">
               <p className="text-lg mb-2">Ваш баланс бонусов</p>
-              <p className="text-[36px] font-bold">1250 бонусов</p>
+              <p className="text-[36px] font-bold">{profile?.bonuses || 0} бонусов</p>
             </div>
             <div className="space-y-3">
               <div className="border rounded-lg p-4">
@@ -105,7 +197,10 @@ export default function SidebarApp() {
             <h1 className="text-[30px] font-bold mb-6">Выход</h1>
             <p className="text-gray-600 mb-4">Вы уверены, что хотите выйти из аккаунта?</p>
             <div className="space-x-3">
-              <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+              <button 
+                onClick={handleLogout}
+                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
                 Выйти
               </button>
               <button 

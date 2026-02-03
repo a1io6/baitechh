@@ -52,10 +52,7 @@ const ImageCropModal = ({ isOpen, setIsOpen, onSave, category, isUploading, init
       return;
     }
 
-    if (!title.trim()) {
-      alert('Пожалуйста, введите название баннера');
-      return;
-    }
+
 
     const bannerData = {
       title: title.trim(),
@@ -141,13 +138,17 @@ const ImageCropModal = ({ isOpen, setIsOpen, onSave, category, isUploading, init
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Название *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Название баннера (необязательно) <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                   placeholder="Введите название"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isUploading}
                 />
               </div>
 
@@ -198,8 +199,8 @@ const ImageCropModal = ({ isOpen, setIsOpen, onSave, category, isUploading, init
               <button onClick={handleClose} className="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">Отмена</button>
               <button 
                 onClick={handleSave}
-                disabled={isUploading || !title.trim()}
-                className="px-6 py-2 bg-blue-900 text-white rounded-lg disabled:opacity-50"
+                className="px-6 py-2.5 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isUploading}
               >
                 {isUploading ? 'Сохранение...' : 'Сохранить'}
               </button>

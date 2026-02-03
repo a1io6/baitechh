@@ -1,7 +1,7 @@
 // hooks/mutations/useAuth.js
 'use client';
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { authService } from "../api/api";
@@ -176,6 +176,82 @@ export const usePasswordResetComplete = () => {
                      error.response?.data?.detail || 
                      'Ошибка сброса пароля';
       toast.error(message);
+    }
+  });
+};
+
+export const useAllProfiles = () => {
+  return useQuery({
+    queryKey: ['profiles', 'all'],
+    queryFn: authService.getAllProfiles,
+  });
+};
+
+// Получить профиль текущего пользователя
+export const useMyProfile = () => {
+  return useQuery({
+    queryKey: ['profile', 'me'],
+    queryFn: authService.getMyProfile,
+    retry: false,
+  });
+};
+
+// Обновить профиль (полное обновление)
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: authService.updateProfile,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
+      toast.success('Профиль успешно обновлен');
+    },
+    onError: (error) => {
+      const errorMessage = 
+        error?.response?.data?.message || 
+        error?.response?.data?.detail ||
+        'Ошибка обновления профиля';
+      toast.error(errorMessage);
+    }
+  });
+};
+
+// Обновить профиль (частичное обновление)
+export const usePatchProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: authService.patchProfile,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
+      toast.success('Профиль успешно обновлен');
+    },
+    onError: (error) => {
+      const errorMessage = 
+        error?.response?.data?.message || 
+        error?.response?.data?.detail ||
+        'Ошибка обновления профиля';
+      toast.error(errorMessage);
+    }
+  });
+};
+
+// Удалить пользователя (админ)
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: authService.deleteUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles', 'all'] });
+      toast.success('Пользователь удален');
+    },
+    onError: (error) => {
+      const errorMessage = 
+        error?.response?.data?.message || 
+        error?.response?.data?.detail ||
+        'Ошибка удаления пользователя';
+      toast.error(errorMessage);
     }
   });
 };

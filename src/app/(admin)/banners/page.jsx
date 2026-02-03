@@ -75,15 +75,24 @@ export default function AdminBannerPage() {
     <div className="admin-banner">
       <div className="admin-banner__container">
         <div className="admin-banner__tabs">
-          {["main", "events"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`admin-banner__tab ${activeTab === tab ? "admin-banner__tab--active" : ""}`}
-            >
-              {tab === "main" ? "Главный баннер" : "Мероприятия"}
-            </button>
-          ))}
+          <button
+            onClick={() => setActiveTab("main")}
+            disabled={isLoading}
+            className={`admin-banner__tab ${
+              activeTab === "main" ? "admin-banner__tab--active" : ""
+            }`}
+          >
+            Главный баннер
+          </button>
+          <button
+            onClick={() => setActiveTab("event")}
+            disabled={isLoading}
+            className={`admin-banner__tab ${
+              activeTab === "events" ? "admin-banner__tab--active" : ""
+            }`}
+          >
+            Мероприятия
+          </button>
         </div>
 
         <div className="admin-banner__content">

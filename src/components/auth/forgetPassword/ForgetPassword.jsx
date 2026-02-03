@@ -21,8 +21,15 @@ function ForgotPassword() {
       toast.error('Введите email');
       return;
     }
+
     try {
-      await passwordResetMutation.mutateAsync(email);
+      console.log('📤 Запрос сброса пароля для:', email);
+      
+      // Передаем объект с email, а не просто строку
+      await passwordResetMutation.mutateAsync({ email });
+      
+      toast.success('Код отправлен на ' + email);
+      
       // Перенаправляем на страницу ввода кода с email в URL
       router.push(`/resetpassword?email=${encodeURIComponent(email)}`);
     } catch (error) {

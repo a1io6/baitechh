@@ -158,7 +158,7 @@ $star-color: #FFD700;
 
   &__title {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     color: $text-dark;
     margin-bottom: 12px;
     line-height: 1.4;
@@ -167,6 +167,14 @@ $star-color: #FFD700;
     -webkit-box-orient: vertical;
     overflow: hidden;
     min-height: 40px;
+  }
+  &__article {
+    font-size: 16px;
+    font-weight: 500;
+    color: $text-dark;
+    line-height: 1.4;
+    display: -webkit-box;
+    overflow: hidden;
   }
 
   &__features {
@@ -341,7 +349,7 @@ font-size: 30px;
     }
 
     &__image {
-      height: 150px;
+      height: 200px;
       margin-bottom: 12px;
     }
 
@@ -393,7 +401,7 @@ font-size: 30px;
 
   .product-card {
     &__image {
-      height: 140px;
+      height: 200px;
     }
   }
 }
@@ -424,7 +432,7 @@ font-size: 30px;
     }
 
     &__image {
-      height: 130px;
+      height: 200px;
       margin-bottom: 10px;
     }
 
@@ -503,7 +511,7 @@ font-size: 30px;
     padding: 12px;
 
     &__image {
-      height: 120px;
+      height: 180px;
     }
 
     &__title {

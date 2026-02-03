@@ -2,10 +2,9 @@
   display: flex;
   gap: 35px; 
   border-radius: 17px; 
-  padding: 35px; 
   justify-content: center;
   align-items: stretch;
-  max-width: 1246px; 
+  max-width: 1280px; 
   height: 568px; 
   margin: 0 auto;
 
@@ -20,9 +19,6 @@
     transition: all 0.3s ease;
     height: 100%;
 
-    &:hover {
-      box-shadow: 0 10px 22px rgba(14, 46, 91, 0.22);
-    }
   }
 
   &__thumbs {
@@ -57,20 +53,19 @@
     height: 100%;
     border-radius: 20px; 
     background: #f9f9f9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px; 
-
+    overflow: hidden;
+    @media (max-width:1024px) {
+      width: 400px; 
+    }
     img {
-      max-width: 90%;
-      max-height: 100%;
-      object-fit: contain;
+      max-width: 100%;
+      height: 100%;
+      object-fit: fill;
     }
   }
 
   &__info {
-    max-width: 645px; 
+    width: 645px; 
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -81,14 +76,17 @@
     transition: all 0.3s ease;
     justify-content: space-between;
 
-    &:hover {
-      box-shadow: 0 10px 22px rgba(14, 46, 91, 0.22);
+    h1{
+      font-size: 18px; 
+      font-weight: 500;
+      color: #555;
     }
   }
 
   &__desc {
     color: #555;
-    font-size: 20px; 
+    font-size: 28px; 
+    font-weight: 600;
     line-height: 1.55;
   }
 
@@ -140,7 +138,7 @@
 }
 
 .add-to-cart {
-  padding: 17px 27px;
+  padding: 12px 20px;
   color: #0e2e5b;
   border-radius: 12px; 
   border: 1px solid #0e2e5b;
@@ -152,12 +150,6 @@
   gap: 12px; 
   background: #fff;
   transition: all 0.2s ease;
-
-  &:hover {
-    background: #0e2e5b;
-    color: #fff;
-  }
-
   svg {
     width: 22px; 
     height: 22px; 
@@ -189,7 +181,7 @@
     }
 
     &__info {
-      max-width: 100%;
+      width: 100%;
       height: auto;
     }
   }

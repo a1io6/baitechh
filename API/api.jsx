@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'https://ayla-diandrous-unobscenely.ngrok-free.dev'; 
+const BASE_URL = 'http://157.230.138.217:3001'; 
 export const WSS_URL = 'baitech';
 
 export const $api = axios.create({
