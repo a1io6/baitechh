@@ -165,19 +165,24 @@ const OrderTable = () => {
                   <td>
                     <select
                       className={`status-select status-select--${order.status}`}
-                      value={order.status}
-                      onChange={(e) =>
+                      value={order.status} // Предполагаем, что order.status приходит как строка (напр. "in_stock")
+                      onChange={(e) => {
+                        const selectedStatus = e.target.value;
                         updateStatus({
                           id: order.id,
-                          status: Number(e.target.value),
-                        })
-                      }
+                          status_data: {
+                            name: selectedStatus,
+                            color_code:
+                              STATUS_CONFIG[selectedStatus]?.color || "#000000",
+                          },
+                        });
+                      }}
                     >
-                      {/* Замените цифры ниже на те, которые соответствуют вашему API */}
-                      <option value={1}>На складе</option>
-                      <option value={5}>В пути</option>
-                      <option value={3}>Доставлено</option>
-                      <option value={4}>Возвраты</option>
+                      {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                        <option key={key} value={key}>
+                          {config.label}
+                        </option>
+                      ))}
                     </select>
                   </td>
                 </td>
