@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import ResetPasswordCode, { ResetPasswordCodeContent } from '@/components/auth/resetpassword/ResetPassword'
 import React from 'react'
 
