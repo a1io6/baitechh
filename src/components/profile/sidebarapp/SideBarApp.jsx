@@ -38,7 +38,7 @@ export default function SidebarApp() {
         email: profile.email || '',
         number: profile.number || ''
       });
-    }
+    }         
   }, [profile]);
 
   const handleProfileUpdate = async (e) => {
