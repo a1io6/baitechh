@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import CatalogPage from '@/components/CatalogePage/CatalogePage'
 import React from 'react'
 
