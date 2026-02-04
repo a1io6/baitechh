@@ -9,12 +9,12 @@ function Card({product}) {
   const imageSrc = product?.existing_images?.[0]?.image;
   return (
     <div>
-      <Link href={`/productdetail/${product.id}`}>
         <div className='product-card'>
-                <div className="product-card__badge">
-                  {product.bar || 'Новинка'}
+                <div className="product-card__badge" style={{backgroundColor:`${product.is_available ? "green" : "red"}`}}>
+                  {product.is_available ? 'В наличии' : 'Нет в наличии'}
                 </div>  
                 
+      <Link href={`/productdetail/${product.id}`}>
                 <div className="product-card__image w-full h-[10px]">
  {imageSrc ? (
   <Image
@@ -33,7 +33,7 @@ function Card({product}) {
 )}
 
                 </div>
-                
+      </Link>            
                 <h3 className="product-card__article">Артикул:{product.article}</h3>
                 <h3 className="product-card__title mt-[3px]">{product.name?.slice(0, 80)}{product.name?.length > 80 ? '...' : ''}</h3>
                 
@@ -52,7 +52,6 @@ function Card({product}) {
                   </button>
                 </div>
               </div>
-      </Link>
     </div>
   )
 }
