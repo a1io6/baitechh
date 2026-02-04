@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { CodeVerifyContent } from '@/components/auth/code/CodeVerify'
 import React from 'react'
 
