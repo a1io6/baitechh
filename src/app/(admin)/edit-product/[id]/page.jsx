@@ -24,11 +24,8 @@ const EditProduct = () => {
     is_available: true,
   });
 
-  // Массив для новых файлов (объекты File)
   const [imageFiles, setImageFiles] = useState([null, null, null, null]);
-  // Массив для отображения (URL или старые ссылки с сервера)
   const [previews, setPreviews] = useState([null, null, null, null]);
-
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -47,10 +44,8 @@ const EditProduct = () => {
           is_available: found.is_available ?? true,
         });
 
-        // Заполняем превью старыми картинками с сервера
         if (found.existing_images && found.existing_images.length > 0) {
           const loadedPreviews = [null, null, null, null];
-          // Предположим: 0,1,2 - доп, 3 - главная (как в твоем AddProduct)
           found.existing_images.forEach((img, idx) => {
             if (idx < 4) loadedPreviews[idx] = img.image;
           });
@@ -96,13 +91,11 @@ const EditProduct = () => {
     formDataPayload.append("characteristics", formData.characteristics);
     formDataPayload.append("is_available", String(formData.is_available));
 
-    // Добавляем только НОВЫЕ файлы, если они были выбраны
     imageFiles.forEach((file) => {
       if (file) formDataPayload.append("images", file);
     });
 
     try {
-      // Отправляем formDataPayload точно так же, как в AddProduct
       await updateProduct({ id, payload: formDataPayload });
       router.push("/camera");
     } catch (err) {
@@ -113,7 +106,7 @@ const EditProduct = () => {
     }
   };
 
-  if (isInitialLoading || isLoading) return  <div className="loader"/>;
+  if (isInitialLoading || isLoading) return <div className="loader"/>;
 
   return (
     <div className="edit-product-page">
@@ -225,3 +218,4 @@ const EditProduct = () => {
 };
 
 export default EditProduct;
+// generateStaticParams бул жерден өчүрүлдү, анткени ал layout.jsx файлына көчүрүлдү.
