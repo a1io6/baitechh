@@ -12,7 +12,7 @@ function ProductDetail() {
   const { id } = useParams(); // <-- берём id из URL
 
   return (
-    <div className="p-[20px]" style={{ maxWidth: "1279px", margin: "0 auto" }}>
+    <div className="xl:p-[0px] p-[20px]" style={{ maxWidth: "1279px", margin: "0 auto" }}>
       <Breadcrumb
         items={[
           { label: "Главная", path: "/" },

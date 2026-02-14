@@ -1,0 +1,73 @@
+{
+  "header": {
+    "search": "Search",
+    "contact": "Contacts",
+    "phones": "Phones",
+    "address": "Address",
+    "socials": "Social Media"
+  },
+  "navbar": {
+    "catalog": "Catalog",
+    "pcComponents": "PC Components",
+    "videoSurveillance": "Video Surveillance",
+    "solutions": "Solutions",
+    "courses": "Courses"
+  },
+  "features": {
+    "freeDelivery": {
+      "title": "Free Delivery",
+      "description": "Free delivery on purchases of 1000 som and above"
+    },
+    "support247": {
+      "title": "24/7 Support",
+      "description": "Technical support service works 24/7"
+    },
+    "payment": {
+      "title": "Payment",
+      "description": "We accept both cash and online card payments"
+    },
+    "qualityGuarantee": {
+      "title": "Quality Guarantee",
+      "description": "Original products only from verified suppliers"
+    },
+    "specialOffers": {
+      "title": "Special Offers",
+      "description": "Our store always has discounts and promotions for regular customers"
+    }
+},
+"recommendations": {
+"title": "Recommendations",
+"error": "Error loading recommendations",
+"noProducts": "No recommendations available"
+},
+  "news": {
+    "news": "News"
+  },
+   "footer": {
+    "workingHours": {
+      "weekdays": "Mon–Fri: 09:00–18:00",
+      "weekend": "Sat: 10:00–15:30, Sun — closed"
+    },
+    "address": {
+      "street": "Bishkek, 7 April St., 4a",
+      "country": "720065, Kyrgyzstan"
+    },
+    "information": {
+      "title": "Information",
+      "aboutUs": "About Us",
+      "privacy": "Privacy Policy",
+      "terms": "Terms & Conditions",
+      "manufacturers": "Manufacturers",
+      "certificates": "Certificates",
+      "promotions": "Promotions",
+      "news": "News"
+    },
+    "client": {
+      "title": "Customer",
+      "account": "My Account",
+      "orderHistory": "Order History",
+      "returns": "Returns"
+    },
+    "map": "Map"
+  }
+}

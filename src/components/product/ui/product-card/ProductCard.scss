@@ -1,6 +1,6 @@
 .product {
   display: flex;
-  gap: 35px; 
+  gap: 30px; 
   border-radius: 17px; 
   justify-content: center;
   align-items: stretch;
@@ -9,6 +9,7 @@
   margin: 0 auto;
 
   &__gallery {
+    width: 75%;
     display: flex;
     gap: 25px; 
     background: #f5f7fa;
@@ -49,7 +50,7 @@
   }
 
   &__image {
-    width: 471px; 
+    width: 100%; 
     height: 100%;
     border-radius: 20px; 
     background: #f9f9f9;
@@ -58,7 +59,7 @@
       width: 400px; 
     }
     img {
-      max-width: 100%;
+      width: 100%;
       height: 100%;
       object-fit: fill;
     }
@@ -88,6 +89,12 @@
     font-size: 28px; 
     font-weight: 600;
     line-height: 1.55;
+  }
+  &__descip {
+    color: #555;
+    font-size:14px; 
+    font-weight: 600;
+    line-height: 1.5;
   }
 
   &__price {
