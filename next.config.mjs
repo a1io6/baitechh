@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export', // Статикалык экспортту иштетет
+  output: 'export', // Статикалык экспортту иштетет
   images: {
     unoptimized: true, // БУЛ СӨЗСҮЗ КЕРЕК: статикалык экспорт үчүн сүрөт оптималдаштырууну өчүрөт
     remotePatterns: [
