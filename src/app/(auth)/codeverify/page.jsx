@@ -1,12 +1,12 @@
-export const dynamic = 'force-dynamic'
 import { CodeVerifyContent } from '@/components/auth/code/CodeVerify'
 import React from 'react'
+import { Suspense } from 'react'
 
 function codeverify() {
   return (
-    <>
-      <CodeVerifyContent type="verify"/>
-    </>
+    <Suspense fallback={null}>
+      <CodeVerifyContent type="verify" />
+    </Suspense>
   )
 }
 
