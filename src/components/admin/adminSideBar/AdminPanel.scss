@@ -1,24 +1,18 @@
 .admin-panel {
-  width: 280px;
+  width: 300px; // Немного увеличил ширину для крупного шрифта
   background: #ffffff;
-//   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Arial', sans-serif;
-  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  border-right: 1px solid #e0e0e0;
+  min-height: 100vh;
   
   .admin-title {
     color: #00162A;
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 24px;
-    text-align: left;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #f0f0f0;
-  }
-  
-  .admin-nav {
-    width: 100%;
+    font-size: 22px; // Увеличено
+    font-weight: 700;
+    margin-bottom: 30px;
+    padding-left: 16px;
   }
   
   .admin-menu {
@@ -30,77 +24,65 @@
     &::before {
       content: '';
       position: absolute;
-      left: 0;
-      width: 7px;
-      height: 40px;
+      left: -24px; // Смещаем к самому краю панели
+      width: 6px;
+      height: 44px; // Высота активного индикатора
       background-color: #0E2E5B;
-      border-radius: 0 14px 14px 0;
+      border-radius: 0 10px 10px 0;
       transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       top: var(--indicator-top, 0);
       z-index: 1;
-      pointer-events: none;
     }
   }
   
   .admin-menu-item {
-    margin-bottom: 8px;
-    position: relative;
-    margin-left: 12px;
+    margin-bottom: 4px;
   }
   
   .admin-menu-link {
-    display: block;
+    display: flex;
+    align-items: center;
     text-decoration: none;
-    color: #00162A;
+    color: #4A5568; // Более мягкий цвет для неактивных
     padding: 12px 16px;
     border-radius: 8px;
     transition: all 0.2s ease;
-    position: relative;
     
+    .icon-text-container {
+      display: flex;
+      align-items: center;
+      gap: 16px; // Отступ между иконкой и текстом
+    }
+
+    .menu-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #718096;
+      transition: color 0.2s ease;
+    }
+
+    .menu-text {
+      font-size: 18px; // УВЕЛИЧЕННЫЙ ШРИФТ
+      font-weight: 400;
+    }
+
+    &:hover {
+      background-color: #f7fafc;
+      .menu-text { color: #00162A; }
+    }
 
     &.active {
       background-color: #f0f7ff;
       
+      .menu-icon {
+        color: #0E2E5B;
+      }
+      
       .menu-text {
         color: #0E2E5B;
-        font-weight: 500;
+        font-weight: 600;
       }
     }
   }
-  
-  .checkbox-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    z-index: 2;
-  }
-  
-
-  
-  .checkmark {
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    display: none;
-    
-    &.checked {
-      display: block;
-    }
-  }
-  
-  .menu-text {
-    font-size: 15px;
-    font-weight: 400;
-    transition: color 0.2s ease;
-  }
-}
-
-// Адаптивность
-@media (max-width: 768px) {
-  .admin-panel {
-    width: 100%;
-    max-width: 280px;
-    margin: 0 auto;
-  }
-}
+} 
