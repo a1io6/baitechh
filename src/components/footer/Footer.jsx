@@ -8,8 +8,10 @@ import { IoChevronDownSharp } from "react-icons/io5";
 import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 function Footer() {
+  const { t } = useTranslation();
   const [openSections, setOpenSections] = useState({
     info: false,
     client: false,
@@ -40,16 +42,16 @@ function Footer() {
           <div className="footer__item">
             <FiClock />
             <span>
-              Пн–Пт: 09:00–18:00 <br />
-              Сб: 10:00–15:30, Вс — выходной
+              {t('footer.workingHours.weekdays')} <br />
+              {t('footer.workingHours.weekend')}
             </span>
           </div>
 
           <div className="footer__item">
             <FiMapPin />
             <span>
-              г. Бишкек, ул. 7 апреля, 4а <br />
-              720065, Kyrgyzstan
+              {t('footer.address.street')} <br />
+              {t('footer.address.country')}
             </span>
           </div>
 
@@ -87,9 +89,8 @@ function Footer() {
             onClick={() => toggleSection('info')}
             type="button"
           >
-            <h4>Информация</h4>
+            <h4>{t('footer.information.title')}</h4>
             <IoChevronDownSharp 
-
               className={`footer__accordion-icon ${
                 openSections.info ? 'footer__accordion-icon--open' : ''
               }`}
@@ -102,13 +103,13 @@ function Footer() {
             }`}
           >
             <ul>
-              <li><Link href="/about">About Us</Link></li>
-              <li><a href="/privacy">Privacy Policy</a></li>
-              <li><a href="/terms">Terms & Conditions</a></li>
-              <li><a href="/brands">Производители</a></li>
-              <li><a href="/certificates">Сертификаты</a></li>
-              <li><a href="/sales">Акции</a></li>
-              <li><a href="/sitemap">Новости</a></li>
+              <li><Link href="/about">{t('footer.information.aboutUs')}</Link></li>
+              <li><a href="/privacy">{t('footer.information.privacy')}</a></li>
+              <li><a href="/terms">{t('footer.information.terms')}</a></li>
+              <li><a href="/brands">{t('footer.information.manufacturers')}</a></li>
+              <li><a href="/certificates">{t('footer.information.certificates')}</a></li>
+              <li><a href="/sales">{t('footer.information.promotions')}</a></li>
+              <li><a href="/sitemap">{t('footer.information.news')}</a></li>
             </ul>
           </div>
         </div>
@@ -120,9 +121,8 @@ function Footer() {
             onClick={() => toggleSection('client')}
             type="button"
           >
-            <h4>Клиенту</h4>
+            <h4>{t('footer.client.title')}</h4>
             <IoChevronDownSharp 
-
               className={`footer__accordion-icon ${
                 openSections.client ? 'footer__accordion-icon--open' : ''
               }`}
@@ -135,27 +135,23 @@ function Footer() {
             }`}
           >
             <ul>
-              <li><a href="/profile">Личный кабинет</a></li>
-              <li><a href="/orders">История заказов</a></li>
-              <li><a href="/return">Возврат товара</a></li>
+              <li><a href="/profile">{t('footer.client.account')}</a></li>
+              <li><a href="/orders">{t('footer.client.orderHistory')}</a></li>
+              <li><a href="/return">{t('footer.client.returns')}</a></li>
             </ul>
-
-            {/* Uncomment if you decide to bring back subscription */}
-            {/* <p className="footer__subscribe-text">...</p>
-            <button className="footer__btn">...</button> */}
           </div>
         </div>
 
         {/* Map – always visible, but adapts width on mobile */}
         <div className="footer__col footer__col--map">
           <div className="footer__map">
-            <div className="footer__map-title">Карта</div>
+            <div className="footer__map-title">{t('footer.map')}</div>
             <iframe
-  title="2GIS Map"
-  src="https://widgets.2gis.com/widget?type=firmsonmap&options=%7B%22pos%22%3A%7B%22lat%22%3A42.844049%2C%22lon%22%3A74.636407%2C%22zoom%22%3A16%7D%2C%22opt%22%3A%7B%22city%22%3A%22bishkek%22%7D%2C%22org%22%3A%2270000001075101217%22%7D"
-  width="100%"
-  height="400"
-/>
+              title="2GIS Map"
+              src="https://widgets.2gis.com/widget?type=firmsonmap&options=%7B%22pos%22%3A%7B%22lat%22%3A42.844049%2C%22lon%22%3A74.636407%2C%22zoom%22%3A16%7D%2C%22opt%22%3A%7B%22city%22%3A%22bishkek%22%7D%2C%22org%22%3A%2270000001075101217%22%7D"
+              width="100%"
+              height="400"
+            />
           </div>
         </div>
       </div>

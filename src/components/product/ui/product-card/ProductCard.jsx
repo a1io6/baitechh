@@ -68,6 +68,7 @@ const ProductCard = ({ productId }) => {
       <div className="product__info">
         <h1>Артикул: {product.article}</h1>
         <p className="product__desc">{product.name}</p>
+        <p className="product__descip">{product.description.slice(0, 150)}...</p>
         <div className="product__price">{product.price.toLocaleString()} сом</div>
         <div className="product__bonus">{product.bonus || 0} бонусов</div>
 
