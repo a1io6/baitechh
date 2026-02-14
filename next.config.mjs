@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
+  // output: 'export', // Статикалык экспортту иштетет
+  images: {
+    unoptimized: true, // БУЛ СӨЗСҮЗ КЕРЕК: статикалык экспорт үчүн сүрөт оптималдаштырууну өчүрөт
     remotePatterns: [
       {
         protocol: 'https',
@@ -20,7 +22,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**', // разрешить ВСЕ HTTPS домены
+        hostname: '**', // Бардык HTTPS домендерге уруксат
       },
       {
         protocol: 'https',
