@@ -11,7 +11,7 @@ const SolutionDetail = () => {
   const currentSolution = SOLUTIONS_DATA.find(item => item.id === Number(params.id)) || SOLUTIONS_DATA[0];
 
   return (
-    <div className="w-full min-h-screen bg-[#F5F7FA] py-0 lg:py-[60px] container">
+    <div className="w-full min-h-screen bg-[#F5F7FA] py-0 lg:py-[0px] container">
       <div className="w-full max-w-[1440px] mx-auto px-4 lg:px-[0px]">
         
         {/* Башкы заголовок */}

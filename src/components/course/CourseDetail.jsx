@@ -2,7 +2,8 @@
 import React from 'react';
 import './CourseDetails.scss';
 import { Smile, Layout, ShieldCheck, HeartPulse, GraduationCap } from 'lucide-react';
-
+import img1 from '../../../assets/png/reklama.png';
+import Image from 'next/image';
 const CourseDetails = () => {
   const benefits = [
     { icon: <Smile size={32} />, text: "Практические навыки работы с оборудованием" },
@@ -26,7 +27,9 @@ const CourseDetails = () => {
 
         <main className="course-main-info">
           <div className="course-image">
-            <div className="image-placeholder"></div>
+            <div className="image-placeholder">
+              <Image src={img1} alt="" />
+            </div>
           </div>
 
           <div className="course-program">

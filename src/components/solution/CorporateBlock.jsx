@@ -5,7 +5,7 @@ import { SOLUTIONS_DATA } from './solutions';
 
 const CorporateBlock = () => {
   return (
-    <section className="w-full bg-[#F5F7FA] py-12">
+    <section className="w-full bg-[#F5F7FA] py-0">
       <div className="container mx-auto px-4 max-w-[1280px]">
         <h2 className="text-[20px] font-medium md:text-[24px] font-bold text-[#00162A] mb-10 ">
           Комплексные решения под ключ
