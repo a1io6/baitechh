@@ -72,6 +72,68 @@ $colors: (
         transform: scale(1.002); // Легкий эффект увеличения при наведении
       }
     }
+
+    .items-row {
+      background-color: #f8fbff; // Легкий фон под карточкой
+
+      .items-container {
+        padding: 10px 20px 20px 20px;
+
+        .order-details-card {
+          display: flex;
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 20px;
+          gap: 25px;
+          align-items: center;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+          border: 1px solid #f0f0f0;
+
+          .item-photo-placeholder {
+            width: 130px;
+            height: 130px;
+            background: #e0e0e0; // Тот самый серый квадрат
+            border-radius: 12px;
+            flex-shrink: 0;
+          }
+
+          .item-info-grid {
+            display: flex;
+            flex: 1;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+
+            .info-block {
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+
+              &.title {
+                flex: 1.2; // Даем больше места для названия
+                max-width: 300px;
+              }
+
+              .info-label {
+                font-size: 14px;
+                font-weight: 700; // Жирные заголовки
+                color: #000000;
+              }
+
+              .info-value {
+                font-size: 13px;
+                color: #333333;
+                line-height: 1.4;
+
+                &.status {
+                  color: #2c3e50; // Темный цвет статуса
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -111,11 +173,13 @@ $colors: (
     border-color: #6C757D;
     color: #6C757D;
   }
+
   &:focus {
     outline: none;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
   }
 }
+
 .status-wrapper {
   display: inline-flex;
   align-items: center;
@@ -273,4 +337,5 @@ $colors: (
       background: #001a3d;
     }
   }
+
 }

@@ -2,13 +2,374 @@
 // СТИЛИ ДЛЯ ОСНОВНОЙ СТРАНИЦЫ CAMER CATALOG (УВЕЛИЧЕННЫЙ ШРИФТ)
 // ======================
 .admin-content {
-  // width: 1101px;
   padding: 20px;
   background-color: #f5f6fa;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
   
-  // width: calc(100% - 280px);
+  .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(14, 46, 91, 0.2); 
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+
+  .modal-content.action-modal {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff; // Чисто белый фон окна
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(14, 46, 91, 0.15); 
+    border: 1px solid #eef0f2;
+    overflow: hidden;
+    animation: modalScaleIn 0.25s ease-out;
+
+    .modal-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f3f5;
+
+      h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #0E2E5B; 
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #94a3b8;
+        cursor: pointer;
+        line-height: 1;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #0E2E5B;
+        }
+      }
+    }
+
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .action-btn {
+        width: 100%;
+        padding: 16px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 10px;
+        border: 2px solid #0E2E5B; // Контур кнопок
+        background: #0E2E5B;       // Основной цвет — синий
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+
+        &:hover {
+          background: #163e7a; // Чуть светлее при наведении
+          border-color: #163e7a;
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        // Особый стиль для кнопки удаления (опционально)
+        &.delete-btn {
+          background: transparent;
+          color: #e74c3c;
+          border-color: #e74c3c;
+
+          &:hover {
+            background: #e74c3c;
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+  .modal-content.status-modal {
+    width: 100%;
+    max-width: 450px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(14, 46, 91, 0.15);
+    border: 1px solid #eef0f2;
+    overflow: hidden;
+    animation: modalScaleIn 0.25s ease-out;
+
+    .modal-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f3f5;
+
+      h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #0E2E5B;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #94a3b8;
+        cursor: pointer;
+        line-height: 1;
+        &:hover { color: #0E2E5B; }
+      }
+    }
+
+    .modal-body {
+      padding: 24px;
+
+      p {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 17px;
+        color: #64748b;
+        line-height: 1.5;
+
+        strong {
+          color: #0E2E5B;
+          font-weight: 600;
+        }
+      }
+
+      .status-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .status-option {
+          width: 100%;
+          padding: 16px;
+          font-size: 16px;
+          font-weight: 600;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-align: center;
+          
+          // По умолчанию: светлые кнопки на белом фоне
+          background: #f8fafc;
+          border: 2px solid #f1f5f9;
+          color: #475569;
+
+          &:hover {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+          }
+
+          // Состояние выбранного статуса: ваш синий цвет
+          &.selected {
+            background: #0E2E5B;
+            border-color: #0E2E5B;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(14, 46, 91, 0.2);
+          }
+
+          &:active {
+            transform: scale(0.98);
+          }
+        }
+      }
+    }
+  }
+  .modal-content.delete-modal {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(14, 46, 91, 0.15);
+    border: 1px solid #eef0f2;
+    overflow: hidden;
+    animation: modalScaleIn 0.25s ease-out;
+
+    .modal-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f3f5;
+
+      h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #0E2E5B; // Твой фирменный темно-синий
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #94a3b8;
+        cursor: pointer;
+        line-height: 1;
+        transition: color 0.2s;
+        &:hover { color: #e74c3c; } // Подсвечиваем красным при наведении
+      }
+    }
+
+    .modal-body {
+      padding: 30px 24px;
+      text-align: center; // Центрируем текст для акцента на вопросе
+
+      p {
+        margin: 0 0 24px 0;
+        font-size: 17px;
+        color: #475569;
+        line-height: 1.6;
+
+        strong {
+          color: #0E2E5B;
+          display: block; // Выносим название на новую строку
+          margin-top: 5px;
+          font-weight: 700;
+          font-size: 19px;
+        }
+      }
+
+      .delete-actions {
+        display: flex;
+        gap: 12px;
+
+        button {
+          flex: 1; // Делаем кнопки одинаковой ширины
+          padding: 14px;
+          font-size: 16px;
+          font-weight: 600;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          border: none;
+        }
+
+        .cancel-btn {
+          background: #f1f5f9;
+          color: #64748b;
+          border: 1px solid transparent;
+
+          &:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+          }
+        }
+
+        .confirm-delete-btn {
+          background: #e74c3c; // Классический красный для удаления
+          color: #ffffff;
+          box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+
+          &:hover {
+            background: #c0392b;
+            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.3);
+            transform: translateY(-1px);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+        }
+      }
+    }
+  }.modal-content.delete-modal {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(14, 46, 91, 0.15);
+  border: 1px solid #eef0f2;
+  overflow: hidden;
+
+  .modal-body {
+    padding: 24px; // Слегка уменьшил, чтобы сэкономить место
+
+    p {
+      margin: 0 0 20px 0;
+      font-size: 16px;
+      color: #64748b;
+      line-height: 1.5;
+      text-align: center;
+
+      strong {
+        display: -webkit-box;
+        -webkit-line-clamp: 3; // Максимум 3 строки для названия
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis; // Добавит "..." в конце, если текст слишком длинный
+        
+        color: #0E2E5B;
+        margin-top: 8px;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 1.3;
+        word-break: break-word; // Чтобы длинные слова без пробелов не вылезали за края
+      }
+    }
+
+    .delete-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+
+      button {
+        flex: 1;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .cancel-btn {
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        &:hover {
+          background: #f1f5f9;
+          color: #1e293b;
+        }
+      }
+
+      .confirm-delete-btn {
+        background: #e74c3c;
+        color: #ffffff;
+        border: none;
+        &:hover {
+          background: #c0392b;
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+}
+}
+
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
 
   .header {
     display: flex;
@@ -169,8 +530,8 @@
               line-height: 1.5;
               
               &.name-value {
-                font-weight: 600;
-                font-size: 18px; // Название товара еще крупнее
+                font-weight: 400;
+                font-size: 14px; // Название товара еще крупнее
               }
             }
           }
@@ -205,31 +566,5 @@
   }
 
   /* Modal */
-  .modal-overlay {
-    .modal-content {
-      max-width: 450px; // Чуть шире для крупного текста
 
-      .modal-header {
-        h3 {
-          font-size: 22px; // Увеличено
-        }
-      }
-
-      .modal-body {
-        p {
-          font-size: 18px; // Увеличено (было 16px)
-        }
-
-        .action-btn {
-          padding: 14px;
-          font-size: 18px; // Увеличено
-        }
-
-        .status-option {
-          padding: 18px;
-          font-size: 18px; // Увеличено
-        }
-      }
-    }
-  }
 }

@@ -190,7 +190,9 @@ const CamerCatalog = () => {
                 <div className="menu-container">
                   <button
                     className="menu-btn"
-                    onClick={() => openActionModal(product)}
+                    onClick={() => {openActionModal(product); console.log('====================================');
+                    console.log("hello");
+                    console.log('====================================');}}
                   >
                     ...
                   </button>
@@ -299,8 +301,8 @@ const CamerCatalog = () => {
             </div>
             <div className="modal-body">
               <p>
-                Вы точно уверены, что хотите удалить товар "
-                {selectedProduct.name}"?
+                Вы точно уверены, что хотите удалить товар <strong>"
+                {selectedProduct.name}"?</strong>
               </p>
               <div className="delete-actions">
                 <button className="cancel-btn" onClick={closeDeleteModal}>
