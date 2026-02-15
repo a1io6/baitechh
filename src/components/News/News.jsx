@@ -70,7 +70,6 @@ export function News() {
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-[20px]">
               {data.map((item) => {
-                // Получаем первое изображение из existing_images
                 const imageUrl = item.existing_images?.[0]?.image;
                 
                 return (
@@ -124,7 +123,6 @@ export function News() {
           </div>
         )}
 
-        {/* Если нет данных */}
         {!isLoading && !error && (!data || data.length === 0) && (
           <div className="text-center py-10">
             <p className="text-gray-500">Новостей пока нет</p>
