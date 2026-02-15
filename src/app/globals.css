@@ -19,6 +19,15 @@ body {
   background: rgba(245, 247, 250, 1);
    font-family: "Montserrat", sans-serif;
 }
+button{
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+  outline: none;
+}
+input {
+  font-family: "Montserrat", sans-serif;
+  outline: none;
+}
 .sidebarapp{
   overflow: auto !important;
 }

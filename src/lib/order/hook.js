@@ -12,7 +12,7 @@ export const useOrders = (filters = {}) => {
   const ordersQuery = useQuery({
     queryKey: ["orders", activeFilters],
     queryFn: async () => {
-      const { data } = await $api.get("/ordering/ordering/", { params: activeFilters });
+      const { data } = await $api.get("/ordering/orders/", { params: activeFilters });
       return data;
     },
     placeholderData: (prev) => prev,
@@ -25,6 +25,15 @@ export const useOrders = (filters = {}) => {
     },
   });
 
+  const getStatuses = useQuery({
+    queryKey: ["statuses"],
+    queryFn: async () => {
+      const { data } = await $api.get("ordering/orders/statistics/");
+      return data;
+    },
+    placeholderData: (prev) => prev,
+  });
+
   return {
     orders: ordersQuery.data?.results || [],
     stats: ordersQuery.data?.dashboard_stats || {},
@@ -32,5 +41,7 @@ export const useOrders = (filters = {}) => {
     isLoading: ordersQuery.isLoading,
     isFetching: ordersQuery.isFetching,
     updateStatus: updateStatusMutation.mutate,
+    isUpdating: updateStatusMutation.isPending,
+    statuses: getStatuses.data,
   };
 };

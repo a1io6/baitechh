@@ -1,63 +1,68 @@
 .stats-container {
   display: flex;
-  gap: 15px;
-  padding: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
-  background-color: #f4f7f9;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 20px 0;
+  overflow-x: auto; // На случай узких экранов
 
   .stats-card {
     flex: 1;
-    min-width: 180px;
-    max-width: 220px;
-    padding: 20px 15px;
-    background: #fff;
+    min-width: 200px;
+    background: #f8f9fa;
     border-radius: 12px;
-    border: 1px solid #e0e0e0;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 20px 15px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    text-align: center;
+    border: 1px solid transparent;
+    transition: transform 0.2s ease;
+    
+    // Мягкая тень как на макете
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    // Специфичные цвета для верхней границы
+    &.green { box-shadow: 0 4px 12px rgba(39, 174, 95, 0.537) ; .card-title { color: #27ae60; } }
+    &.yellow { box-shadow: 0 4px 12px rgba(241, 196, 15, 0.568) ; .card-title { color: #f1c40f; } }
+    &.blue { box-shadow: 0 4px 12px rgba(41, 127, 185, 0.518) ; .card-title { color: #2980b9; } }
+    &.red { box-shadow: 0 4px 12px rgba(231, 77, 60, 0.505) ; .card-title { color: #e74c3c; } }
+    &.gray { box-shadow: 0 4px 12px rgba(127, 140, 141, 0.575) ; .card-title { color: #7f8c8d; } }
+
+    .card-header {
+      flex-grow: 1;
+      margin-bottom: 12px;
+    }
 
     .card-title {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
 
     .card-value {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
-      color: #1e3a8a; // Темно-синий для цифр
+      color: #0E2E5B; // Темно-синий из твоего бренда
+      margin-bottom: 4px;
     }
 
-    .card-subvalue, .card-footer {
-      font-size: 11px;
-      color: #64748b;
-      line-height: 1.4;
+    .card-subvalue {
+      font-size: 13px;
+      color: #7f8c8d;
+      margin-bottom: 15px;
     }
 
-    /* Цветовые схемы для границ и заголовков */
-    &.green {
-      border-top: 3px solid #10b981;
-      .card-title { color: #10b981; }
+    .card-footer {
+      width: 100%;
+      padding-top: 12px;
+      border-top: 1px solid #e9ecef; // Разделительная линия
+      font-size: 12px;
+      color: #7f8c8d;
+      font-weight: 500;
     }
-    &.yellow {
-      border-top: 3px solid #eab308;
-      .card-title { color: #eab308; }
-    }
-    &.blue {
-      border-top: 3px solid #3b82f6;
-      .card-title { color: #3b82f6; }
-    }
-    &.red {
-      border-top: 3px solid #ef4444;
-      .card-title { color: #ef4444; }
-    }
-    &.gray {
-      border-top: 3px solid #94a3b8;
-      .card-title { color: #94a3b8; }
+
+    &:hover {
+      transform: translateY(-5px);
     }
   }
 }

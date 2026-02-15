@@ -102,7 +102,6 @@ const EditProduct = () => {
     });
 
     try {
-      // Отправляем formDataPayload точно так же, как в AddProduct
       await updateProduct({ id, payload: formDataPayload });
       router.push("/camera");
     } catch (err) {
@@ -113,13 +112,20 @@ const EditProduct = () => {
     }
   };
 
-  if (isInitialLoading || isLoading) return  <div className="loader"/>;
+  if (isInitialLoading || isLoading) return <div className="loader" />;
 
   return (
     <div className="edit-product-page">
       <div className="page-header">
-        <button className="back-btn" onClick={() => router.back()}>← Назад</button>
-        <h2>Редактирование товара</h2>
+        <button className="back-btn" onClick={() => router.back()}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div className="header-text">
+          <h2>Редактирование товара</h2>
+          <p>Заполните информацию о продукте</p>
+        </div>
       </div>
 
       <form className="form-container" onSubmit={handleSubmit}>

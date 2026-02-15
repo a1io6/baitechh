@@ -178,7 +178,6 @@ const AddProduct = () => {
           </div>
         </div>
 
-        <div className="header-badge">Новая позиция</div>
       </div>
 
       <div className="form-container">
