@@ -258,7 +258,7 @@ footer{
   .footer__accordion-content {
     max-height: none !important;
     overflow: visible;
-    margin-top: 22px; // original spacing
+    margin-top: 0px; // original spacing
   }
 
   // Restore original margin-top for desktop h4

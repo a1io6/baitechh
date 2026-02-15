@@ -1,41 +1,31 @@
+"use client";
+
 import Image from 'next/image';
 import React from 'react';
+import { useParams } from 'next/navigation';
+import { SOLUTIONS_DATA } from './solutions';
 
-const SolutionDetailPage = () => {
-  const solutionData = {
-    title: "Безопасность жилых комплексов",
-    blocks: [
-      {
-        id: 1,
-        subtitle: "Видеонаблюдение в подъезде",
-        description: "Видеонаблюдение в многоквартирном доме позволяет пресекать акты вандализма...",
-        image: "/img/security-1.jpg"
-      },
-      {
-        id: 2,
-        subtitle: "Контроль доступа и автоматизация",
-        description: "Заманбап системалар ар бир кирген-чыккан адамды көзөмөлдөп...",
-        image: "/img/security-2.jpg"
-      }
-    ]
-  };
+const SolutionDetail = () => {
+  const params = useParams();
+  
+  const currentSolution = SOLUTIONS_DATA.find(item => item.id === Number(params.id)) || SOLUTIONS_DATA[0];
 
   return (
-    <div className="w-full min-h-screen bg-[#F5F7FA] py-8 lg:py-[60px] container">
-      <div className="w-full max-w-[1440px] mx-auto px-4 lg:px-[76px]">
+    <div className="w-full min-h-screen bg-[#F5F7FA] py-0 lg:py-[0px] container">
+      <div className="w-full max-w-[1440px] mx-auto px-4 lg:px-[0px]">
         
         {/* Башкы заголовок */}
-        <h1 className="font-['Montserrat'] font-medium text-[20px] lg:text-[24px] text-[#1f2937] mb-8 lg:mb-[40px]">
-          {solutionData.title}
+        <h1 className="font-medium text-[20px] lg:text-[24px] text-[#1f2937] mb-8 lg:mb-[40px]">
+          {currentSolution.title}
         </h1>
 
-        {/* Вертикалдуу тизмек */}
-        <div className="flex flex-col gap-12 lg:gap-[80px]">
-          {solutionData.blocks.map((block) => (
+        {/* Блоктордун ортосундагы аралыкты (gap) 31px кылдык */}
+        <div className="flex flex-col gap-[31px]">
+          {currentSolution.blocks.map((block, index) => (
             <div key={block.id} className="flex flex-col">
               
-              {/* Сүрөт: Ноутбукта 854x481px */}
-              <div className="w-full lg:w-[854px] aspect-[854/481] lg:h-[481px] rounded-[20px] overflow-hidden bg-[#d9d6d4] mb-5 lg:mb-[25px] flex-shrink-0">
+              {/* СҮРӨТ */}
+              <div className="w-full lg:w-[854px] aspect-[854/481] lg:h-[481px] rounded-[20px] overflow-hidden bg-[#d9d6d4] mb-2 lg:mb-[10px] flex-shrink-0">
                 <Image
                   src={block.image}
                   alt={block.subtitle}
@@ -45,13 +35,24 @@ const SolutionDetailPage = () => {
                 />
               </div>
 
-              {/* Текст блогу: Максималдуу туурасы 1166px */}
-              <div className="w-full lg:max-w-[1166px]">
-                <h2 className="font-['Montserrat'] font-medium text-[18px] lg:text-[20px] text-[#1f2937] mb-3 lg:mb-[15px]">
+              {/* ТЕКСТ БЛОГУ - min-h-[120px] кошулду */}
+              <div className="w-full lg:max-w-[1166px] min-h-[120px]">
+                {/* Название */}
+                <h2 className=" font-medium text-[18px] lg:text-[24px] text-[#1f2937] mb-1 lg:mb-[5px]">
                   {block.subtitle}
                 </h2>
-                <p className="font-['Montserrat'] font-medium text-[15px] lg:text-[16px] leading-[150%] text-[#4b5563] break-words">
-                  {block.description}
+
+                {/* Описание */}
+                <p className=" font-medium text-[16px] lg:text-[20px] leading-[120%] text-[#00162ACC] break-words">
+                  {index === 0 ? (
+                    <>
+                      {currentSolution.mainDescription}
+                      <br /><br />
+                      {block.description}
+                    </>
+                  ) : (
+                    block.description
+                  )}
                 </p>
               </div>
               
@@ -63,4 +64,4 @@ const SolutionDetailPage = () => {
   );
 };
 
-export default SolutionDetailPage;
+export default SolutionDetail;
