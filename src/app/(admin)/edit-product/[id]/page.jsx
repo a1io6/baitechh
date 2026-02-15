@@ -1,16 +1,14 @@
-"use client";
+import EditProductClient from "./EditProductClient";
 
-import React, { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { useProducts } from "@/lib/products/hooks/hooks";
-import "./EditProduct.scss";
+export const dynamicParams = false;
 
-const EditProduct = () => {
-  const params = useParams();
-  const id = params.id;
-  const router = useRouter();
+export async function generateStaticParams() {
+  return [{ id: "1" }];
+}
 
-  const { products, categories, brands, updateProduct, isInitialLoading, isLoading } = useProducts();
+export default function EditProductPage() {
+  return <EditProductClient />;
+}
 
   const [formData, setFormData] = useState({
     name: "",

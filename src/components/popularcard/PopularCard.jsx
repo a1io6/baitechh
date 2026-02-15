@@ -42,8 +42,8 @@ export function PopularCard({ productId }) {
 
   return (
     <div className='recommendations1'>
-      <h2 className="recommendations__title mt-[40px]">Похожие товары</h2>
-      <div className="recommendations-carousel mt-[-30px]">
+      <h2 className="recommendations__title mb-[40px] mt[40px] text-[30px]">Похожие товары</h2>
+      <div className="recommendations-carousel ">
         <Swiper
           modules={[Pagination]}
           spaceBetween={20}
@@ -69,7 +69,7 @@ export function PopularCard({ productId }) {
               spaceBetween: 20
             },
             1200: {
-              slidesPerView: 4,
+              slidesPerView: 3.2,
               spaceBetween: 20
             }
           }}

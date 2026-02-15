@@ -37,7 +37,7 @@ const AddProduct = () => {
     const { name, value } = e.target;
     if (name === "bonus") {
       const num = Number(value);
-      if (num > 100 || num < 0) return;
+      if (num > 9999 || num < 0) return;
       setFormData((prev) => ({ ...prev, bonus: num }));
       return;
     }

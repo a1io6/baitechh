@@ -1,0 +1,20 @@
+
+> baitech2@0.1.0 dev
+> next dev -p 3000
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.190.174:3000
+
+✓ Starting...
+✓ Ready in 989ms
+📦 Похожие товары для продукта 1 : undefined
+ GET /productdetail/1 200 in 3.5s (compile: 2.7s, generate-params: 708ms, render: 782ms)
+ GET /productdetail/7 500 in 3.5s (compile: 3.3s, render: 204ms)
+ GET /productdetail/999999 404 in 208ms (compile: 115ms, generate-params: 10ms, render: 93ms)
+ GET /productdetail/999999 404 in 209ms (compile: 115ms, generate-params: 10ms, render: 94ms)
+📦 Похожие товары для продукта 1 : undefined
+ GET /productdetail/1 200 in 858ms (compile: 742ms, generate-params: 731ms, render: 117ms)
+ GET /productdetail/7 404 in 65ms (compile: 28ms, generate-params: 6ms, render: 37ms)
+ GET /productdetail/7 404 in 80ms (compile: 28ms, generate-params: 6ms, render: 52ms)
+[?25h
