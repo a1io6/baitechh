@@ -67,7 +67,7 @@ $white: #F7F6F5;
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 40px 20px 30px rgba(0, 0, 0, 0.1);
+   box-shadow: 0px 20px 0px rgba(0, 0, 0, 0.1);
 
     .feature-card__icon {
       animation: float 2s ease-in-out infinite;
@@ -166,6 +166,38 @@ $white: #F7F6F5;
       gap: 20px;
       overflow-x: auto;
     }
+  }
+  .feature-card{
+      &:hover {
+    transform: translateY(0px);
+    box-shadow: 0px 20px 0px rgba(0, 0, 0, 0.1);
+
+    .feature-card__icon {
+      animation: none;
+      color: $primary-green;
+    }
+  }
+  }
+}
+@media (max-width: 480px) {
+  .features {
+    padding: 40px 0px;
+ &__container {
+      padding: 20px 15px;
+      gap: 20px;
+      overflow-x: auto;
+    }
+  }
+  .feature-card{
+      &:hover {
+    transform: translateY(0px);
+   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.422);
+  
+    .feature-card__icon {
+      animation: none;
+      color: $primary-green;
+    }
+  }
   }
 }
 

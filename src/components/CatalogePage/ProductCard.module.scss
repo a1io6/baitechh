@@ -1,0 +1,268 @@
+.card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  padding: 15px;
+
+  &:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// БЕЙДЖИ
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #fff;
+  z-index: 2;
+  &.available { background: #8bc34a; }
+  &.waiting { background: #f44336; }
+}
+
+// ----------------------------------------------------
+// РЕЖИМ СЕТКИ (GRID)
+// ----------------------------------------------------
+.card.grid {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+
+  .imageSection {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    img { 
+      max-height: 100%; 
+      max-width: 100%;
+      object-fit: contain; 
+    }
+  }
+
+  .infoSection {
+    margin-top: 15px;
+  }
+
+  .priceRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .cartBtn {
+    border: 1px solid #ddd;
+    background: transparent;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+}
+
+// ----------------------------------------------------
+// РЕЖИМ СПИСКА (LIST / FULL)
+// ----------------------------------------------------
+.card.list, .card.full {
+  .mainWrapper {
+    display: flex;
+    gap: 20px;
+
+    // Адаптив для мобильных
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  .imageSection {
+    width: 220px;
+    flex-shrink: 0;
+
+    img { 
+      width: 100%; 
+      height: auto; 
+      object-fit: contain;
+    }
+
+    // Адаптив для мобильных
+    @media (max-width: 768px) {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+  }
+
+  .infoSection {
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 20px;
+
+    // Адаптив для мобильных
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+  }
+
+  .title { 
+    font-size: 16px; 
+    margin: 5px 0; 
+  }
+
+  .purchaseSection {
+    border-left: 1px solid #f0f0f0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    // Адаптив для мобильных
+    @media (max-width: 768px) {
+      border-left: none;
+      border-top: 1px solid #f0f0f0;
+      padding-left: 0;
+      padding-top: 15px;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .cartBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid #1e3a8a;
+    color: #1e3a8a;
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    // Адаптив для мобильных
+    @media (max-width: 768px) {
+      margin-top: 0;
+    }
+  }
+}
+
+// Специфика для FULL
+.card.full {
+  .middleInfo {
+    display: block;
+    .specs {
+      font-size: 12px;
+      color: #777;
+      margin-top: 10px;
+      ul { 
+        padding-left: 15px; 
+        margin-top: 5px; 
+      }
+    }
+  }
+}
+
+// В обычном LIST описание короче
+.card.list {
+  .description {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+  }
+}
+
+// Вспомогательные стили
+.article { 
+  font-size: 11px; 
+  color: #999; 
+}
+
+.bonus { 
+  color: #8bc34a; 
+  font-size: 12px; 
+  margin-bottom: 5px; 
+}
+
+.price { 
+  font-size: 18px; 
+  font-weight: 700; 
+  color: #2e7d32; 
+}
+
+// Dots для grid режима
+.dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+
+  span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd;
+
+    &.active {
+      background: #1e3a8a;
+    }
+  }
+}
+
+// Дополнительный адаптив для планшетов
+@media (max-width: 1024px) {
+  .card.list, .card.full {
+    .imageSection {
+      width: 180px;
+    }
+
+    .infoSection {
+      grid-template-columns: 1fr 180px;
+    }
+  }
+}
+
+// Дополнительный адаптив для маленьких экранов
+@media (max-width: 480px) {
+  .card {
+    padding: 12px;
+  }
+
+  .card.grid {
+    .imageSection {
+      height: 150px;
+    }
+  }
+
+  .card.list, .card.full {
+    .title {
+      font-size: 14px;
+    }
+
+    .price {
+      font-size: 16px;
+    }
+
+    .cartBtn {
+      padding: 6px 12px;
+      font-size: 14px;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}

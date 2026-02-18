@@ -7,6 +7,7 @@ import 'swiper/css/pagination';
 import './recommendations.scss';
 import Card from '../ui/card/Card';
 import { useProducts } from '@/lib/products/hooks/hooks';
+import { useTranslation } from 'react-i18next';
 
 // Скелетон для загрузки
 const CardSkeleton = () => (
@@ -20,19 +21,18 @@ const CardSkeleton = () => (
 );
 
 export function Recommendations() {
-  // Используем ваш существующий хук
+  const { t } = useTranslation();
   const { products, isLoading, isError } = useProducts();
 
-  // Берем только первые 10 продуктов для рекомендаций
   const recommendedProducts = products.slice(0, 10);
 
   if (isError) {
     return (
       <div className='recommendations'>
-        <h2 className="recommendations__title">Рекомендации</h2>
+        <h2 className="recommendations__title">{t('recommendations.title')}</h2>
         <div className="recommendations__error">
           <p className="text-center text-red-500 py-8">
-            Ошибка загрузки рекомендаций
+            {t('recommendations.error')}
           </p>
         </div>
       </div>
@@ -41,7 +41,7 @@ export function Recommendations() {
 
   return (
     <div className='recommendations'>
-      <h2 className="recommendations__title">Рекомендации</h2>
+      <h2 className="recommendations__title">{t('recommendations.title')}</h2>
       <div className="recommendations-carousel">
         <Swiper
           modules={[Pagination]}

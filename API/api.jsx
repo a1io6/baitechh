@@ -25,3 +25,21 @@ $api.interceptors.request.use((config) => {
 }, (error) => {
   return Promise.reject(error);
 });
+
+// Добавьте перехватчик ответов для обработки ошибок авторизации
+$api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Токен истек или невалиден
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+      
+      if (typeof window !== "undefined") {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);

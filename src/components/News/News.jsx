@@ -5,6 +5,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import './style.scss'
 import { useBanner } from '@/lib/news/hooks/hooks';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 // Компонент скелетона для загрузки
 function NewsSkeleton() {
@@ -34,7 +35,7 @@ function NewsSkeleton() {
 
 export function News() {
   const { data, isLoading, error } = useBanner()
-  
+  const {t} = useTranslation()
   const [emblaRef] = useEmblaCarousel(
     { 
       loop: true,
@@ -50,29 +51,25 @@ export function News() {
     <section className="pb-16">
       <div className="w-full mx-auto px-6 xl:px-0">
         <h2 className="sm:text-5xl text-3xl font-bold md:text-center text-start text-[#1e293b]" style={{marginBottom:'50px'}}>
-          Новости
+          {t('news.news')}
         </h2>
 
-        {/* Показываем скелетон при загрузке */}
         {isLoading && (
           <div className="overflow-hidden">
             <NewsSkeleton />
           </div>
         )}
 
-        {/* Показываем ошибку */}
         {error && !isLoading && (
           <div className="text-center py-10">
             <p className="text-red-500">Ошибка загрузки новостей</p>
           </div>
         )}
 
-        {/* Показываем данные */}
         {!isLoading && !error && data && data.length > 0 && (
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-[20px]">
               {data.map((item) => {
-                // Получаем первое изображение из existing_images
                 const imageUrl = item.existing_images?.[0]?.image;
                 
                 return (
@@ -126,7 +123,6 @@ export function News() {
           </div>
         )}
 
-        {/* Если нет данных */}
         {!isLoading && !error && (!data || data.length === 0) && (
           <div className="text-center py-10">
             <p className="text-gray-500">Новостей пока нет</p>

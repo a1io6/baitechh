@@ -1,0 +1,260 @@
+.catalogPage {
+  padding: 30px 20px;
+  background-color: #f9f9f9;
+  @media (max-width:768px) {
+     padding: 20px 15px;
+  }
+}
+
+.layout {
+  display: flex;
+  gap: 24px;
+}
+
+// --- САЙДБАР ---
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  height: fit-content;
+
+  .filterTitle {
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .filterGroup {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid #f0f0f0;
+    font-size: 14px;
+    cursor: pointer;
+    color: #444;
+
+    &:hover {
+      color: #1e3a8a;
+    }
+  }
+
+  .applyBtn {
+    width: 100%;
+    background: #1e3a8a; // Темно-синий Delta
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #162d6b;
+    }
+  }
+}
+
+// --- ОСНОВНАЯ ЧАСТЬ ---
+.main {
+  flex-grow: 1;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  background: white;
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.viewToggle {
+  display: flex;
+  gap: 12px;
+  
+  svg {
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s;
+
+    &.active {
+      color: #1e3a8a; // Подсветка активного режима
+    }
+
+    &:hover:not(.active) {
+      color: #666;
+    }
+  }
+}
+
+// --- ЛОГИКА СЕТКИ И СПИСКА ---
+
+.grid {
+  display: grid;
+  gap: 16px;
+  transition: all 0.3s ease;
+
+  // Режим: Сетка (3 в ряд)
+  &.grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  // Режим: Список (1 в ряд, компактно)
+  &.list {
+    grid-template-columns: 1fr;
+  }
+
+  // Режим: Полный (1 в ряд, подробно)
+  &.full {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loadMore {
+  display: block;
+  margin: 30px auto;
+  padding: 10px 40px;
+  background: white;
+  border: 1px solid #1e3a8a;
+  color: #1e3a8a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: #1e3a8a;
+    color: white;
+  }
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  padding: 100px;
+  font-size: 18px;
+  color: #666;
+}
+
+@media (max-width: 1100px) {
+  .grid.grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+  }
+  .grid.grid {
+    grid-template-columns: 1fr;
+  }
+}
+.filterSection {
+  margin-bottom: 15px;
+}
+
+.filterOptions {
+  padding: 10px 5px;
+  max-height: 200px;
+  overflow-y: auto; // Если брендов много
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #555;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+
+  &:hover {
+    color: #1a365d;
+  }
+}
+
+.resetBtn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  &:hover {
+    background: #f5f5f5;
+  }
+}
+.priceInputs {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  
+  input {
+    width: 50%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    &:focus { border-color: #1e3a8a; }
+  }
+}
+
+.scrollArea {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  input { cursor: pointer; }
+}
+
+.clearIcon {
+  cursor: pointer;
+  color: #ff4d4d;
+  &:hover { transform: scale(1.1); }
+}
+
+.applyBtn {
+  width: 100%;
+  background: #1a365d; // Тёмно-синий
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-top: 20px;
+  cursor: pointer;
+  &:hover { background: #132a4a; }
+}

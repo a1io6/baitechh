@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Key, BookOpen, Package, RotateCcw, CreditCard, Gift, LogOut, Menu, X } from 'lucide-react';
 import ChangePassword from '../changepassword/ChangePassword';
 import OrderHistory from '../historyorders/HistoryOrders';
@@ -11,14 +11,51 @@ import AddressBook from '../adressbook/AdressBook';
 import { useMyProfile, usePatchProfile } from '@/lib/auth/hooks/hooks';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
+import './style.scss'
 
 export default function SidebarApp() {
   const [activePage, setActivePage] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  // Получаем данные профиля
-  const { data: profile, isLoading: profileLoading } = useMyProfile();
+  // Проверка авторизации при загрузке
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('access_token');
+      
+      if (!token) {
+        setIsAuthenticated(false);
+        setIsCheckingAuth(false);
+        return;
+      }
+      
+      setIsAuthenticated(true);
+      setIsCheckingAuth(false);
+    };
+
+    checkAuth();
+
+    // Слушаем события изменения авторизации
+    const handleAuthChange = () => {
+      checkAuth();
+    };
+
+    window.addEventListener('authChange', handleAuthChange);
+    
+    return () => {
+      window.removeEventListener('authChange', handleAuthChange);
+    };
+  }, []);
+
+  // ✅ ВАЖНО: Получаем данные профиля ТОЛЬКО если авторизован
+  const { data: profile, isLoading: profileLoading } = useMyProfile({
+    enabled: isAuthenticated // Запрос выполняется только если авторизован
+  });
+  
   const patchMutation = usePatchProfile();
 
   // Стейты для формы профиля
@@ -46,22 +83,40 @@ export default function SidebarApp() {
     
     try {
       await patchMutation.mutateAsync(profileForm);
+      toast.success('Профиль обновлен');
     } catch (error) {
       console.error('Ошибка обновления профиля:', error);
+      toast.error('Ошибка обновления профиля');
     }
   };
 
   const handleLogout = () => {
+    // Очищаем React Query кеш
+    queryClient.clear();
+    
     // Удаляем токены
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     
-    // Уведомляем об изменении авторизации
+    // Сбрасываем форму
+    setProfileForm({
+      name: '',
+      surname: '',
+      email: '',
+      number: ''
+    });
+    
+    setIsAuthenticated(false);
+    
     window.dispatchEvent(new Event('authChange'));
     
     toast.success('Вы вышли из аккаунта');
     router.push('/');
+  };
+
+  const handleGoToLogin = () => {
+    router.push('/login');
   };
 
   const menuItems = [
@@ -75,6 +130,44 @@ export default function SidebarApp() {
     { id: 'logout', label: 'Выход', icon: LogOut },
   ];
 
+  // Если проверяется авторизация
+  if (isCheckingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="mb-6">
+            <h2 className="text-[20px] font-bold text-gray-800 mb-2">
+             Вы еще не зарегистрированы
+            </h2>
+            <p className="text-[#00162ACC] mb-6 text-[16px]">
+              Вам нужно пройти регистрацию или войти в свой аккаунт.
+            </p>
+          </div>
+          
+          <div className="space-y-3">
+            <button
+              onClick={handleGoToLogin}
+              className="w-full px-6 py-3 bg-[#0E2E5B] text-white rounded-lg hover:bg-[#092144] cursor-pointer  transition-colors font-medium"
+            >
+              Войти 
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const renderPageContent = () => {
     switch (activePage) {
       case 'profile':
@@ -82,9 +175,12 @@ export default function SidebarApp() {
           <div>
             <h1 className="text-[30px] font-bold mb-6">Моя информация</h1>
             {profileLoading ? (
-              <div>Загрузка профиля...</div>
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Загрузка профиля...</span>
+              </div>
             ) : (
-              <form onSubmit={handleProfileUpdate} className="space-y-4 max-w-md">
+              <form onSubmit={handleProfileUpdate} className="space-y-4 max-w-md flex flex-col gap-[15px]">
                 <div>
                   <label className="block text-sm font-medium mb-2">Имя</label>
                   <input 
@@ -131,7 +227,7 @@ export default function SidebarApp() {
                 </div>
                 <button 
                   type="submit"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="px-6 py-2 bg-[#0E2E5B] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                   disabled={patchMutation.isPending}
                 >
                   {patchMutation.isPending ? 'Сохранение...' : 'Сохранить'}
@@ -170,27 +266,93 @@ export default function SidebarApp() {
         <TransactionHistory/>
           </>
         );
-      case 'bonuses':
-        return (
+  case 'bonuses':
+  return (
+    <div>
+      <h1 className="text-[20px] font-[500] mb-4">Ваши бонусы 200</h1>
+        <p className="text-[14px] text-gray-500 mb-2">История</p>
+      
+      <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
+        <div className='flex item-start justify-between'>
+        <div className="flex items-center  gap-[20px]">
+          <div className="w-8 h-8 pb-[4px] rounded-full bg-green-500 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
           <div>
-            <h1 className="text-[30px] font-bold mb-6">Бонусы</h1>
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-6 text-white mb-6">
-              <p className="text-lg mb-2">Ваш баланс бонусов</p>
-              <p className="text-[36px] font-bold">{profile?.bonuses || 0} бонусов</p>
-            </div>
-            <div className="space-y-3">
-              <div className="border rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold">Начислено за покупку</p>
-                    <p className="text-sm text-gray-600">20 января 2026</p>
-                  </div>
-                  <p className="font-bold text-green-600">+250</p>
+            <p className="text-[20px] font-[500] text-[#00162A]">
+              {profile?.bonuses || 20000} сом
+            </p>
+            <p className="text-[14px] text-gray-500">20.03.2026</p>
+          </div>
+        </div>
+          <div>
+            <h4 className='text-[18px] font-[400] text-[#3AA15B]'>20 бонусов</h4>
+          </div>
+        </div>
+      </div>
+
+   <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
+        <div className='flex item-start justify-between'>
+        <div className="flex items-center gap-[20px]">
+          <div className="w-8 h-8 pb-[4px] rounded-full bg-green-500 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <p className="text-[20px] font-[500] text-[#00162A]">
+              {profile?.used_bonuses || 20000} сом
+            </p>
+            <p className="text-[12px] text-[#00162ACC] font-[500]">24.04.2026</p>
+          </div>
+        </div>
+       <div>
+            <h4 className='text-[18px] font-[400] text-[#3AA15B]'>20 бонусов</h4>
+          </div>
+      </div>
+</div>
+      <h2 className="text-[16px] font-semibold mb-3">История бонусов</h2>
+
+      {(!profile?.bonus_history || profile.bonus_history.length === 0) ? (
+  <div className="bg-transperent rounded-2xl  border border-gray-100 py-16 px-8 text-center">
+  <div className="w-24 h-24 mx-auto mb-2 rounded-full flex items-center justify-center">
+    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+      <circle cx="30" cy="30" r="28" stroke="#9CA3AF" strokeWidth="2"/>
+      <circle cx="20" cy="24" r="2.5" fill="#9CA3AF"/>
+      <circle cx="40" cy="24" r="2.5" fill="#9CA3AF"/>
+      <path d="M20 40C20 40 23 36 30 36C37 36 40 40 40 40" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round"/>
+    </svg>
+  </div>
+  <p className="text-[15px] text-gray-700 leading-relaxed">
+    К сожалению, на<br/>
+    данный момент у вас<br/>
+    нет доступных<br/>
+    бонусов.
+  </p>
+</div>
+      ) : (
+          <div className="space-y-3">
+          {profile.bonus_history.map((item, index) => (
+            <div key={index} className="bg-white rounded-[15px] border border-gray-200 p-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-[14px] font-medium text-gray-900">{item.description}</p>
+                  <p className="text-[12px] text-gray-500 mt-1">{item.date}</p>
                 </div>
+                <p className={`text-[16px] font-bold ${
+                  item.amount > 0 ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {item.amount > 0 ? '+' : ''}{item.amount}
+                </p>
               </div>
             </div>
-          </div>
-        );
+          ))}
+        </div>
+      )}
+    </div>
+  );
       case 'logout':
         return (
           <div>
@@ -205,7 +367,7 @@ export default function SidebarApp() {
               </button>
               <button 
                 onClick={() => setActivePage('profile')}
-                className="px-6 py-2 border rounded-lg hover:bg-gray-50"
+                className="px-6 py-2 border rounded-lg hover:bg-gray-50 ml-[30px]"
               >
                 Отмена
               </button>
@@ -243,7 +405,7 @@ export default function SidebarApp() {
   );
 
   return (
-    <div className="flex h-screen container relative">
+    <div className="sidebarprofile  flex h-screen container relative">
       {/* Основной контент */}
       <div className="sidebarapp  flex-1 relative">
         <div className="">

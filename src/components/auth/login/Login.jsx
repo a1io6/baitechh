@@ -207,7 +207,7 @@ const handleSubmit = async (e) => {
                 disabled={isLoading}
               />
               <p className="login-form1__terms">
-                Регистрируясь вы соглашаетесь с нашими{" "}
+                Регистрируясь вы соглашаетесь с нашими
                 <Link href="/terms" className="login-form1__terms-link">
                   условиями обслуживания
                 </Link>

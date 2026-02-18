@@ -1,16 +1,35 @@
-"use client";
+import EditProductClient from "./EditProductClient";
 
-import React, { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { useProducts } from "@/lib/products/hooks/hooks";
-import "./EditProduct.scss";
+export const dynamicParams = false;
 
-const EditProduct = () => {
-  const params = useParams();
-  const id = params.id;
-  const router = useRouter();
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://157.230.138.217:3001";
+const PRODUCTS_API_URL = `${API_BASE_URL.replace(/\/$/, "")}/products/products/`;
 
-  const { products, categories, brands, updateProduct, isInitialLoading, isLoading } = useProducts();
+export async function generateStaticParams() {
+  try {
+    const response = await fetch(PRODUCTS_API_URL, {
+      headers: { "ngrok-skip-browser-warning": "true" },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+    const products = Array.isArray(data) ? data : data?.results || [];
+
+    return products
+      .filter((product) => product?.id !== undefined && product?.id !== null)
+      .map((product) => ({ id: String(product.id) }));
+  } catch {
+    return [];
+  }
+}
+
+export default function EditProductPage() {
+  return <EditProductClient />;
+}
 
   const [formData, setFormData] = useState({
     name: "",

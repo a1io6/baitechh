@@ -71,9 +71,14 @@ export const useLogin = () => {
     onSuccess: (data) => {
       console.log('Login data:', data);
       
+      // ✅ СНАЧАЛА очищаем все старые данные
+      queryClient.clear();
+      localStorage.clear();
+      
       // Обновляем кеш пользователя
       if (data.user) {
         queryClient.setQueryData(['auth', 'user'], data.user);
+        queryClient.setQueryData(['profile', 'me'], data.user);
       }
 
       const isAdmin = data.user?.role === 'admin' || 
@@ -82,12 +87,29 @@ export const useLogin = () => {
                       data.user?.is_superuser;
 
       if (isAdmin) {
-        localStorage.setItem('adminToken', data.access);
+        // ✅ Для админа используем access_token (единообразие)
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('isAdmin', 'true');
+        
         toast.success('Добро пожаловать в админ панель!');
+        
+        // Уведомляем об изменении авторизации
+        window.dispatchEvent(new Event('authChange'));
+        
         router.push('/admin');
       } else {
-        localStorage.setItem('accessToken', data.access);
+        // ✅ Для обычного пользователя тоже access_token
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
         toast.success('Вход выполнен успешно!');
+        
+        // Уведомляем об изменении авторизации
+        window.dispatchEvent(new Event('authChange'));
+        
         router.push('/');
       }
     },
@@ -109,17 +131,28 @@ export const useLogout = () => {
     mutationKey: ['logout'],
     mutationFn: authService.logout,
     onSuccess: () => {
-      // Очищаем кеш
+      // ✅ Полная очистка
       queryClient.clear();
+      localStorage.clear();
+      Cookies.remove('access');
+      Cookies.remove('refresh');
+      
+      // Уведомляем об изменении авторизации
+      window.dispatchEvent(new Event('authChange'));
       
       toast.success('Вы вышли из системы');
-      router.push('/login');
+      router.push('/');
     },
     onError: (error) => {
       // Даже при ошибке logout делаем локальный выход
+      queryClient.clear();
+      localStorage.clear();
       Cookies.remove('access');
       Cookies.remove('refresh');
-      queryClient.clear();
+      
+      // Уведомляем об изменении авторизации
+      window.dispatchEvent(new Event('authChange'));
+      
       router.push('/login');
     }
   });
@@ -129,7 +162,7 @@ export const useLogout = () => {
 export const usePasswordResetRequest = () => {
   return useMutation({
     mutationKey: ['password-reset-request'],
-    mutationFn: (email) => authService.passwordResetRequest(email), // ✅ правильно
+    mutationFn: (email) => authService.passwordResetRequest(email),
     onSuccess: () => {
       toast.success('Код для сброса пароля отправлен на ваш email');
     },
@@ -187,12 +220,14 @@ export const useAllProfiles = () => {
   });
 };
 
-// Получить профиль текущего пользователя
-export const useMyProfile = () => {
+// ✅ Получить профиль текущего пользователя
+export const useMyProfile = (options = {}) => {
   return useQuery({
     queryKey: ['profile', 'me'],
     queryFn: authService.getMyProfile,
+    enabled: options.enabled !== false, // ✅ Поддержка enabled
     retry: false,
+    staleTime: 0,
   });
 };
 

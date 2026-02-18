@@ -1,5 +1,9 @@
 import React from 'react';
 import './AboutCompany.scss';
+import img1 from '../../../assets/png/reklama.png';
+import Image from 'next/image';
+import Link from 'next/link';
+
 
 const AboutCompany = () => {
   const specializations = [
@@ -17,7 +21,7 @@ const AboutCompany = () => {
         
         {/* Навигация */}
         <nav className="breadcrumbs">
-          <a href="/">Главная</a>
+          <Link href="/">Главная</Link>
           <span>/</span>
           <span className="current">О компании</span>
         </nav>
@@ -38,8 +42,7 @@ const AboutCompany = () => {
         <div className="media-section">
           <div className="image-container">
             <div className="image-placeholder">
-              {/* <img src="/path-to-your-image.jpg" alt="Наша команда" /> */}
-              <span style={{color: '#888'}}>Фото 519x288</span>
+              <Image src={img1}  alt="Наша команда" className='w-full' />
             </div>
           </div>
 
