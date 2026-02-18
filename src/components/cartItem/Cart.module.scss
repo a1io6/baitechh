@@ -2,12 +2,21 @@
   padding: 40px 0;
   background: #f8f9fa;
   min-height: 100vh;
+
+  @media (max-width: 768px) {
+    padding: 20px 10px;
+  }
 }
 
 .title {
   font-size: 18px;
   font-weight: 500;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
 }
 
 // ПУСТАЯ КОРЗИНА
@@ -23,10 +32,14 @@
 
   h3 { font-size: 22px; color: #333; }
   p { color: #888; margin-bottom: 10px; }
+
+  @media (max-width: 768px) {
+    padding: 60px 10px;
+    h3 { font-size: 18px; }
+  }
 }
 
 .card {
-    margin-left: 30px;
   display: flex;
   background: white;
   border: 1px solid #e0e0e0;
@@ -35,10 +48,17 @@
   margin-bottom: 15px;
   position: relative;
   gap: 20px;
-   width: 1000px !important;
-   @media (max-width: 1180px) {
-     width: 100% !important;
-   }
+  width: 1000px;
+
+  @media (max-width: 1180px) {
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;
+  }
 
   .indexNumber {
     position: absolute;
@@ -71,10 +91,9 @@
 
   img { width: 100%; object-fit: contain; }
 
-  .dots {
-    display: flex; gap: 5px; justify-content: center; margin-top: 10px;
-    span { width: 6px; height: 6px; background: #ddd; border-radius: 50%; }
-    span.active { background: #bbb; }
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
   }
 }
 
@@ -82,7 +101,9 @@
   flex: 1;
 
   .header {
-    display: flex; justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
+
     .article { font-size: 12px; color: #aaa; }
     .deleteBtn { background: none; border: none; color: #aaa; cursor: pointer; &:hover { color: red; } }
   }
@@ -93,26 +114,73 @@
   .priceRow {
     .bonus { color: #4caf50; font-size: 13px; margin-bottom: 4px; }
     .price { font-size: 20px; font-weight: 700; color: #2e7d32; }
+
+    @media (max-width: 768px) {
+      display: flex;
+      justify-content: space-between;
+      .price { font-size: 18px; }
+      .bonus { font-size: 12px; }
+    }
   }
 }
 
 .footer {
-  display: flex; justify-content: space-between; align-items: center; margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 
   .counter {
-    display: flex; align-items: center; border: 1px solid #ddd; border-radius: 20px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+
     button { padding: 5px 10px; border: none; background: none; cursor: pointer; }
     span { padding: 0 15px; font-weight: 600; }
+
+    @media (max-width: 480px) {
+      span { padding: 0 8px; }
+      button { padding: 4px 6px; }
+    }
   }
-  
+
   .checkbox { width: 20px; height: 20px; cursor: pointer; }
 }
 
 // КНОПКИ
 .btnPrimary {
-  background: #003060; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer;
-  font-weight: 600; &:hover { background: #004080; }
+  background: #003060; 
+  color: white; 
+  border: none; 
+  padding: 12px 25px; 
+  border-radius: 8px; 
+  cursor: pointer;
+  font-weight: 600; 
+  &:hover { background: #004080; }
+
+  @media (max-width: 480px) {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
 }
+
 .btnOutline {
-  background: none; border: 1px solid #003060; color: #003060; padding: 10px 20px; border-radius: 8px; cursor: pointer;
+  background: none; 
+  border: 1px solid #003060; 
+  color: #003060; 
+  padding: 10px 20px; 
+  border-radius: 8px; 
+  cursor: pointer;
+
+  @media (max-width: 480px) {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
 }

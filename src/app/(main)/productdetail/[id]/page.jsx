@@ -1,7 +1,7 @@
 import ProductDetail from '@/components/product/ProductDetail'
 import React from 'react'
 
-const PRODUCTS_API_URL = 'http://157.230.138.217:3001/products/products/'
+const PRODUCTS_API_URL = 'https://baitech.kg/products/products/'
 
 export const dynamicParams = false
 

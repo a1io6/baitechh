@@ -5,13 +5,26 @@ import { LuMinus } from "react-icons/lu";
 import img from '../../../../assets/svg/Vector (43).svg';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
+import { useCreateCartItem } from '@/lib/cart/hooks/hooks';
+
 function Card({product}) {
+  const { t } = useTranslation();
+  const { mutate: addToCart, isPending } = useCreateCartItem();
   const imageSrc = product?.existing_images?.[0]?.image;
+  const handleAddToCart = () => {
+  if (!product?.id) return;
+
+  addToCart({
+    product_id: product.id,
+    quantity: 1,
+  });
+};
   return (
     <div>
         <div className='product-card'>
                 <div className="product-card__badge" style={{backgroundColor:`${product.is_available ? "green" : "red"}`}}>
-                  {product.is_available ? 'В наличии' : 'Нет в наличии'}
+                  {product.is_available ? t('card.inStock') : t('card.outOfStock')}
                 </div>  
                 
       <Link href={`/productdetail/${product.id}`}>
@@ -19,7 +32,7 @@ function Card({product}) {
  {imageSrc ? (
   <Image
     src={imageSrc}
-    alt={product.name || 'product'}
+    alt={'product'}
     width={300}
     height={300}
   />
@@ -34,20 +47,20 @@ function Card({product}) {
 
                 </div>
       </Link>            
-                <h3 className="product-card__article">Артикул:{product.article}</h3>
+                <h3 className="product-card__article">{t('card.article')}:{product.article}</h3>
                 <h3 className="product-card__title mt-[3px]">{product.name?.slice(0, 80)}{product.name?.length > 80 ? '...' : ''}</h3>
                 
-                <ul className="product-card__features mt-[5px] h-[60px]">
+                <ul className="product-card__features mt-[2px]">
                    {product.description?.slice(0, 85)}{product.description?.length > 85 ? '...' : ''}
                 </ul>
                 
                 <div className="product-card__footer">
                   <div className="product-card__price">
-                     <span className='currency'>{product.bonus || 0} бонусов</span>
-                    <span className="amount">{product.price.toLocaleString()} сом</span>
+                     <span className='currency'>{product.bonus || 0} {t('card.bonuses')}</span>
+                    <span className="amount">{product.price.toLocaleString()} {t('card.currency')}</span>
                   </div>
                   
-                  <button className="product-card__cart" aria-label="Добавить в корзину">
+                  <button className="product-card__cart" aria-label={t('card.addToCart')}   onClick={handleAddToCart} disabled={isPending}>
                    <Image src={img} alt="" width={20} height={20}/>
                   </button>
                 </div>

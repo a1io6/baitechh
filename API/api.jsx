@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://157.230.138.217:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://baitech.kg";
 export const WSS_URL = 'baitech';
 
 export const $api = axios.create({
@@ -9,7 +9,7 @@ export const $api = axios.create({
 
 $api.interceptors.request.use((config) => {
   const token = typeof window !== "undefined" 
-    ? localStorage.getItem("access_token") // ✅ Исправлено на access_token
+    ? localStorage.getItem("access_token")
     : null;
 
   if (token) {
