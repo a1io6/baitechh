@@ -3,7 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 @import "tailwindcss";
-*{
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -17,43 +18,79 @@
 
 body {
   background: rgba(245, 247, 250, 1);
-   font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
-button{
+
+button {
   font-family: "Montserrat", sans-serif;
   cursor: pointer;
   outline: none;
 }
+
 input {
   font-family: "Montserrat", sans-serif;
   outline: none;
 }
-.sidebarapp{
+
+.sidebarapp {
   overflow: auto !important;
 }
+
 .sidebarapp::-webkit-scrollbar {
   display: none;
   font-family: "Montserrat", sans-serif;
 }
-.loader {
-    width: 48px;
-    height: 48px;
-    display: flex; 
-    justify-content: center !important; 
-    align-items: center ; 
-    margin: 0 auto;
-    border: 5px solid #0c64c8;
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-    }
 
-    @keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-    } 
+.loader {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center !important;
+  align-items: center;
+  margin: 0 auto;
+  border: 5px solid #0c64c8;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}

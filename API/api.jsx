@@ -12,8 +12,10 @@ $api.interceptors.request.use((config) => {
     ? localStorage.getItem("access_token")
     : null;
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`; 
+  if (token || userToken) {
+    config.headers.Authorization = `Bearer ${token || userToken}`; 
+    
+    // console.log("Запрос ушел с заголовком:", config.headers.Authorization);
   } else {
     console.warn("Токен не найден в localStorage!");
   }
