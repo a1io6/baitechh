@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = 'https://baitech.kg/';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://baitech.kg";
 export const WSS_URL = 'baitech';
 
 export const $api = axios.create({
@@ -8,8 +8,9 @@ export const $api = axios.create({
 });
 
 $api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("adminToken"); 
-  const userToken = localStorage.getItem("access_token");
+  const token = typeof window !== "undefined" 
+    ? localStorage.getItem("access_token")
+    : null;
 
   if (token || userToken) {
     config.headers.Authorization = `Bearer ${token || userToken}`; 

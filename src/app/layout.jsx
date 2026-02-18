@@ -15,11 +15,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Baitech",
-  description: "Baitech интернет магазин компьютерной техники и комплектующих",
-  icons: {
-    icon: "../../assets/svg/logo.svg",
-    apple: "../../assets//svg/logo.svg",
+  metadataBase: new URL("https://baitech.kg"),
+  title: {
+    default: "Baitech — Разработка сайтов в Бишкеке",
+    template: "%s | Baitech",
+  },
+  description:
+    "Baitech — разработка сайтов, веб-приложений и IT-решений в Бишкеке.",
+  keywords: ["разработка сайтов Бишкек", "создание сайта", "baitech"],
+  openGraph: {
+    title: "Baitech — IT решения",
+    description:
+      "Профессиональная разработка сайтов и веб-приложений.",
+    url: "https://baitech.kg",
+    siteName: "Baitech",
+    locale: "ru_RU",
+    type: "website",
   },
 };
 

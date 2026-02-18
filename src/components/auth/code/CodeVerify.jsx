@@ -193,20 +193,15 @@ const handleSubmit = async (e) => {
   }
 };
   const handleResendCode = async () => {
-    console.log('📧 Email:', email);
     
     if (!email) {
-      console.log('❌ Email отсутствует!');
       toast.error('Email не найден');
       return;
     }
 
     try {
-      console.log('📤 Отправляю запрос на повторную отправку кода...');
-      await resendMutation.mutateAsync({ email });
-      console.log('✅ Код успешно отправлен повторно');
       
-      toast.success('Код отправлен повторно на ' + email);
+      toast.success('Код отпраявлен повторно на ' + email);
       
       // Очищаем код для нового ввода
       setCode(['', '', '', '']);

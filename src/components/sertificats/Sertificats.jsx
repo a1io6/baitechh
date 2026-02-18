@@ -1,28 +1,29 @@
+"use client";
+
 import React from 'react';
 import './Certificates.scss';
+import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 
 const Certificates = () => {
-  const certificateCards = [
-    { title: "Сертификаты соответствия на поставляемое оборудование" },
-    { title: "Допуски на монтаж и обслуживание систем безопасности" },
-    { title: "Обученный и сертифицированный технический персонал" },
-    { title: "Соблюдение норм пожарной и технической безопасности" },
-    { title: "Официальные гарантийные обязательства от производителей" }
-  ];
+  const { t } = useTranslation();
+  const certificateCards = t('certificates.cards', { returnObjects: true });
 
   return (
     <section className="certificates-page">
       <div className="container-1220">
         <nav className="breadcrumbs">
-          <a href="/">Главная</a> <span className="sep">/</span> <span className="active">Сертификаты и лицензии</span>
+          <Link href="/">{t('certificates.breadcrumbs.home')}</Link> 
+          <span className="sep">/</span> 
+          <span className="active">{t('certificates.breadcrumbs.current')}</span>
         </nav>
 
-        <h1 className="title-h1">Сертификаты и лицензии</h1>
+        <h1 className="title-h1">{t('certificates.title')}</h1>
         <p className="desc-main">
-          Мы работаем в соответствии с действующими стандартами и требованиями в сфере систем безопасности...
+          {t('certificates.description')}
         </p>
 
-        <h2 className="title-h2">Наша компания имеет:</h2>
+        <h2 className="title-h2">{t('certificates.subtitle')}</h2>
 
         <div className="cert-grid">
           {certificateCards.map((card, index) => (
@@ -35,8 +36,9 @@ const Certificates = () => {
           ))}
 
           <div className="cert-footer-text">
-            <p>Мы регулярно проходим обучение и техническую аттестацию у производителей...</p>
-            <p>По запросу клиента мы предоставляем копии сертификатов и лицензий.</p>
+            {t('certificates.footer', { returnObjects: true }).map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
           </div>
         </div>
       </div>

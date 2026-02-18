@@ -3,52 +3,98 @@ import Under from '@/components/ui/under/Under';
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { $api } from '../../../../API/api';
+import toast from 'react-hot-toast';
+import { Eye, EyeOff } from 'lucide-react';
 
 const ChangePassword = () => {
-  const [step, setStep] = useState(1); // 1-Email, 2-OTP, 3-New Password
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [passwords, setPasswords] = useState({
     new_password: '',
     confirm_password: ''
   });
+  const [showPassword, setShowPassword] = useState({
+    new_password: false,
+    confirm_password: false
+  });
 
   // 1. Запрос кода (OTP)
   const requestMutation = useMutation({
     mutationFn: (data) => $api.post('/api/password-reset/request/', data),
-    onSuccess: () => setStep(2),
-    onError: (error) => alert(error.response?.data?.detail || 'Ошибка запроса')
+    onSuccess: () => {
+      setStep(2);
+      toast.success('Код отправлен на вашу почту');
+    },
+    onError: (error) => {
+      const message = error.response?.data?.detail || 
+                     error.response?.data?.message || 
+                     'Ошибка запроса';
+      toast.error(message);
+    }
   });
-
+  
   // 2. Верификация кода
   const verifyMutation = useMutation({
     mutationFn: (data) => $api.post('/api/password-reset/verify/', data),
-    onSuccess: () => setStep(3), // Если код верный, идем к паролю
-    onError: (error) => alert(error.response?.data?.detail || 'Неверный код')
+    onSuccess: () => {
+      setStep(3);
+      toast.success('Код подтвержден');
+    },
+    onError: (error) => {
+      const message = error.response?.data?.detail || 
+                     error.response?.data?.message || 
+                     'Неверный код';
+      toast.error(message);
+    }
   });
 
   // 3. Установка нового пароля
   const completeMutation = useMutation({
     mutationFn: (data) => $api.post('/api/password-reset/complete/', data),
     onSuccess: () => {
-      alert('Пароль успешно изменен!');
-      // Здесь можно сделать роут на логин: router.push('/login')
+      toast.success('Пароль успешно изменен!');
+      setStep(1);
+      setEmail('');
+      setOtp('');
+      setPasswords({ new_password: '', confirm_password: '' });
     },
-    onError: (error) => alert(error.response?.data?.detail || 'Ошибка при сохранении пароля')
+    onError: (error) => {
+      const message = error.response?.data?.detail || 
+                     error.response?.data?.message || 
+                     'Ошибка при сохранении пароля';
+      toast.error(message);
+    }
   });
 
   const handlePasswordsChange = (e) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };
 
+  const togglePasswordVisibility = (field) => {
+    setShowPassword({ ...showPassword, [field]: !showPassword[field] });
+  };
+
   const onFinalSubmit = (e) => {
     e.preventDefault();
-    if (passwords.new_password !== passwords.confirm_password) {
-      alert("Пароли не совпадают");
+    
+    if (passwords.new_password.length < 8) {
+      toast.error('Пароль должен содержать минимум 8 символов');
       return;
     }
-    // Отправляем пароли (обычно бэкенд также требует email или токен в этом запросе)
-    completeMutation.mutate(passwords);
+    
+    if (passwords.new_password !== passwords.confirm_password) {
+      toast.error('Пароли не совпадают');
+      return;
+    }
+    
+    // ✅ Отправляем ВСЕ поля включая confirm_password
+    completeMutation.mutate({
+      email: email,
+      otp: otp,
+      new_password: passwords.new_password,
+      confirm_password: passwords.confirm_password
+    });
   };
 
   return (
@@ -64,12 +110,19 @@ const ChangePassword = () => {
             <div className="flex flex-col gap-2">
               <label className="font-medium text-[#1f2937]">* Электронная почта</label>
               <input 
-                type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+                type="email" 
+                required 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="user@example.com"
                 className="w-full h-[48px] px-5 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
               />
             </div>
-            <button disabled={requestMutation.isPending} className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400">
+            <button 
+              type="submit"
+              disabled={requestMutation.isPending} 
+              className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400"
+            >
               {requestMutation.isPending ? 'Отправка...' : 'Получить код'}
             </button>
           </form>
@@ -82,16 +135,29 @@ const ChangePassword = () => {
               <p className="text-[#122D52] font-medium">Код отправлен на {email}</p>
               <label className="font-medium text-[#1f2937]">* Введите код подтверждения</label>
               <input 
-                type="text" required value={otp} onChange={(e) => setOtp(e.target.value)}
+                type="text" 
+                required 
+                value={otp} 
+                onChange={(e) => setOtp(e.target.value)}
                 placeholder="Код из письма"
                 className="w-full h-[48px] px-5 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
               />
             </div>
             <div className="flex gap-4">
-              <button disabled={verifyMutation.isPending} className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400">
+              <button 
+                type="submit"
+                disabled={verifyMutation.isPending} 
+                className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400"
+              >
                 {verifyMutation.isPending ? 'Проверка...' : 'Подтвердить код'}
               </button>
-              <button type="button" onClick={() => setStep(1)} className="text-[#122D52] underline text-sm">Изменить почту</button>
+              <button 
+                type="button" 
+                onClick={() => setStep(1)} 
+                className="text-[#122D52] underline text-sm"
+              >
+                Изменить почту
+              </button>
             </div>
           </form>
         )}
@@ -102,20 +168,68 @@ const ChangePassword = () => {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <label className="font-medium text-[#1f2937]">* Новый пароль</label>
-                <input 
-                  type="password" name="new_password" required value={passwords.new_password} onChange={handlePasswordsChange}
-                  className="w-full h-[48px] px-5 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
-                />
+                <div className="relative">
+                  <input 
+                    type={showPassword.new_password ? "text" : "password"}
+                    name="new_password" 
+                    required 
+                    value={passwords.new_password} 
+                    onChange={handlePasswordsChange}
+                    className="w-full h-[48px] px-5 pr-12 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
+                    placeholder="Минимум 8 символов"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility('new_password')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword.new_password ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+                {passwords.new_password && passwords.new_password.length < 8 && (
+                  <p className="text-xs text-red-500">Пароль должен содержать минимум 8 символов</p>
+                )}
               </div>
+              
               <div className="flex flex-col gap-2">
                 <label className="font-medium text-[#1f2937]">* Подтвердите пароль</label>
-                <input 
-                  type="password" name="confirm_password" required value={passwords.confirm_password} onChange={handlePasswordsChange}
-                  className="w-full h-[48px] px-5 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
-                />
+                <div className="relative">
+                  <input 
+                    type={showPassword.confirm_password ? "text" : "password"}
+                    name="confirm_password" 
+                    required 
+                    value={passwords.confirm_password} 
+                    onChange={handlePasswordsChange}
+                    className="w-full h-[48px] px-5 pr-12 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
+                    placeholder="Повторите пароль"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility('confirm_password')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword.confirm_password ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+                {passwords.confirm_password && passwords.new_password !== passwords.confirm_password && (
+                  <p className="text-xs text-red-500">Пароли не совпадают</p>
+                )}
               </div>
             </div>
-            <button disabled={completeMutation.isPending} className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400">
+            
+            <button 
+              type="submit"
+              disabled={completeMutation.isPending} 
+              className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400"
+            >
               {completeMutation.isPending ? 'Сохранение...' : 'Сбросить пароль'}
             </button>
           </form>

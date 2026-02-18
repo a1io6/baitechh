@@ -5,7 +5,10 @@ import { cart } from '../api/api'
 export const useCart = () => {
   return useQuery({
     queryKey: ['cart'],
-    queryFn: cart.getCartItems,
+    queryFn: async () => {
+      const data = await cart.getCartItems();
+      return data.results;
+    },
   })
 }
 
@@ -27,8 +30,20 @@ export const useUpdateCartItem = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ product_id, quantity }) =>
-      cart.updateCartItem(product_id, quantity),
+    mutationFn: ({ id, product_id, quantity }) =>
+      cart.updateCartItem(id, product_id, quantity),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] })
+    },
+  })
+}
+
+// Удаление товара
+export const useDeleteCartItem = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id) => cart.deleteCartItem(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
