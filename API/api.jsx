@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://157.230.138.217:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://baitech.kg";
 export const WSS_URL = 'baitech';
 
 export const $api = axios.create({

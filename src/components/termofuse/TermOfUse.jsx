@@ -1,5 +1,6 @@
 import React from 'react';
 import './TermsOfUse.scss';
+import { Link } from 'lucide-react';
 
 const TermsOfUse = () => {
   return (
@@ -8,7 +9,7 @@ const TermsOfUse = () => {
         
         {/* Навигация */}
         <nav className="breadcrumbs">
-          <a href="/">Главная</a>
+          <Link href="/">Главная</Link>
           <span className="sep">/</span>
           <span className="active">Условия использования сайта</span>
         </nav>

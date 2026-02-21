@@ -14,17 +14,14 @@ const SolutionDetail = () => {
     <div className="w-full min-h-screen bg-[#F5F7FA] py-0 lg:py-[0px] container">
       <div className="w-full max-w-[1440px] mx-auto px-4 lg:px-[0px]">
         
-        {/* Башкы заголовок */}
         <h1 className="font-medium text-[20px] lg:text-[24px] text-[#1f2937] mb-8 lg:mb-[40px]">
           {currentSolution.title}
         </h1>
 
-        {/* Блоктордун ортосундагы аралыкты (gap) 31px кылдык */}
         <div className="flex flex-col gap-[31px]">
           {currentSolution.blocks.map((block, index) => (
             <div key={block.id} className="flex flex-col">
               
-              {/* СҮРӨТ */}
               <div className="w-full lg:w-[854px] aspect-[854/481] lg:h-[481px] rounded-[20px] overflow-hidden bg-[#d9d6d4] mb-2 lg:mb-[10px] flex-shrink-0">
                 <Image
                   src={block.image}
@@ -42,7 +39,6 @@ const SolutionDetail = () => {
                   {block.subtitle}
                 </h2>
 
-                {/* Описание */}
                 <p className=" font-medium text-[16px] lg:text-[20px] leading-[120%] text-[#00162ACC] break-words">
                   {index === 0 ? (
                     <>

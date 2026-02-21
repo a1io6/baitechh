@@ -1,5 +1,8 @@
+'use client'
 import React from 'react';
 import './Certificates.scss';
+import { useCertificat } from '@/lib/sertificats/hooks/hooks';
+import Link from 'next/link';
 
 const Certificates = () => {
   const certificateCards = [
@@ -9,12 +12,14 @@ const Certificates = () => {
     { title: "Соблюдение норм пожарной и технической безопасности" },
     { title: "Официальные гарантийные обязательства от производителей" }
   ];
-
+  const {data, loading} = useCertificat()
+  console.log(data);
+  
   return (
     <section className="certificates-page">
       <div className="container-1220">
         <nav className="breadcrumbs">
-          <a href="/">Главная</a> <span className="sep">/</span> <span className="active">Сертификаты и лицензии</span>
+          <Link href="/">Главная</Link> <span className="sep">/</span> <span className="active">Сертификаты и лицензии</span>
         </nav>
 
         <h1 className="title-h1">Сертификаты и лицензии</h1>
