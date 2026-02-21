@@ -9,11 +9,13 @@ export const $api = axios.create({
 
 $api.interceptors.request.use((config) => {
   const token = typeof window !== "undefined" 
-    ? localStorage.getItem("access_token") // ✅ Исправлено на access_token
+    ? localStorage.getItem("access_token")
     : null;
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`; 
+  if (token || userToken) {
+    config.headers.Authorization = `Bearer ${token || userToken}`; 
+    
+    // console.log("Запрос ушел с заголовком:", config.headers.Authorization);
   } else {
     console.warn("Токен не найден в localStorage!");
   }

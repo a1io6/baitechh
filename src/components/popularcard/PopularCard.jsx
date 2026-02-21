@@ -16,7 +16,7 @@ export function PopularCard({ productId }) {
   // Загрузка - показываем скелетон
   if (isLoading) {
     return (
-      <div className='recommendations'>
+      <div className='recommendations1'>
         <h2 className="recommendations__title mt-[40px]">Похожие товары</h2>
         <div className="recommendations-carousel mt-[-30px]">
           <div className="flex gap-5">
@@ -47,21 +47,21 @@ export function PopularCard({ productId }) {
         <Swiper
           modules={[Pagination]}
           spaceBetween={20}
-          slidesPerView={1}
+          slidesPerView={2}
           pagination={false}
           loop={false}
           grabCursor={true}
           breakpoints={{
             360: {
-              slidesPerView: 1.5,
-              spaceBetween: 15
+              slidesPerView: 2,
+              spaceBetween: 5
             },
             640: {
-              slidesPerView: 2.5,
+              slidesPerView: 2.2,
               spaceBetween: 15
             },
             768: {
-              slidesPerView: 2.5,
+              slidesPerView: 3.2,
               spaceBetween: 18
             },
             1024: {
@@ -69,7 +69,7 @@ export function PopularCard({ productId }) {
               spaceBetween: 20
             },
             1200: {
-              slidesPerView: 3.2,
+              slidesPerView: 4,
               spaceBetween: 20
             }
           }}

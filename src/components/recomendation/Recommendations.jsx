@@ -46,21 +46,21 @@ export function Recommendations() {
         <Swiper
           modules={[Pagination]}
           spaceBetween={20}
-          slidesPerView={1}
+          slidesPerView={2}
           pagination={false}
           loop={false}
           grabCursor={true}
           breakpoints={{
-            360: {
-              slidesPerView: 1.5,
+            380: {
+              slidesPerView: 2.2,
               spaceBetween: 15
             },
             640: {
-              slidesPerView: 2.5,
+              slidesPerView: 2.2,
               spaceBetween: 15
             },
             768: {
-              slidesPerView: 2.5,
+              slidesPerView: 3.2,
               spaceBetween: 18
             },
             1024: {

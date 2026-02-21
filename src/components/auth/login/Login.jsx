@@ -53,7 +53,7 @@ const handleSubmit = async (e) => {
           localStorage.setItem('adminRefreshToken', response.refresh);
           console.log('✅ Admin refresh токен сохранен');
         }
-        toast.success('Добро пожаловать в админ панель!');
+        toast.success('Добро пожаловать');
         router.push('/camera');
       } else {
         // Для обычного пользователя
@@ -79,7 +79,6 @@ const handleSubmit = async (e) => {
       console.error('Login error:', error);
     }
   } else {
-    // Регистрация
     if (!acceptedTerms) {
       toast.error('Необходимо принять условия обслуживания');
       return;
@@ -190,6 +189,7 @@ const handleSubmit = async (e) => {
               {error?.response?.data?.message || 
                error?.response?.data?.detail ||
                error?.response?.data?.email ||
+               error?.response?.data?.number ||
                error?.response?.data?.non_field_errors  ||
                (type === "login" ? 'Ошибка входа' : 'Ошибка регистрации')}
             </div>

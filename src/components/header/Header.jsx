@@ -11,6 +11,7 @@ import ModalAuth from '../ui/modalauth/ModalAuth'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
+import { useCart, useCreateCartItem } from '@/lib/cart/hooks/hooks'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,6 +23,7 @@ export default function Header() {
   const contactsRef = useRef(null)
   const router = useRouter()
   const { t, i18n } = useTranslation()
+  const {data: items = []} = useCart();
 
   useEffect(() => {
     const checkAuth = () => {
@@ -191,7 +193,14 @@ export default function Header() {
             )}
           </div>
           <Link href="/cart">
+          <div className='relative'>
             <HiOutlineShoppingCart />
+      {items.length > 0 && (
+  <span className='absolute top-[-10px] right-[-10px] text-[14px] py-[1px] px-[4px] rounded-full bg-red-500 text-white'>
+    {items.length}
+  </span>
+)}
+          </div>
           </Link>
           <div className="relative">
             <FiUser onClick={handleUserClick} />

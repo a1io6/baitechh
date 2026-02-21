@@ -2,12 +2,24 @@
   padding: 40px 0;
   background: #f8f9fa;
   min-height: 100vh;
+
+  @media (max-width: 1200px) {
+    padding: 20px 20px;
+  }
+  @media (max-width: 768px) {
+    padding: 20px 15px;
+  }
 }
 
 .title {
   font-size: 18px;
   font-weight: 500;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
 }
 
 // ПУСТАЯ КОРЗИНА
@@ -23,6 +35,12 @@
 
   h3 { font-size: 22px; color: #333; }
   p { color: #888; margin-bottom: 10px; }
+
+  @media (max-width: 768px) {
+    padding: 60px 10px;
+    h3 { font-size: 18px; }
+    p { font-size: 14px; }
+  }
 }
 
 // КАРТОЧКА ТОВАРА
@@ -35,6 +53,12 @@
   margin-bottom: 15px;
   position: relative;
   gap: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 15px;
+    gap: 10px;
+  }
 
   .indexNumber {
     position: absolute;
@@ -52,6 +76,11 @@
   position: relative;
   text-align: center;
 
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+  }
+
   .badge {
     position: absolute;
     top: 0; left: 0;
@@ -63,12 +92,6 @@
   }
 
   img { width: 100%; object-fit: contain; }
-
-  .dots {
-    display: flex; gap: 5px; justify-content: center; margin-top: 10px;
-    span { width: 6px; height: 6px; background: #ddd; border-radius: 50%; }
-    span.active { background: #bbb; }
-  }
 }
 
 .infoBlock {
@@ -86,24 +109,52 @@
   .priceRow {
     .bonus { color: #4caf50; font-size: 13px; margin-bottom: 4px; }
     .price { font-size: 20px; font-weight: 700; color: #2e7d32; }
+
+    @media (max-width: 768px) {
+      display: flex;
+      justify-content: space-between;
+      .price { font-size: 18px; }
+      .bonus { font-size: 12px; }
+    }
   }
 }
-.cartContent{
-    display: flex;
-    justify-content: space-between;
+
+.cartContent {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  @media (max-width: 1024px) {
+    flex-direction: column-reverse;;
+    gap: 15px;
+  }
 }
-.summary{
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
+
 .footer {
   display: flex; justify-content: space-between; align-items: center; margin-top: 15px;
 
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
   .counter {
     display: flex; align-items: center; border: 1px solid #ddd; border-radius: 20px;
+
     button { padding: 5px 10px; border: none; background: none; cursor: pointer; }
     span { padding: 0 15px; font-weight: 600; }
+
+    @media (max-width: 480px) {
+      span { padding: 0 8px; }
+      button { padding: 4px 6px; }
+    }
   }
   
   .checkbox { width: 20px; height: 20px; cursor: pointer; }
@@ -113,7 +164,18 @@
 .btnPrimary {
   background: #003060; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer;
   font-weight: 600; &:hover { background: #004080; }
+
+  @media (max-width: 480px) {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
 }
+
 .btnOutline {
   background: none; border: 1px solid #003060; color: #003060; padding: 10px 20px; border-radius: 8px; cursor: pointer;
+
+  @media (max-width: 480px) {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
 }

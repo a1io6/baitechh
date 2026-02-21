@@ -69,5 +69,141 @@
       "returns": "Returns"
     },
     "map": "Map"
-  }
+  },
+    "aboutCompany": {
+      "breadcrumbs": {
+        "home": "Home",
+        "current": "About Company"
+      },
+      "title": "About Company",
+      "intro": "Our company is a team of professionals in the field of security systems and smart technologies, which has been successfully implementing projects of various complexity for private, commercial and government facilities for over 10 years.",
+      "specializationTitle": "We specialize in design, supply, installation and maintenance of:",
+      "specializations": [
+        "video surveillance systems",
+        "security and fire alarm systems",
+        "access control systems (ACS)",
+        "turnstiles and barriers",
+        "smart locks and Smart Home solutions",
+        "interactive and touch panels"
+      ],
+      "goalTitle": "Our Goal",
+      "goalText": "Our goal is to create safe, smart and efficient spaces using modern technologies and practical experience.",
+      "footer": [
+        "The company works directly with trusted manufacturers and factories, including those from China, which allows us to offer competitive prices, original equipment and flexible cooperation terms. Dealer conditions are available for corporate clients and partners.",
+        "Our team consists of more than 20 specialists: engineers, designers, technical department, sales department, marketing and accounting. This approach allows us to support the client at all stages — from consultation and design to launch and service maintenance.",
+        "We value quality, reliability and responsibility, so we implement each project taking into account safety standards, technical requirements and client objectives."
+      ],
+      "imageAlt": "Our team"
+    },
+    "privacy": {
+      "breadcrumbs": {
+        "home": "Home",
+        "current": "Privacy Policy"
+      },
+      "title": "Privacy Policy",
+      "intro": "By providing your data on this website, you agree to its processing.",
+      "subHeading": "We collect and use personal data (name, phone, email and other information provided by you) exclusively for:",
+      "list": [
+        "contacting you,",
+        "processing requests,",
+        "providing information about our products and services."
+      ],
+      "footer": [
+        "Your data is not transferred to third parties without legal grounds and is protected in accordance with legal requirements.",
+        "The website may use cookies for proper operation and to improve user experience.",
+        "You can request changes or deletion of your data at any time by contacting us through the contacts provided on the website."
+      ]
+    },
+     "termsOfUse": {
+      "breadcrumbs": {
+        "home": "Home",
+        "current": "Terms of Use"
+      },
+      "title": "Terms of Use",
+      "intro": "By using this website, you agree to these terms. \nAll information on the website is for informational purposes only and does not constitute a public offer, unless otherwise specified.",
+      "administration": {
+        "title": "The website administration reserves the right to:",
+        "list": [
+          "• change the content of the website without prior notice;",
+          "• update prices, descriptions of products and services;",
+          "• restrict access to the website if necessary."
+        ]
+      },
+      "users": {
+        "title": "Website users agree to:",
+        "list": [
+          "• provide accurate information when filling out forms;",
+          "• not disrupt the website's functionality;",
+          "• not use website materials without the copyright holder's permission."
+        ]
+      },
+      "footer": [
+        "All website materials (texts, images, logos) are protected by copyright law. Copying and distribution without the copyright holder's consent is prohibited.",
+        "The website administration is not responsible for possible interruptions in the website's operation and for the actions of third parties."
+      ]
+    },
+      "brandsPage": {
+      "breadcrumbs": {
+        "home": "Home",
+        "current": "Our Manufacturers and Brands"
+      },
+      "title": "Our Manufacturers and Brands",
+      "description": "In our work, we use equipment only from trusted and reliable manufacturers who have established themselves in the international market. This allows us to guarantee stable system operation, high quality and compliance with modern safety standards.",
+      "subtitle": "We collaborate with leading brands:",
+      "categories": {
+        "ledScreens": {
+          "title": "LED Screens and Information Kiosks",
+          "brands": ["Unilumin", "Absen", "Novastar"]
+        },
+        "interactivePanels": {
+          "title": "Interactive and Touch Panels",
+          "brands": ["Samsung", "LG", "BOE", "OEM / SKD / CKD manufacturers (China)"]
+        },
+        "surveillance": {
+          "title": "Video Surveillance and Security Systems",
+          "brands": ["Dahua Technology", "Hikvision", "HiWatch / HiVideo", "AJAX Systems"]
+        },
+        "networking": {
+          "title": "Low-Current and Structured Cabling Systems",
+          "brands": ["TP-Link", "Ubiquiti", "D-Link"]
+        },
+        "accessControl": {
+          "title": "Access Control Systems, Turnstiles",
+          "brands": ["ZKTeco", "Hikvision Access Control", "Dahua Access Control"]
+        },
+        "smartLocks": {
+          "title": "Smart Locks and Smart Solutions",
+          "brands": ["Smart Lock (RFID, biometrics)", "TTLock / Tuya Smart"]
+        }
+      },
+      "conclusion": "We select equipment individually based on client needs — from budget solutions to professional systems for large facilities. All deliveries are accompanied by technical support, warranty and service maintenance."
+    },
+     "certificates": {
+      "breadcrumbs": {
+        "home": "Home",
+        "current": "Certificates and Licenses"
+      },
+      "title": "Certificates and Licenses",
+      "description": "We work in accordance with current standards and requirements in the field of security systems...",
+      "subtitle": "Our company has:",
+      "cards": [
+        { "title": "Certificates of compliance for supplied equipment" },
+        { "title": "Permits for installation and maintenance of security systems" },
+        { "title": "Trained and certified technical personnel" },
+        { "title": "Compliance with fire and technical safety standards" },
+        { "title": "Official warranty obligations from manufacturers" }
+      ],
+      "footer": [
+        "We regularly undergo training and technical certification from manufacturers...",
+        "Upon client request, we provide copies of certificates and licenses."
+      ]
+    },
+     "card": {
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock",
+      "article": "Article",
+      "bonuses": "bonuses",
+      "currency": "som",
+      "addToCart": "Add to Cart"
+    }
 }

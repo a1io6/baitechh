@@ -9,7 +9,7 @@ import { useCart, useClearCart } from '@/lib/cart/hooks/hooks';
 export default function Cart() {
   const { data: items = [], isLoading } = useCart();
   const { mutate: clearCart, isPending } = useClearCart();
-
+  console.log(items);
   const isEmpty = items.length === 0;
 
   if (isLoading) {
@@ -23,8 +23,8 @@ export default function Cart() {
       {isEmpty ? (
         <div className={styles.emptyCart}>
           <ShoppingCart size={64} strokeWidth={1} />
-          <h3>В корзинvsd asfq qw rqr  е пока нет товаров</h3>
-          <p>Найдите то, что вам нуdssdfdsfжно в каталоге или через поиск</p>
+          <h3>В корзине пока нет товаров</h3>
+          <p>Найдите то, что вам нужно в каталоге или через поиск</p>
           <Link href="/">
             <button className={styles.btnPrimary}>Перейти в каталог</button>
           </Link>

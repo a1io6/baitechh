@@ -1,58 +1,58 @@
+"use client";
+
 import React from 'react';
 import './TermsOfUse.scss';
-import { Link } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import Link from 'next/link';
 
 const TermsOfUse = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="terms-page">
       <div className="container-1220">
         
         {/* Навигация */}
         <nav className="breadcrumbs">
-          <Link href="/">Главная</Link>
+          <Link href="/">{t('termsOfUse.breadcrumbs.home')}</Link>
           <span className="sep">/</span>
-          <span className="active">Условия использования сайта</span>
+          <span className="active">{t('termsOfUse.breadcrumbs.current')}</span>
         </nav>
 
         {/* Башкы заголовок */}
-        <h1 className="title-h1">Условия использования сайта</h1>
+        <h1 className="title-h1">{t('termsOfUse.title')}</h1>
 
         {/* Киришүү текст */}
         <p className="desc-intro">
-          Используя данный сайт, вы соглашаетесь с настоящими условиями. <br />
-          Вся информация на сайте носит информационный характер и не является публичной офертой, если иное не указано отдельно.
+          {t('termsOfUse.intro')}
         </p>
 
         {/* Эки колонкалуу тизмелер */}
         <div className="terms-grid">
           <div className="terms-col">
-            <h2 className="title-h2">Администрация сайта оставляет за собой право:</h2>
+            <h2 className="title-h2">{t('termsOfUse.administration.title')}</h2>
             <ul className="terms-list">
-              <li>• изменять содержание сайта без предварительного уведомления;</li>
-              <li>• обновлять цены, описания товаров и услуг;</li>
-              <li>• ограничивать доступ к сайту при необходимости.</li>
+              {t('termsOfUse.administration.list', { returnObjects: true }).map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
           </div>
 
           <div className="terms-col">
-            <h2 className="title-h2">Пользователи сайта обязуются:</h2>
+            <h2 className="title-h2">{t('termsOfUse.users.title')}</h2>
             <ul className="terms-list">
-              <li>• предоставлять достоверную информацию при заполнении форм;</li>
-              <li>• не нарушать работоспособность сайта;</li>
-              <li>• не использовать материалы сайта без разрешения правообладателя.</li>
+              {t('termsOfUse.users.list', { returnObjects: true }).map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
           </div>
         </div>
 
         {/* Корутунду эскертүүлөр */}
         <div className="footer-notice">
-          <p>
-            Все материалы сайта (тексты, изображения, логотипы) защищены законодательством об авторских правах. 
-            Копирование и распространение без согласия правообладателя запрещено.
-          </p>
-          <p>
-            Администрация сайта не несёт ответственности за возможные перебои в работе сайта и за действия третьих лиц.
-          </p>
+          {t('termsOfUse.footer', { returnObjects: true }).map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
         </div>
 
       </div>
