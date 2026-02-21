@@ -28,9 +28,6 @@ export default function Cart() {
           <Link href="/">
             <button className={styles.btnPrimary}>Перейти в каталог</button>
           </Link>
-          <div>
-            jdspdyohjpodsjyiopgshoiyhjs
-          </div>
         </div>
         
       ) : (

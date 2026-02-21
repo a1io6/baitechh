@@ -1,4 +1,5 @@
 // hooks/useBanners.js
+'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { bannerService } from '../api/api';

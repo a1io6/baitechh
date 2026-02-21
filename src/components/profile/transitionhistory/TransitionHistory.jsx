@@ -1,74 +1,61 @@
-import React from 'react'
+"use client";
+
+import React from "react";
 import { RxCross2 } from "react-icons/rx";
-import { GiCheckMark } from "react-icons/gi";   
-import './TransactionHistory.scss'
-import Under from '@/components/ui/under/Under';
+import { GiCheckMark } from "react-icons/gi";
+import "./TransactionHistory.scss";
+import Under from "@/components/ui/under/Under";
+import { useTranslation } from "react-i18next";
+
 function TransactionHistory() {
-    const data = [
-        {
-            id: 1,
-            payment: 'Оплата заказа',
-            date: '12 Августа, 2023',
-            amount: '12 000 сом',
-            icon: <GiCheckMark />,
-            status: 'Успешно'
-        },
-        {
-            id: 2,
-            payment: 'Оплата заказа',
-            date: '12 Августа, 2023',
-            amount: '12 000 сом',
-            icon: <GiCheckMark />,
-            status: 'Успешно'
-        },
-        {
-            id: 3,
-            payment: 'Оплата заказа',
-            date: '12 Августа, 2023',
-            amount: '12 000 сом',
-            icon: <RxCross2 />,
-            status: 'Ошибка'
-        },
-        {
-            id: 4,
-            payment: 'Оплата заказа',
-            date: '12 Августа, 2023',
-            amount: '12 000 сом',
-            icon: <GiCheckMark />,
-            status: 'Успешно'
-        },
-        {
-            id: 5,
-            payment: 'Оплата заказа',
-            date: '12 Августа, 2023',
-            amount: '12 000 сом',
-            icon: <GiCheckMark />,
-            status: 'Успешно'
-        }
-    ]
+  const {t} = useTranslation();
+
+  const data = [
+    { id: 1, status: "success" },
+    { id: 2, status: "success" },
+    { id: 3, status: "error" },
+    { id: 4, status: "success" },
+    { id: 5, status: "success" }
+  ];
+
   return (
-    <div className='transactionhistory container'>
-        <Under text={"Главная"} text1={"Личный кабинет"} text2={"История транзакций"} />
-        {
-            data.map((item) => (
-                <div key={item.id} className="transactionhistorycard">
-                    <div className={`icon ${item.status === 'Успешно' ? 'icon--success' : 'icon--error'}`}>
-                        <span>{item.icon}</span>
-                    </div>
-                    <div className='details'>
-                        <div className='title'>
-                            <h3>{item.payment}</h3>
-                            <span>{item.amount}</span>
-                        </div>
-                        <div className='date'>
-                            <p>{item.date}  </p>
-                        </div>
-                    </div>
-                    </div>
-            ))
-        }
+    <div className="transactionhistory container">
+      <Under
+        text={t("transactionHistory.breadcrumb.home")}
+        text1={t("transactionHistory.breadcrumb.personalAccount")}
+        text2={t("transactionHistory.breadcrumb.history")}
+      />
+
+      {data.map((item) => (
+        <div key={item.id} className="transactionhistorycard">
+          <div
+            className={`icon ${
+              item.status === "success" ? "icon--success" : "icon--error"
+            }`}
+          >
+            <span>
+              {item.status === "success" ? <GiCheckMark /> : <RxCross2 />}
+            </span>
+          </div>
+
+          <div className="details">
+            <div className="title">
+              <h3>{t("transactionHistory.payment")}</h3>
+              <span>{t("transactionHistory.amount")}</span>
+            </div>
+
+            <div className="date">
+              <p>12.08.2023</p>
+            </div>
+
+            <div className="status">
+              <p>{t(`transactionHistory.status.${item.status}`)}</p>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
-  )
+  );
 }
 
-export default TransactionHistory
+export default TransactionHistory;

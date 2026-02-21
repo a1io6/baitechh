@@ -205,5 +205,257 @@
       "bonuses": "bonuses",
       "currency": "som",
       "addToCart": "Add to Cart"
+    },
+        "profile": {
+      "loading": "Loading...",
+      "menuButton": "Menu",
+      "personalAccount": "Personal Account",
+      "notRegistered": {
+        "title": "You are not registered yet",
+        "description": "You need to register or log in to your account.",
+        "loginButton": "Log In"
+      },
+      "menu": {
+        "myInfo": "My Information",
+        "changePassword": "Change Password",
+        "addressBook": "Address Book",
+        "orderHistory": "Order History",
+        "returns": "Returns",
+        "transactions": "Transaction History",
+        "bonuses": "Bonuses",
+        "logout": "Logout"
+      },
+      "myInfo": {
+        "title": "My Information",
+        "loadingProfile": "Loading profile...",
+        "fields": {
+          "name": "Name",
+          "surname": "Surname",
+          "email": "Email",
+          "phone": "Phone"
+        },
+        "placeholders": {
+          "name": "Your name",
+          "surname": "Your surname"
+        },
+        "emailNote": "Email cannot be changed",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "bonuses": {
+        "title": "Your bonuses",
+        "history": "History",
+        "currency": "som",
+        "bonusesText": "bonuses",
+        "bonusHistory": "Bonus History",
+        "noBonuses": "Unfortunately,\nat the moment you\ndon't have any\navailable bonuses."
+      },
+      "logout": {
+        "title": "Logout",
+        "confirmation": "Are you sure you want to log out of your account?",
+        "confirmButton": "Log Out",
+        "cancelButton": "Cancel"
+      },
+      "messages": {
+        "profileUpdated": "Profile updated",
+        "profileUpdateError": "Profile update error",
+        "loggedOut": "You have logged out"
+      }
+    },
+     "changePassword": {
+      "breadcrumbs": {
+        "home": "Home",
+        "account": "Personal Account",
+        "current": "Password Recovery"
+      },
+      "step1": {
+        "emailLabel": "Email",
+        "getCode": "Get Code",
+        "sending": "Sending..."
+      },
+      "step2": {
+        "codeSentTo": "Code sent to",
+        "enterCode": "Enter confirmation code",
+        "codePlaceholder": "Code from email",
+        "confirmCode": "Confirm Code",
+        "checking": "Checking...",
+        "changeEmail": "Change Email"
+      },
+      "step3": {
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "minChars": "Minimum 8 characters",
+        "repeatPassword": "Repeat password",
+        "resetPassword": "Reset Password",
+        "saving": "Saving..."
+      },
+      "validation": {
+        "minLength": "Password must contain at least 8 characters",
+        "passwordMismatch": "Passwords do not match"
+      },
+      "messages": {
+        "codeSent": "Code sent to your email",
+        "codeConfirmed": "Code confirmed",
+        "passwordChanged": "Password successfully changed!",
+        "requestError": "Request error",
+        "invalidCode": "Invalid code",
+        "saveError": "Error saving password"
+      }
+    },
+    "addressBook": {
+      "breadcrumbs": {
+        "home": "Home",
+        "account": "Personal Account",
+        "current": "Address Book"
+      },
+      "title": "Address Book",
+      "addNewAddress": "Add New Address",
+      "fields": {
+        "email": "Email",
+        "address": "Address",
+        "cityPostal": "City/Postal Code",
+        "country": "Country",
+        "status": "Status"
+      },
+      "status": {
+        "primary": "Primary",
+        "additional": "Additional"
+      },
+      "buttons": {
+        "delete": "Delete",
+        "edit": "Edit"
+      }
+    },
+     "orderHistory": {
+      "breadcrumbs": {
+        "home": "Home",
+        "account": "Personal Account",
+        "current": "Order History"
+      },
+      "orders": {
+        "order1": {
+          "number": "Order №123456",
+          "status": "Delivered",
+          "description": "Delivery to: Pushkin St., 10, apt. 5, Moscow"
+        },
+        "order2": {
+          "number": "Order №654321",
+          "status": "Processing",
+          "description": "Delivery to: Lenin Ave., 25, apt. 12, St. Petersburg"
+        },
+        "order3": {
+          "number": "Order №789012",
+          "status": "Cancelled",
+          "description": "Delivery to: Sovetskaya St., 8, apt. 3, Novosibirsk"
+        },
+        "order4": {
+          "number": "Order №210987",
+          "status": "Delivered",
+          "description": "Delivery to: Gagarin St., 14, apt. 7, Yekaterinburg"
+        },
+        "order5": {
+          "number": "Order №345678",
+          "status": "Processing",
+          "description": "Delivery to: Mira Ave., 30, apt. 15, Kazan"
+        }
+      }
+    },
+    "returns": {
+      "breadcrumbs": {
+        "orderHistory": "Home",
+        "allOrders": "Personal Account",
+        "delivered": "Returns",
+        "cancelled": "Cancelled"
+      },
+      "ordered": "Ordered",
+      "status": "Status",
+      "amount": "Amount",
+      "currency": "som",
+      "camera": "Camera",
+      "statusTypes": {
+        "delivered": "Delivered",
+        "success": "Success",
+        "processing": "Processing",
+        "cancelled": "Cancelled"
+      },
+      "orders": {
+        "order1": {
+          "number": "Order №123456",
+          "status": "Delivered",
+          "description": "Delivery to: Pushkin St., 10, apt. 5, Moscow"
+        },
+        "order2": {
+          "number": "Order №654321",
+          "status": "Processing",
+          "description": "Delivery to: Lenin Ave., 25, apt. 12, St. Petersburg"
+        },
+        "order3": {
+          "number": "Order №789012",
+          "status": "Cancelled",
+          "description": "Delivery to: Sovetskaya St., 8, apt. 3, Novosibirsk"
+        },
+        "order4": {
+          "number": "Order №210987",
+          "status": "Delivered",
+          "description": "Delivery to: Gagarin St., 14, apt. 7, Yekaterinburg"
+        },
+        "order5": {
+          "number": "Order №345678",
+          "status": "Processing",
+          "description": "Delivery to: Mira Ave., 30, apt. 15, Kazan"
+        }
+      }
+    },
+     "notFound": {
+      "title": "Oops! Page not found",
+      "description": "The page you are looking for may have been deleted or its address changed. Click the button below to go to the home page.",
+      "goHomeButton": "Go Home"
+    },
+      "transactionHistory": {
+    "breadcrumb": {
+      "home": "Home",
+      "personalAccount": "Personal Account",
+      "history": "Transaction History"
+    },
+    "payment": "Order Payment",
+    "amount": "12,000 KGS",
+    "status": {
+      "success": "Successful",
+      "error": "Error"
     }
+  },
+   "courseDetails": {
+    "title": "Video Surveillance Systems Courses",
+    "description": "Learn video surveillance systems from scratch! This course is for those who want a new profession or additional income. No fluff — only what is really needed for work. Learn to install, configure, and maintain modern video surveillance systems from scratch.",
+    "programTitle": "Course program:",
+    "program": [
+      "Basics of local networks",
+      "Analog and hybrid video surveillance systems",
+      "Digital video surveillance systems",
+      "Selecting equipment according to client needs",
+      "Installation and proper connection of cameras",
+      "Configuring DVRs and remote access",
+      "Common mistakes and how to avoid them",
+      "Maintenance and system upgrades",
+      "Hands-on practical lessons"
+    ],
+    "whatYouGet": "What you will get:",
+    "benefits": [
+      "Practical skills with equipment",
+      "Understanding principles of video surveillance systems",
+      "Confidence in self-installation",
+      "Support and answers during and after the course",
+      "Possibility to receive certificates from top brands Hikvision and Dahua"
+    ],
+    "footerCourses": [
+      "Course list: ACS — Access Control System",
+      "VSS — Video Surveillance Systems",
+      "FAS — Fire and Security Alarm Systems",
+      "Training and preparation for project implementation"
+    ]
+  },
+    "corporateBlock": {
+    "title": "Turnkey Comprehensive Solutions",
+    "readMore": "Read More"
+  }
 }

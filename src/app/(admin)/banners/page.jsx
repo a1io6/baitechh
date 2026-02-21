@@ -102,6 +102,15 @@ export default function AdminBannerPage() {
           >
             Сертификаты
           </button>
+          <button
+            onClick={() => setActiveTab("solution")}
+            disabled={isLoading}
+            className={`admin-banner__tab ${
+              activeTab === "solution" ? "admin-banner__tab--active" : ""
+            }`}
+          >
+            Решение
+          </button>
         </div>
 
         <div className="admin-banner__content">

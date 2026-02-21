@@ -12,9 +12,11 @@ import { useMyProfile, usePatchProfile } from '@/lib/auth/hooks/hooks';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import './style.scss'
 
 export default function SidebarApp() {
+  const { t } = useTranslation();
   const [activePage, setActivePage] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -66,7 +68,6 @@ export default function SidebarApp() {
     number: ''
   });
 
-  // Обновляем форму когда приходят данные профиля
   React.useEffect(() => {
     if (profile) {
       setProfileForm({
@@ -83,10 +84,10 @@ export default function SidebarApp() {
     
     try {
       await patchMutation.mutateAsync(profileForm);
-      toast.success('Профиль обновлен');
+      toast.success(t('profile.messages.profileUpdated'));
     } catch (error) {
       console.error('Ошибка обновления профиля:', error);
-      toast.error('Ошибка обновления профиля');
+      toast.error(t('profile.messages.profileUpdateError'));
     }
   };
 
@@ -111,7 +112,7 @@ export default function SidebarApp() {
     
     window.dispatchEvent(new Event('authChange'));
     
-    toast.success('Вы вышли из аккаунта');
+    toast.success(t('profile.messages.loggedOut'));
     router.push('/');
   };
 
@@ -120,14 +121,14 @@ export default function SidebarApp() {
   };
 
   const menuItems = [
-    { id: 'profile', label: 'Моя информация', icon: User },
-    { id: 'password', label: 'Изменить пароль', icon: Key },
-    { id: 'address', label: 'Адресная книга', icon: BookOpen },
-    { id: 'orders', label: 'История заказов', icon: Package },
-    { id: 'returns', label: 'Возвраты', icon: RotateCcw },
-    { id: 'transactions', label: 'История транзакций', icon: CreditCard },
-    { id: 'bonuses', label: 'Бонусы', icon: Gift },
-    { id: 'logout', label: 'Выход', icon: LogOut },
+    { id: 'profile', label: t('profile.menu.myInfo'), icon: User },
+    { id: 'password', label: t('profile.menu.changePassword'), icon: Key },
+    { id: 'address', label: t('profile.menu.addressBook'), icon: BookOpen },
+    { id: 'orders', label: t('profile.menu.orderHistory'), icon: Package },
+    { id: 'returns', label: t('profile.menu.returns'), icon: RotateCcw },
+    { id: 'transactions', label: t('profile.menu.transactions'), icon: CreditCard },
+    { id: 'bonuses', label: t('profile.menu.bonuses'), icon: Gift },
+    { id: 'logout', label: t('profile.menu.logout'), icon: LogOut },
   ];
 
   // Если проверяется авторизация
@@ -136,7 +137,7 @@ export default function SidebarApp() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Загрузка...</p>
+          <p className="text-gray-600">{t('profile.loading')}</p>
         </div>
       </div>
     );
@@ -148,19 +149,19 @@ export default function SidebarApp() {
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
           <div className="mb-6">
             <h2 className="text-[20px] font-bold text-gray-800 mb-2">
-             Вы еще не зарегистрированы
+              {t('profile.notRegistered.title')}
             </h2>
             <p className="text-[#00162ACC] mb-6 text-[16px]">
-              Вам нужно пройти регистрацию или войти в свой аккаунт.
+              {t('profile.notRegistered.description')}
             </p>
           </div>
           
           <div className="space-y-3">
             <button
               onClick={handleGoToLogin}
-              className="w-full px-6 py-3 bg-[#0E2E5B] text-white rounded-lg hover:bg-[#092144] cursor-pointer  transition-colors font-medium"
+              className="w-full px-6 py-3 bg-[#0E2E5B] text-white rounded-lg hover:bg-[#092144] cursor-pointer transition-colors font-medium"
             >
-              Войти 
+              {t('profile.notRegistered.loginButton')}
             </button>
           </div>
         </div>
@@ -173,38 +174,38 @@ export default function SidebarApp() {
       case 'profile':
         return (
           <div>
-            <h1 className="text-[30px] font-bold mb-6">Моя информация</h1>
+            <h1 className="text-[30px] font-bold mb-6">{t('profile.myInfo.title')}</h1>
             {profileLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Загрузка профиля...</span>
+                <span className="ml-3 text-gray-600">{t('profile.myInfo.loadingProfile')}</span>
               </div>
             ) : (
               <form onSubmit={handleProfileUpdate} className="space-y-4 max-w-md flex flex-col gap-[15px]">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Имя</label>
+                  <label className="block text-sm font-medium mb-2">{t('profile.myInfo.fields.name')}</label>
                   <input 
                     type="text" 
                     className="w-full px-4 py-2 border rounded-lg" 
-                    placeholder="Ваше имя"
+                    placeholder={t('profile.myInfo.placeholders.name')}
                     value={profileForm.name}
                     onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
                     disabled={patchMutation.isPending}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Фамилия</label>
+                  <label className="block text-sm font-medium mb-2">{t('profile.myInfo.fields.surname')}</label>
                   <input 
                     type="text" 
                     className="w-full px-4 py-2 border rounded-lg" 
-                    placeholder="Ваша фамилия"
+                    placeholder={t('profile.myInfo.placeholders.surname')}
                     value={profileForm.surname}
                     onChange={(e) => setProfileForm({...profileForm, surname: e.target.value})}
                     disabled={patchMutation.isPending}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
+                  <label className="block text-sm font-medium mb-2">{t('profile.myInfo.fields.email')}</label>
                   <input 
                     type="email" 
                     className="w-full px-4 py-2 border rounded-lg bg-gray-100" 
@@ -212,10 +213,10 @@ export default function SidebarApp() {
                     value={profileForm.email}
                     disabled
                   />
-                  <p className="text-xs text-gray-500 mt-1">Email нельзя изменить</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('profile.myInfo.emailNote')}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Телефон</label>
+                  <label className="block text-sm font-medium mb-2">{t('profile.myInfo.fields.phone')}</label>
                   <input 
                     type="tel" 
                     className="w-full px-4 py-2 border rounded-lg" 
@@ -230,7 +231,7 @@ export default function SidebarApp() {
                   className="px-6 py-2 bg-[#0E2E5B] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                   disabled={patchMutation.isPending}
                 >
-                  {patchMutation.isPending ? 'Сохранение...' : 'Сохранить'}
+                  {patchMutation.isPending ? t('profile.myInfo.saving') : t('profile.myInfo.save')}
                 </button>
               </form>
             )}
@@ -266,110 +267,110 @@ export default function SidebarApp() {
         <TransactionHistory/>
           </>
         );
-  case 'bonuses':
-  return (
-    <div>
-      <h1 className="text-[20px] font-[500] mb-4">Ваши бонусы 200</h1>
-        <p className="text-[14px] text-gray-500 mb-2">История</p>
-      
-      <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
-        <div className='flex item-start justify-between'>
-        <div className="flex items-center  gap-[20px]">
-          <div className="w-8 h-8 pb-[4px] rounded-full bg-green-500 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+      case 'bonuses':
+        return (
           <div>
-            <p className="text-[20px] font-[500] text-[#00162A]">
-              {profile?.bonuses || 20000} сом
-            </p>
-            <p className="text-[14px] text-gray-500">20.03.2026</p>
-          </div>
-        </div>
-          <div>
-            <h4 className='text-[18px] font-[400] text-[#3AA15B]'>20 бонусов</h4>
-          </div>
-        </div>
-      </div>
-
-   <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
-        <div className='flex item-start justify-between'>
-        <div className="flex items-center gap-[20px]">
-          <div className="w-8 h-8 pb-[4px] rounded-full bg-green-500 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <div>
-            <p className="text-[20px] font-[500] text-[#00162A]">
-              {profile?.used_bonuses || 20000} сом
-            </p>
-            <p className="text-[12px] text-[#00162ACC] font-[500]">24.04.2026</p>
-          </div>
-        </div>
-       <div>
-            <h4 className='text-[18px] font-[400] text-[#3AA15B]'>20 бонусов</h4>
-          </div>
-      </div>
-</div>
-      <h2 className="text-[16px] font-semibold mb-3">История бонусов</h2>
-
-      {(!profile?.bonus_history || profile.bonus_history.length === 0) ? (
-  <div className="bg-transperent rounded-2xl  border border-gray-100 py-16 px-8 text-center">
-  <div className="w-24 h-24 mx-auto mb-2 rounded-full flex items-center justify-center">
-    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-      <circle cx="30" cy="30" r="28" stroke="#9CA3AF" strokeWidth="2"/>
-      <circle cx="20" cy="24" r="2.5" fill="#9CA3AF"/>
-      <circle cx="40" cy="24" r="2.5" fill="#9CA3AF"/>
-      <path d="M20 40C20 40 23 36 30 36C37 36 40 40 40 40" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round"/>
-    </svg>
-  </div>
-  <p className="text-[15px] text-gray-700 leading-relaxed">
-    К сожалению, на<br/>
-    данный момент у вас<br/>
-    нет доступных<br/>
-    бонусов.
-  </p>
-</div>
-      ) : (
-          <div className="space-y-3">
-          {profile.bonus_history.map((item, index) => (
-            <div key={index} className="bg-white rounded-[15px] border border-gray-200 p-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-[14px] font-medium text-gray-900">{item.description}</p>
-                  <p className="text-[12px] text-gray-500 mt-1">{item.date}</p>
+            <h1 className="text-[20px] font-[500] mb-4">
+              {t('profile.bonuses.title')} {profile?.bonuses || 200}
+            </h1>
+            <p className="text-[14px] text-gray-500 mb-2">{t('profile.bonuses.history')}</p>
+            
+            <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
+              <div className='flex item-start justify-between'>
+                <div className="flex items-center gap-[20px]">
+                  <div className="w-8 h-8 pb-[4px] rounded-full bg-green-500 flex items-center justify-center">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[20px] font-[500] text-[#00162A]">
+                      {profile?.bonuses || 20000} {t('profile.bonuses.currency')}
+                    </p>
+                    <p className="text-[14px] text-gray-500">20.03.2026</p>
+                  </div>
                 </div>
-                <p className={`text-[16px] font-bold ${
-                  item.amount > 0 ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {item.amount > 0 ? '+' : ''}{item.amount}
-                </p>
+                <div>
+                  <h4 className='text-[18px] font-[400] text-[#3AA15B]'>20 {t('profile.bonuses.bonusesText')}</h4>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+
+            <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
+              <div className='flex item-start justify-between'>
+                <div className="flex items-center gap-[20px]">
+                  <div className="w-8 h-8 pb-[4px] rounded-full bg-green-500 flex items-center justify-center">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[20px] font-[500] text-[#00162A]">
+                      {profile?.used_bonuses || 20000} {t('profile.bonuses.currency')}
+                    </p>
+                    <p className="text-[12px] text-[#00162ACC] font-[500]">24.04.2026</p>
+                  </div>
+                </div>
+                <div>
+                  <h4 className='text-[18px] font-[400] text-[#3AA15B]'>20 {t('profile.bonuses.bonusesText')}</h4>
+                </div>
+              </div>
+            </div>
+            
+            <h2 className="text-[16px] font-semibold mb-3">{t('profile.bonuses.bonusHistory')}</h2>
+
+            {(!profile?.bonus_history || profile.bonus_history.length === 0) ? (
+              <div className="bg-transperent rounded-2xl border border-gray-100 py-16 px-8 text-center">
+                <div className="w-24 h-24 mx-auto mb-2 rounded-full flex items-center justify-center">
+                  <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                    <circle cx="30" cy="30" r="28" stroke="#9CA3AF" strokeWidth="2"/>
+                    <circle cx="20" cy="24" r="2.5" fill="#9CA3AF"/>
+                    <circle cx="40" cy="24" r="2.5" fill="#9CA3AF"/>
+                    <path d="M20 40C20 40 23 36 30 36C37 36 40 40 40 40" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <p className="text-[15px] text-gray-700 leading-relaxed">
+                  {t('profile.bonuses.noBonuses')}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {profile.bonus_history.map((item, index) => (
+                  <div key={index} className="bg-white rounded-[15px] border border-gray-200 p-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-[14px] font-medium text-gray-900">{item.description}</p>
+                        <p className="text-[12px] text-gray-500 mt-1">{item.date}</p>
+                      </div>
+                      <p className={`text-[16px] font-bold ${
+                        item.amount > 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {item.amount > 0 ? '+' : ''}{item.amount}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
       case 'logout':
         return (
           <div>
-            <h1 className="text-[30px] font-bold mb-6">Выход</h1>
-            <p className="text-gray-600 mb-4">Вы уверены, что хотите выйти из аккаунта?</p>
+            <h1 className="text-[30px] font-bold mb-6">{t('profile.logout.title')}</h1>
+            <p className="text-gray-600 mb-4">{t('profile.logout.confirmation')}</p>
             <div className="space-x-3">
               <button 
                 onClick={handleLogout}
                 className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
-                Выйти
+                {t('profile.logout.confirmButton')}
               </button>
               <button 
                 onClick={() => setActivePage('profile')}
                 className="px-6 py-2 border rounded-lg hover:bg-gray-50 ml-[30px]"
               >
-                Отмена
+                {t('profile.logout.cancelButton')}
               </button>
             </div>
           </div>
@@ -405,17 +406,17 @@ export default function SidebarApp() {
   );
 
   return (
-    <div className="sidebarprofile  flex h-screen container relative">
+    <div className="sidebarprofile flex h-screen container relative">
       {/* Основной контент */}
-      <div className="sidebarapp  flex-1 relative">
+      <div className="sidebarapp flex-1 relative">
         <div className="">
           <div className="flex items-center justify-between mb-6 relative">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
               className="md:hidden flex flex-col gap-[2px] items-center py-1 px-2 border rounded-lg bg-[#0E2E5B] hover:bg-gray-100 absolute top-[0px] right-0"
             >
-                <Image src={img} alt="Menu" width={22} height={20}/>
-                <p className='text-[11px] text-center text-white'>Меню</p>
+              <Image src={img} alt="Menu" width={22} height={20}/>
+              <p className='text-[11px] text-center text-white'>{t('profile.menuButton')}</p>
             </button>
           </div>
 
@@ -442,7 +443,7 @@ export default function SidebarApp() {
           <div className="fixed right-0 top-0 h-full w-[320px] bg-white shadow-2xl z-50 overflow-y-auto md:hidden">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold">Личный кабинет</h2>
+                <h2 className="text-lg font-semibold">{t('profile.personalAccount')}</h2>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 hover:bg-gray-100 rounded-lg"

@@ -42,33 +42,29 @@ const handleSubmit = async (e) => {
                       response?.user?.is_staff === true || 
                       response?.user?.is_superuser === true;
       
-      // Сохраняем токены в зависимости от роли
-      if (isAdmin) {
-        // Для администратора
-        if (response?.access) {
-          localStorage.setItem('adminToken', response.access);
-          console.log('✅ Admin токен сохранен');
-        }
-        if (response?.refresh) {
-          localStorage.setItem('adminRefreshToken', response.refresh);
-          console.log('✅ Admin refresh токен сохранен');
-        }
-        toast.success('Добро пожаловать');
-        router.push('/camera');
-      } else {
-        // Для обычного пользователя
-        if (response?.access) {
-          localStorage.setItem('access_token', response.access);
-          console.log('✅ User access токен сохранен');
-        }
-        if (response?.refresh) {
-          localStorage.setItem('refresh_token', response.refresh);
-          console.log('✅ User refresh токен сохранен');
-        }
-        toast.success('Вы успешно вошли!');
-        router.push('/');
-      }
-      
+    if (isAdmin) {
+  // Только для админа — сохра
+  // няем в adminToken
+  if (response?.access) {
+    localStorage.setItem('adminToken', response.access);
+  }
+  if (response?.refresh) {
+    localStorage.setItem('adminRefreshToken', response.refresh);
+  }
+  toast.success('Добро пожаловать');
+  router.push('/camera'); // редирект для админа
+} else {
+  // Только для пользователя — сохраняем в access_token
+  if (response?.access) {
+    localStorage.setItem('access_token', response.access);
+  }
+  if (response?.refresh) {
+    localStorage.setItem('refresh_token', response.refresh);
+  }
+  toast.success('Вы успешно вошли!');
+  router.push('/'); // редирект для пользователя
+}
+
       // Сохраняем информацию о пользователе
       if (response?.user) {
         localStorage.setItem('user', JSON.stringify(response.user));
