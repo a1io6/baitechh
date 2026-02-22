@@ -1,3 +1,5 @@
+@use "sass:map";
+
 // Цветовая палитра остается прежней
 $colors: (
   returns: (bg: rgba(127, 140, 141, 0.1), text: #7f8c8d, border: #7f8c8d),
@@ -28,7 +30,7 @@ $colors: (
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 
         &:focus {
-          border-color: map-get(map-get($colors, stock), border);
+          border-color: map.get(map.get($colors, stock), border);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
       }
@@ -205,16 +207,16 @@ $colors: (
 
   @each $name, $map in $colors {
     &--#{$name} {
-      background: map-get($map, bg);
-      border-color: map-get($map, border);
+      background: map.get($map, bg);
+      border-color: map.get($map, border);
 
       &:hover {
-        background: rgba(map-get($map, border), 0.2);
+        background: rgba(map.get($map, border), 0.2);
       }
 
       // Эффект при наведении
       .status-wrapper__select {
-        color: map-get($map, text);
+        color: map.get($map, text);
       }
     }
   }
