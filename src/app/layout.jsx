@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   metadataBase: new URL("https://baitech.kg"),
   title: {
-    default: "Baitech — Разработка сайтов в Бишкеке",
+    default: "Baitech",
     template: "%s | Baitech",
   },
   description:

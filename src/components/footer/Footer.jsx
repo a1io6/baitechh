@@ -108,8 +108,6 @@ function Footer() {
               <li><a href="/terms">{t('footer.information.terms')}</a></li>
               <li><a href="/brands">{t('footer.information.manufacturers')}</a></li>
               <li><a href="/certificates">{t('footer.information.certificates')}</a></li>
-              <li><a href="/sales">{t('footer.information.promotions')}</a></li>
-              <li><a href="/sitemap">{t('footer.information.news')}</a></li>
             </ul>
           </div>
         </div>

@@ -3,57 +3,47 @@
 import Image from 'next/image';
 import React from 'react';
 import { useParams } from 'next/navigation';
-import { SOLUTIONS_DATA } from './solutions';
+import { useSolutionBannerById } from '@/lib/solution/hooks/hooks';
 
 const SolutionDetail = () => {
   const params = useParams();
-  
-  const currentSolution = SOLUTIONS_DATA.find(item => item.id === Number(params.id)) || SOLUTIONS_DATA[0];
+  const { data, isLoading, isError } = useSolutionBannerById(params.id);
+
+  if (isLoading) return <div className='loader'></div>;
+  if (isError) return <div>Ошибка загрузки</div>;
+
+  const imageUrl = data?.existing_images?.[0]?.image || '';
 
   return (
-    <div className="w-full min-h-screen bg-[#F5F7FA] py-0 lg:py-[0px] container">
-      <div className="w-full max-w-[1440px] mx-auto px-4 lg:px-[0px]">
-        
+    <div className="w-full  bg-[#F5F7FA] container pb-[30px]">
+      <div className="w-full max-w-[1440px] mx-auto px-4 xl:px-[0px]">
+
         <h1 className="font-medium text-[20px] lg:text-[24px] text-[#1f2937] mb-8 lg:mb-[40px]">
-          {currentSolution.title}
+          {data?.title}
         </h1>
 
         <div className="flex flex-col gap-[31px]">
-          {currentSolution.blocks.map((block, index) => (
-            <div key={block.id} className="flex flex-col">
-              
-              <div className="w-full lg:w-[854px] aspect-[854/481] lg:h-[481px] rounded-[20px] overflow-hidden bg-[#d9d6d4] mb-2 lg:mb-[10px] flex-shrink-0">
+          <div className="flex flex-col">
+
+            {imageUrl && (
+              <div className="w-full lg:w-[854px] aspect-[854/481] lg:h-[481px] rounded-[20px] overflow-hidden bg-[#d9d6d4] mb-2 lg:mb-[10px]">
                 <Image
-                  src={block.image}
-                  alt={block.subtitle}
+                  src={imageUrl}
+                  alt={data?.title}
                   width={854}
                   height={481}
                   className="w-full h-full object-cover"
                 />
               </div>
+            )}
 
-              {/* ТЕКСТ БЛОГУ - min-h-[120px] кошулду */}
-              <div className="w-full lg:max-w-[1166px] min-h-[120px]">
-                {/* Название */}
-                <h2 className=" font-medium text-[18px] lg:text-[24px] text-[#1f2937] mb-1 lg:mb-[5px]">
-                  {block.subtitle}
-                </h2>
-
-                <p className=" font-medium text-[16px] lg:text-[20px] leading-[120%] text-[#00162ACC] break-words">
-                  {index === 0 ? (
-                    <>
-                      {currentSolution.mainDescription}
-                      <br /><br />
-                      {block.description}
-                    </>
-                  ) : (
-                    block.description
-                  )}
-                </p>
-              </div>
-              
+            <div className="w-full lg:max-w-[1166px]">
+              <p className="font-medium text-[16px] lg:text-[20px] leading-[120%] text-[#00162ACC] break-words">
+                {data?.description}
+              </p>
             </div>
-          ))}
+
+          </div>
         </div>
       </div>
     </div>

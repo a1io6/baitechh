@@ -1,55 +1,50 @@
-'use client'
+'use client';
+
 import React from 'react';
 import './CourseDetails.scss';
 import { Smile, Layout, ShieldCheck, HeartPulse, GraduationCap } from 'lucide-react';
 import img1 from '../../../assets/png/reklama.png';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
+
 const CourseDetails = () => {
+  const { t } = useTranslation();
+
   const benefits = [
-    { icon: <Smile size={32} />, text: "Практические навыки работы с оборудованием" },
-    { icon: <Layout size={32} />, text: "Понимание принципов работы систем видеонаблюдения" },
-    { icon: <ShieldCheck size={32} />, text: "Уверенность в самостоятельной установке" },
-    { icon: <HeartPulse size={32} />, text: "Поддержку и ответы на вопросы в процессе и после окончания обучения" },
-    { icon: <GraduationCap size={32} />, text: "Возможность получить сертификат от топовых брендов Hikvision и Dahua" }
+    { icon: <Smile size={32} />, text: t('courseDetails.benefits.0') },
+    { icon: <Layout size={32} />, text: t('courseDetails.benefits.1') },
+    { icon: <ShieldCheck size={32} />, text: t('courseDetails.benefits.2') },
+    { icon: <HeartPulse size={32} />, text: t('courseDetails.benefits.3') },
+    { icon: <GraduationCap size={32} />, text: t('courseDetails.benefits.4') }
   ];
 
   return (
     <div className="course-page">
       <div className="course-container">
         <header className="course-header">
-          <h1 className="course-title">Курсы по системам видеонаблюдения</h1>
-          <p className="course-description">
-            Освой системы видеонаблюдения с нуля! курс для тех, кто хочет новую профессию или дополнительный доход. 
-            Без воды — только то, что реально нужно в работе. Научим устанавливать, настраивать и обслуживать 
-            современные системы видеонаблюдения с нуля.
-          </p>
+          <h1 className="course-title">{t('courseDetails.title')}</h1>
+          <p className="course-description">{t('courseDetails.description')}</p>
         </header>
 
         <main className="course-main-info">
           <div className="course-image">
             <div className="image-placeholder">
-              <Image src={img1} alt="" />
+              <Image src={img1} alt="course image" />
             </div>
           </div>
 
           <div className="course-program">
-            <h3>В программе курса:</h3>
+            <h3>{t('courseDetails.programTitle')}</h3>
             <div className="program-items">
-              <p>Основы локальных сетей</p>
-              <p>Аналоговые и гибридные системы видеонаблюдения</p>
-              <p>Цифровые системы видеонаблюдения</p>
-              <p>Подбор оборудования под задачи клиента</p>
-              <p>Монтаж и правильное подключение камер</p>
-              <p>Настройка видеорегистраторов и удалённого доступа</p>
-              <p>Типовые ошибки и способы их избежать</p>
-              <p>Обслуживание и модернизация систем</p>
-              <p>Занятие проходят в практическом формате</p>
+              {t('courseDetails.program', { returnObjects: true }).map((item, index) => (
+                <p key={index}>{item}</p>
+              ))}
             </div>
           </div>
         </main>
 
         <section className="benefits-section">
-          <h2>Что вы получите:</h2>
+          <h2>{t('courseDetails.whatYouGet')}</h2>
           <div className="benefits-grid">
             {benefits.map((item, index) => (
               <div key={index} className="benefit-card">
@@ -62,15 +57,10 @@ const CourseDetails = () => {
 
         <div className="course-footer">
           <div className="footer-links">
-            <p>Перечень курсов: СКУД- Система Контроля и Управления Доступом</p>
-            <p>СВН- Системы Видеонаблюдения</p>
-            <p>ОПС- Охранно-Пожарная Сигнализация</p>
-            <p>Подготовка и обучение реализации проектных объектов</p>
+            {t('courseDetails.footerCourses', { returnObjects: true }).map((item, index) => (
+              <p key={index}>{item}</p>
+            ))}
           </div>
-          {/* <div className="footer-contact">
-            <p>Звоните проконсультируем:</p>
-            <a href="tel:+996503406805">+996 503 406 805</a>
-          </div> */}
         </div>
       </div>
     </div>
@@ -78,3 +68,4 @@ const CourseDetails = () => {
 };
 
 export default CourseDetails;
+  

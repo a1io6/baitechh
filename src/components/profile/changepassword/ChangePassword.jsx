@@ -5,8 +5,10 @@ import { useMutation } from '@tanstack/react-query';
 import { $api } from '../../../../API/api';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const ChangePassword = () => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -24,12 +26,12 @@ const ChangePassword = () => {
     mutationFn: (data) => $api.post('/api/password-reset/request/', data),
     onSuccess: () => {
       setStep(2);
-      toast.success('Код отправлен на вашу почту');
+      toast.success(t('changePassword.messages.codeSent'));
     },
     onError: (error) => {
       const message = error.response?.data?.detail || 
                      error.response?.data?.message || 
-                     'Ошибка запроса';
+                     t('changePassword.messages.requestError');
       toast.error(message);
     }
   });
@@ -39,12 +41,12 @@ const ChangePassword = () => {
     mutationFn: (data) => $api.post('/api/password-reset/verify/', data),
     onSuccess: () => {
       setStep(3);
-      toast.success('Код подтвержден');
+      toast.success(t('changePassword.messages.codeConfirmed'));
     },
     onError: (error) => {
       const message = error.response?.data?.detail || 
                      error.response?.data?.message || 
-                     'Неверный код';
+                     t('changePassword.messages.invalidCode');
       toast.error(message);
     }
   });
@@ -53,7 +55,7 @@ const ChangePassword = () => {
   const completeMutation = useMutation({
     mutationFn: (data) => $api.post('/api/password-reset/complete/', data),
     onSuccess: () => {
-      toast.success('Пароль успешно изменен!');
+      toast.success(t('changePassword.messages.passwordChanged'));
       setStep(1);
       setEmail('');
       setOtp('');
@@ -62,7 +64,7 @@ const ChangePassword = () => {
     onError: (error) => {
       const message = error.response?.data?.detail || 
                      error.response?.data?.message || 
-                     'Ошибка при сохранении пароля';
+                     t('changePassword.messages.saveError');
       toast.error(message);
     }
   });
@@ -79,16 +81,15 @@ const ChangePassword = () => {
     e.preventDefault();
     
     if (passwords.new_password.length < 8) {
-      toast.error('Пароль должен содержать минимум 8 символов');
+      toast.error(t('changePassword.validation.minLength'));
       return;
     }
     
     if (passwords.new_password !== passwords.confirm_password) {
-      toast.error('Пароли не совпадают');
+      toast.error(t('changePassword.validation.passwordMismatch'));
       return;
     }
     
-    // ✅ Отправляем ВСЕ поля включая confirm_password
     completeMutation.mutate({
       email: email,
       otp: otp,
@@ -99,16 +100,21 @@ const ChangePassword = () => {
 
   return (
     <div className="bg-[#F5F7FA] min-h-screen">
-      <div className="max-w-[845px]">
+      <div className="max-w-[545px]">
         <div className="mb-8 lg:mb-[40px]">
-          <Under text={"Главная"} text1={"Личный кабинет"} text2={"Восстановление пароля"} />
+          <Under 
+            text={t('changePassword.breadcrumbs.home')} 
+            link={'/'}
+            text1={t('changePassword.breadcrumbs.account')} 
+            text2={t('changePassword.breadcrumbs.current')} 
+          />
         </div>
 
         {/* ШАГ 1: EMAIL */}
         {step === 1 && (
           <form onSubmit={(e) => { e.preventDefault(); requestMutation.mutate({ email }); }} className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <label className="font-medium text-[#1f2937]">* Электронная почта</label>
+              <label className="font-medium text-[#1f2937]">* {t('changePassword.step1.emailLabel')}</label>
               <input 
                 type="email" 
                 required 
@@ -123,7 +129,7 @@ const ChangePassword = () => {
               disabled={requestMutation.isPending} 
               className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400"
             >
-              {requestMutation.isPending ? 'Отправка...' : 'Получить код'}
+              {requestMutation.isPending ? t('changePassword.step1.sending') : t('changePassword.step1.getCode')}
             </button>
           </form>
         )}
@@ -132,14 +138,14 @@ const ChangePassword = () => {
         {step === 2 && (
           <form onSubmit={(e) => { e.preventDefault(); verifyMutation.mutate({ email, otp }); }} className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <p className="text-[#122D52] font-medium">Код отправлен на {email}</p>
-              <label className="font-medium text-[#1f2937]">* Введите код подтверждения</label>
+              <p className="text-[#122D52] font-medium">{t('changePassword.step2.codeSentTo')} {email}</p>
+              <label className="font-medium text-[#1f2937]">* {t('changePassword.step2.enterCode')}</label>
               <input 
                 type="text" 
                 required 
                 value={otp} 
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="Код из письма"
+                placeholder={t('changePassword.step2.codePlaceholder')}
                 className="w-full h-[48px] px-5 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
               />
             </div>
@@ -149,14 +155,14 @@ const ChangePassword = () => {
                 disabled={verifyMutation.isPending} 
                 className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400"
               >
-                {verifyMutation.isPending ? 'Проверка...' : 'Подтвердить код'}
+                {verifyMutation.isPending ? t('changePassword.step2.checking') : t('changePassword.step2.confirmCode')}
               </button>
               <button 
                 type="button" 
                 onClick={() => setStep(1)} 
                 className="text-[#122D52] underline text-sm"
               >
-                Изменить почту
+                {t('changePassword.step2.changeEmail')}
               </button>
             </div>
           </form>
@@ -167,7 +173,7 @@ const ChangePassword = () => {
           <form onSubmit={onFinalSubmit} className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <label className="font-medium text-[#1f2937]">* Новый пароль</label>
+                <label className="font-medium text-[#1f2937]">* {t('changePassword.step3.newPassword')}</label>
                 <div className="relative">
                   <input 
                     type={showPassword.new_password ? "text" : "password"}
@@ -176,7 +182,7 @@ const ChangePassword = () => {
                     value={passwords.new_password} 
                     onChange={handlePasswordsChange}
                     className="w-full h-[48px] px-5 pr-12 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
-                    placeholder="Минимум 8 символов"
+                    placeholder={t('changePassword.step3.minChars')}
                   />
                   <button
                     type="button"
@@ -191,12 +197,12 @@ const ChangePassword = () => {
                   </button>
                 </div>
                 {passwords.new_password && passwords.new_password.length < 8 && (
-                  <p className="text-xs text-red-500">Пароль должен содержать минимум 8 символов</p>
+                  <p className="text-xs text-red-500">{t('changePassword.validation.minLength')}</p>
                 )}
               </div>
               
               <div className="flex flex-col gap-2">
-                <label className="font-medium text-[#1f2937]">* Подтвердите пароль</label>
+                <label className="font-medium text-[#1f2937]">* {t('changePassword.step3.confirmPassword')}</label>
                 <div className="relative">
                   <input 
                     type={showPassword.confirm_password ? "text" : "password"}
@@ -205,7 +211,7 @@ const ChangePassword = () => {
                     value={passwords.confirm_password} 
                     onChange={handlePasswordsChange}
                     className="w-full h-[48px] px-5 pr-12 bg-white border border-[#D1D5DB] rounded-lg outline-none focus:border-[#122D52]"
-                    placeholder="Повторите пароль"
+                    placeholder={t('changePassword.step3.repeatPassword')}
                   />
                   <button
                     type="button"
@@ -220,7 +226,7 @@ const ChangePassword = () => {
                   </button>
                 </div>
                 {passwords.confirm_password && passwords.new_password !== passwords.confirm_password && (
-                  <p className="text-xs text-red-500">Пароли не совпадают</p>
+                  <p className="text-xs text-red-500">{t('changePassword.validation.passwordMismatch')}</p>
                 )}
               </div>
             </div>
@@ -230,7 +236,7 @@ const ChangePassword = () => {
               disabled={completeMutation.isPending} 
               className="w-full lg:w-[280px] h-[48px] bg-[#122D52] text-white rounded-lg disabled:bg-gray-400"
             >
-              {completeMutation.isPending ? 'Сохранение...' : 'Сбросить пароль'}
+              {completeMutation.isPending ? t('changePassword.step3.saving') : t('changePassword.step3.resetPassword')}
             </button>
           </form>
         )}

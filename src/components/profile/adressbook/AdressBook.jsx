@@ -1,11 +1,15 @@
+"use client"
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AddressModal from "@/components/ui/modal/AddressModal";
 import { $api } from '../../../../API/api';
+import Under from '@/components/ui/under/Under';
+import { useTranslation } from 'react-i18next';
 
 const API_URL = '/addressbook/addresses/';
 
 const AddressBook = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
@@ -52,18 +56,19 @@ const AddressBook = () => {
   const addresses = data?.results || [];
 
   return (
-    <div className="w-full bg-[#F5F7FA] font-['Montserrat'] min-h-screen p-4 lg:p-10">
-      <nav className="text-[14px] text-[#4b5563] mb-10">
-        Главная / Личный кабинет / <span className="text-[#1f2937] font-medium">Адресная книга</span>
-      </nav>
-
-      <h1 className="text-[24px] font-medium text-[#1f2937] mb-5">Адресная книга</h1>
+    <div className="w-full bg-[#F5F7FA] font-['Montserrat'] min-h-screen">
+     <Under 
+       text={t('addressBook.breadcrumbs.home')} 
+       text1={t('addressBook.breadcrumbs.account')} 
+       text2={t('addressBook.breadcrumbs.current')}
+     />
+      <h1 className="text-[24px] font-medium text-[#1f2937] mb-5">{t('addressBook.title')}</h1>
 
       <button 
         onClick={handleAddNew}
         className="bg-[#122D52] text-white px-8 h-[48px] rounded-[8px] font-medium hover:bg-[#0d213d] transition-all mb-10 active:scale-95"
       >
-        Добавить новый адрес
+        {t('addressBook.addNewAddress')}
       </button>
 
       <div className="flex flex-col gap-6">
@@ -85,12 +90,12 @@ const AddressBook = () => {
 
               <div className="space-y-1 text-[#4b5563]">
                 <p className="font-semibold text-[#1f2937] text-lg mb-2">{item.first_name} {item.last_name}</p>
-                <p>Email: {item.email}</p>
-                <p>Адрес: {item.address_1} {item.address_2 && `, ${item.address_2}`}</p>
-                <p>Город/Индекс: {item.region}, {item.postal_code}</p>
-                <p>Страна: {item.country}</p>
-                <p>Статус: <span className={item.is_primary ? "text-green-600 font-bold" : ""}>
-                  {item.is_primary ? "Основной" : "Дополнительный"}
+                <p>{t('addressBook.fields.email')}: {item.email}</p>
+                <p>{t('addressBook.fields.address')}: {item.address_1} {item.address_2 && `, ${item.address_2}`}</p>
+                <p>{t('addressBook.fields.cityPostal')}: {item.region}, {item.postal_code}</p>
+                <p>{t('addressBook.fields.country')}: {item.country}</p>
+                <p>{t('addressBook.fields.status')}: <span className={item.is_primary ? "text-green-600 font-bold" : ""}>
+                  {item.is_primary ? t('addressBook.status.primary') : t('addressBook.status.additional')}
                 </span></p>
               </div>
 
@@ -100,14 +105,14 @@ const AddressBook = () => {
                   onClick={() => deleteMutation.mutate(item.id)}
                   className="flex items-center justify-center min-w-[100px] px-5 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
                 >
-                  Удалить
+                  {t('addressBook.buttons.delete')}
                 </button>
                 <button 
                   disabled={isDeleting}
                   onClick={() => handleEdit(item)}
                   className="px-5 py-2 border border-[#D1D5DB] text-[#122D52] rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  Изменить
+                  {t('addressBook.buttons.edit')}
                 </button>
               </div>
             </div>
