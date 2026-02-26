@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { $api } from "../../../API/api";
+import toast from "react-hot-toast";
 
 export const useSiteSettings = () => {
   const queryClient = useQueryClient();
@@ -8,7 +9,7 @@ export const useSiteSettings = () => {
   const settingsQuery = useQuery({
     queryKey: ["site-settings"],
     queryFn: async () => {
-      const { data } = await $api.get("/site-settings/"); // Указываем ID 1
+      const { data } = await $api.get("/site-settings/"); 
       return data;
     },
   });
@@ -21,7 +22,7 @@ export const useSiteSettings = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["site-settings"] });
-      alert("Настройки сохранены!");
+      toast.success("Настройки сохранены!");
     },
   });
 

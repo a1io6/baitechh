@@ -15,7 +15,7 @@ export function Banner() {
     if (error) return null;
 
   return (
-    <div className="hero-banner">
+    <div className="hero-banner container">
       <Swiper
         modules={[Pagination, Autoplay, EffectFade]}
         spaceBetween={0}

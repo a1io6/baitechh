@@ -251,8 +251,8 @@
         "noBonuses": "Тилекке каршы,\nазыркы учурда сизде\nжеткиликтүү\nбонустар жок."
       },
       "logout": {
-        "title": "Чыгуу",
-        "confirmation": "Аккаунттан чыгууга ишенесизби?",
+        "title": "Аккаунттан чыгууга ишенесизби?",
+        "confirmation": "Сиз каалаган убакта маалыматыңызды колдонуп кайра кире аласыз.",
         "confirmButton": "Чыгуу",
         "cancelButton": "Жокко чыгаруу"
       },
@@ -457,5 +457,112 @@
   "corporateBlock": {
     "title": "Толук чечимдер",
     "readMore": "Көбүрөөк окуу"
-  }
+  },
+  "loginPage": {
+      "tabs": {
+        "login": "Кирүү",
+        "register": "Катталуу"
+      },
+      "placeholders": {
+        "name": "Атыңызды киргизиңиз",
+        "surname": "Фамилияңызды киргизиңиз",
+        "phone": "Телефонду киргизиңиз",
+        "email": "Email киргизиңиз",
+        "password": "Сырсөздү киргизиңиз"
+      },
+      "buttons": {
+        "login": "Кирүү",
+        "register": "Катталуу"
+      },
+      "termsText": "Катталуу менен сиз биздин ",
+      "termsLink": "тейлөө шарттарыбызга макулдугуңузду бересиз",
+      "forgotPassword": "Сырсөздү унуттуңузбу?",
+      "messages": {
+        "welcomeAdmin": "Кош келдиңиз",
+        "loginSuccess": "Сиз ийгиликтүү кирдиңиз!",
+        "acceptTerms": "Тейлөө шарттарын кабыл алуу керек",
+        "passwordLength": "Сырсөз кеминде 8 символду камтышы керек",
+        "loginError": "Кирүү катасы",
+        "registerError": "Катталуу катасы"
+      }
+    },
+     "forgotPassword": {
+      "title": "Сырсөздү унуттуңузбу?",
+      "subtitle": "Аккаунтуңузга байланыштуу почтаны киргизиңиз",
+      "placeholder": "Email киргизиңиз",
+      "button": "Кодду алуу",
+      "messages": {
+        "enterEmail": "Email киргизиңиз",
+        "codeSent": "Код жөнөтүлдү",
+        "sendError": "Жөнөтүү катасы"
+      }
+    },
+      "codeVerify": {
+      "title": "Кодду ырастоо",
+      "subtitle": "Төмөнкүгө жөнөтүлгөн 4 сандуу кодду киргизиңиз",
+      "loading": "Жүктөлүүдө...",
+      "buttons": {
+        "confirm": "Кодду ырастоо",
+        "resend": "Кодду кайра жөнөтүү",
+        "sending": "Жөнөтүлүүдө..."
+      },
+      "messages": {
+        "emailNotFound": "Email табылган жок. Кайрадан катталыңыз.",
+        "paste4Digits": "4 сандуу кодду чаптаңыз",
+        "enter4Digits": "Бардык 4 санды киргизиңиз",
+        "codeConfirmed": "Код ийгиликтүү ырасталды!",
+        "invalidCode": "Туура эмес код. Кайра аракет кылыңыз",
+        "codeResentTo": "Код кайра жөнөтүлдү",
+        "resendError": "Кодду жөнөтүүдө ката"
+      }
+    },
+     "resetPasswordCode": {
+      "title": "Кодду ырастоо",
+      "subtitle": "Төмөнкүгө жөнөтүлгөн 4 сандуу кодду киргизиңиз",
+      "loading": "Жүктөлүүдө...",
+      "button": "Кодду ырастоо",
+      "messages": {
+        "emailNotFound": "Email табылган жок",
+        "paste4Digits": "4 сандуу кодду чаптаңыз",
+        "enter4Digits": "Бардык 4 санды киргизиңиз",
+        "invalidCode": "Туура эмес код. Кайра аракет кылыңыз"
+      }
+    },
+    "cart": {
+      "card": "Себет",
+      "title": "Буйрутма",
+      "empty": {
+        "title": "Себетте али товарлар жок",
+        "description": "Каталогдон же издөөдөн керектүү нерсени табыңыз",
+        "goToCatalog": "Каталогго өтүү"
+      },
+      "checkout": "Буйрутма берүү",
+      "clearAll": "Баарын өчүрүү"
+    },
+      "productCard": {
+      "loading": "Жүктөлүүдө...",
+      "notFound": "Товар табылган жок",
+      "article": "Артикул",
+      "currency": "сом",
+      "bonuses": "бонустар",
+      "addToCart": "Себет"
+    },
+     "description": {
+      "title": "Сыпаттама",
+      "loading": "Жүктөлүүдө...",
+      "notAvailable": "Сыпаттама жок"
+    },
+     "productSpecs": {
+      "title": "Мүнөздөмөлөр",
+      "loading": "Жүктөлүүдө...",
+      "notAvailable": "Мүнөздөмөлөр жок"
+    },
+        "modalAuth": {
+      "personalAccount": "Жеке кабинет",
+      "logout": "Чыгуу",
+      "messages": {
+        "logoutSuccess": "Сиз ийгиликтүү чыктыңыз"
+      }
+    }
+
 }

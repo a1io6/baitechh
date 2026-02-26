@@ -7,16 +7,18 @@ import ProductCard from "./ui/product-card/ProductCard.jsx";
 import Description from "./ui/description/Description.jsx";
 import ProductSpecs from "./ui/ProductSpecs/ProductSpecs.jsx";
 import { PopularCard } from "../popularcard/PopularCard.jsx";
+import { useTranslation } from "react-i18next";
 
 function ProductDetail() {
-  const { id } = useParams(); // <-- берём id из URL
+  const {t} = useTranslation()
+  const { id } = useParams();
 
   return (
     <div className="xl:p-[0px] p-[20px]" style={{ maxWidth: "1279px", margin: "0 auto" }}>
       <Breadcrumb
         items={[
-          { label: "Главная", path: "/" },
-          { label: "Информация", path: "" },
+          { label: t('aboutCompany.breadcrumbs.home'), path: "/" },
+          { label: t('footer.information.title'), path: "" },
         ]}
       />
       <ProductCard productId={id} /> 

@@ -38,7 +38,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ru" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning
       >
         <I18nProvider>
         <QueryProvider>

@@ -9,8 +9,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useLogin, useRegister } from "@/lib/auth/hooks/hooks";
+import { useTranslation } from "react-i18next";
 
 const LoginPage = ({ type = "login" }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -23,86 +25,85 @@ const LoginPage = ({ type = "login" }) => {
   const loginMutation = useLogin();
   const registerMutation = useRegister();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (type === "login") {
-    // Логин
-    try {
-      const response = await loginMutation.mutateAsync({
-        email,
-        password
-      });
+    if (type === "login") {
+      // Логин
+      try {
+        const response = await loginMutation.mutateAsync({
+          email,
+          password
+        });
 
-      // ✅ Проверяем роль пользователя после успешного входа
-      console.log('Login response:', response);
-      
-      // Определяем роль
-      const isAdmin = response?.role === 'admin' || 
-                      response?.user?.is_staff === true || 
-                      response?.user?.is_superuser === true;
-      
-    if (isAdmin) {
-  // Только для админа — сохра
-  // няем в adminToken
-  if (response?.access) {
-    localStorage.setItem('adminToken', response.access);
-  }
-  if (response?.refresh) {
-    localStorage.setItem('adminRefreshToken', response.refresh);
-  }
-  toast.success('Добро пожаловать');
-  router.push('/camera'); // редирект для админа
-} else {
-  // Только для пользователя — сохраняем в access_token
-  if (response?.access) {
-    localStorage.setItem('access_token', response.access);
-  }
-  if (response?.refresh) {
-    localStorage.setItem('refresh_token', response.refresh);
-  }
-  toast.success('Вы успешно вошли!');
-  router.push('/'); // редирект для пользователя
-}
+        // ✅ Проверяем роль пользователя после успешного входа
+        console.log('Login response:', response);
+        
+        // Определяем роль
+        const isAdmin = response?.role === 'admin' || 
+                        response?.user?.is_staff === true || 
+                        response?.user?.is_superuser === true;
+        
+        if (isAdmin) {
+          // Только для админа — сохраняем в adminToken
+          if (response?.access) {
+            localStorage.setItem('adminToken', response.access);
+          }
+          if (response?.refresh) {
+            localStorage.setItem('adminRefreshToken', response.refresh);
+          }
+          toast.success(t('loginPage.messages.welcomeAdmin'));
+          router.push('/camera'); // редирект для админа
+        } else {
+          // Только для пользователя — сохраняем в access_token
+          if (response?.access) {
+            localStorage.setItem('access_token', response.access);
+          }
+          if (response?.refresh) {
+            localStorage.setItem('refresh_token', response.refresh);
+          }
+          toast.success(t('loginPage.messages.loginSuccess'));
+          router.push('/'); // редирект для пользователя
+        }
 
-      // Сохраняем информацию о пользователе
-      if (response?.user) {
-        localStorage.setItem('user', JSON.stringify(response.user));
-        console.log('✅ Данные пользователя сохранены');
+        // Сохраняем информацию о пользователе
+        if (response?.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+          console.log('✅ Данные пользователя сохранены');
+        }
+        
+      } catch (error) {
+        console.error('Login error:', error);
       }
-      
-    } catch (error) {
-      console.error('Login error:', error);
-    }
-  } else {
-    if (!acceptedTerms) {
-      toast.error('Необходимо принять условия обслуживания');
-      return;
-    }
+    } else {
+      if (!acceptedTerms) {
+        toast.error(t('loginPage.messages.acceptTerms'));
+        return;
+      }
 
-    if (password.length < 8) {
-      toast.error('Пароль должен содержать минимум 8 символов');
-      return;
-    }
+      if (password.length < 8) {
+        toast.error(t('loginPage.messages.passwordLength'));
+        return;
+      }
 
-    try {
-      const formData = {
-        name: name,
-        surname: surname,
-        number,
-        email,
-        password
-      };
+      try {
+        const formData = {
+          name: name,
+          surname: surname,
+          number,
+          email,
+          password
+        };
 
-      // Регистрация
-      await registerMutation.mutateAsync(formData);
-      
-      router.push(`/codeverify?email=${encodeURIComponent(email)}`);
-    } catch (error) {
-      console.error('Registration error:', error);
+        // Регистрация
+        await registerMutation.mutateAsync(formData);
+        
+        router.push(`/codeverify?email=${encodeURIComponent(email)}`);
+      } catch (error) {
+        console.error('Registration error:', error);
+      }
     }
-  }
-};
+  };
 
   const isLoading = type === "login" 
     ? loginMutation.isPending 
@@ -121,7 +122,7 @@ const handleSubmit = async (e) => {
             onClick={() => router.push("/login")}
             className={`login-form1__title ${type === "login" ? "active" : ""}`}
           >
-            Вход
+            {t('loginPage.tabs.login')}
           </h2>
           <h2
             className={`login-form1__title ${
@@ -129,7 +130,7 @@ const handleSubmit = async (e) => {
             }`}
             onClick={() => router.push("/register")}
           >
-            Регистрация
+            {t('loginPage.tabs.register')}
           </h2>
         </header>
 
@@ -138,7 +139,7 @@ const handleSubmit = async (e) => {
             <>
               <InputField
                 type="text"
-                placeholder="Введите имя"
+                placeholder={t('loginPage.placeholders.name')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isLoading}
@@ -146,7 +147,7 @@ const handleSubmit = async (e) => {
               />
               <InputField
                 type="text"
-                placeholder="Введите фамилию"
+                placeholder={t('loginPage.placeholders.surname')}
                 value={surname}
                 onChange={(e) => setSurname(e.target.value)}
                 disabled={isLoading}
@@ -154,7 +155,7 @@ const handleSubmit = async (e) => {
               />
               <InputField
                 type="tel"
-                placeholder="Введите телефон"
+                placeholder={t('loginPage.placeholders.phone')}
                 value={number}
                 onChange={(e) => setPhone(e.target.value)}
                 disabled={isLoading}
@@ -164,7 +165,7 @@ const handleSubmit = async (e) => {
           )}
           <InputField
             type="email"
-            placeholder="Введите email"
+            placeholder={t('loginPage.placeholders.email')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
@@ -173,7 +174,7 @@ const handleSubmit = async (e) => {
 
           <InputField
             type="password"
-            placeholder="Введите пароль"
+            placeholder={t('loginPage.placeholders.password')}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
@@ -187,7 +188,7 @@ const handleSubmit = async (e) => {
                error?.response?.data?.email ||
                error?.response?.data?.number ||
                error?.response?.data?.non_field_errors  ||
-               (type === "login" ? 'Ошибка входа' : 'Ошибка регистрации')}
+               (type === "login" ? t('loginPage.messages.loginError') : t('loginPage.messages.registerError'))}
             </div>
           )}
 
@@ -203,9 +204,9 @@ const handleSubmit = async (e) => {
                 disabled={isLoading}
               />
               <p className="login-form1__terms">
-                Регистрируясь вы соглашаетесь с нашими
+                {t('loginPage.termsText')}
                 <Link href="/terms" className="login-form1__terms-link">
-                  условиями обслуживания
+                  {t('loginPage.termsLink')}
                 </Link>
               </p>
             </div>
@@ -219,14 +220,14 @@ const handleSubmit = async (e) => {
             loading={isLoading}
             disabled={isLoading || (type === "register" && !acceptedTerms)}
           >
-            {type === "login" ? "Войти" : "Зарегистрироваться"}
+            {type === "login" ? t('loginPage.buttons.login') : t('loginPage.buttons.register')}
           </Button>
         </form>
 
         {type === "login" && (
           <div className="login-form1__footer">
             <Link href="/forgot-password" className="login-form1__forgot-password">
-              Забыли пароль?
+              {t('loginPage.forgotPassword')}
             </Link>
           </div>
         )}

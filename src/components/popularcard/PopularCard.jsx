@@ -29,7 +29,6 @@ export function PopularCard({ productId }) {
     );
   }
 
-  // Ошибка - не показываем блок
   if (error) {
     console.error('Ошибка загрузки похожих товаров:', error);
     return null;

@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import { useCart, useCreateCartItem } from '@/lib/cart/hooks/hooks'
+import { useSiteSettings } from '@/lib/settings/hook'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -24,6 +25,7 @@ export default function Header() {
   const router = useRouter()
   const { t, i18n } = useTranslation()
   const {data: items = []} = useCart();
+  const { settings, isLoading } = useSiteSettings();
 
   useEffect(() => {
     const checkAuth = () => {
@@ -99,60 +101,65 @@ export default function Header() {
             </button>
             
             {isContactsOpen && (
-              <div className="contacts-dropdown">
-                <div className="contacts-section">
-                  <h3><FiPhone /> {t('header.phones')}</h3>
-                  <div className="contacts-list">
-                    <a href="tel:+996555123456" className="contact-item">
-                      <FiPhone />
-                      <span>+996 555 123 456</span>
-                    </a>
-                    <a href="tel:+996700123456" className="contact-item">
-                      <FiPhone />
-                      <span>+996 700 123 456</span>
-                    </a>
-                    <a href="tel:+996777123456" className="contact-item">
-                      <FiPhone />
-                      <span>+996 777 123 456</span>
-                    </a>
-                  </div>
-                </div>
+             <div className="contacts-dropdown">
+  <div className="contacts-section">
+    <h3><FiPhone /> {t('header.phones')}</h3>
+    <div className="contacts-list">
+      {isLoading ? (
+        <span className="footer__skeleton" />
+      ) : (
+        <a href={`tel:${settings?.phone}`} className="contact-item">
+          <FiPhone />
+          <span>{settings?.phone}</span>
+        </a>
+      )}
+    </div>
+  </div>
 
-                <div className="contacts-section">
-                  <h3><FiMail /> Email</h3>
-                  <div className="contacts-list">
-                    <a href="mailto:info@baitech.kg" className="contact-item">
-                      <FiMail />
-                      <span>info@baitech.kg</span>
-                    </a>
-                  </div>
-                </div>
+  <div className="contacts-section">
+    <h3><FiMail /> Email</h3>
+    <div className="contacts-list">
+      {isLoading ? (
+        <span className="footer__skeleton" />
+      ) : (
+        <a href={`mailto:${settings?.email}`} className="contact-item">
+          <FiMail />
+          <span>{settings?.email}</span>
+        </a>
+      )}
+    </div>
+  </div>
 
-                <div className="contacts-section">
-                  <h3><FiMapPin /> {t('header.address')}</h3>
-                  <div className="contacts-list">
-                    <div className="contact-item">
-                      <FiMapPin />
-                      <span>г. Бишкек, ул. Примерная 123</span>
-                    </div>
-                  </div>
-                </div>
+  <div className="contacts-section">
+    <h3><FiMapPin /> {t('header.address')}</h3>
+    <div className="contacts-list">
+      <div className="contact-item">
+        <FiMapPin />
+        {isLoading ? (
+          <span className="footer__skeleton" />
+        ) : (
+          <span>{t('footer.address.street')}</span>
+        )}
+      </div>
+    </div>
+  </div>
 
-                <div className="contacts-section">
-                  <h3>{t('header.socials')}</h3>
-                  <div className="contacts-social">
-                    <a href="https://wa.me/996555123456" target="_blank" rel="noopener noreferrer" className="social-link whatsapp">
-                      <FaWhatsapp />
-                    </a>
-                    <a href="https://t.me/baitech" target="_blank" rel="noopener noreferrer" className="social-link telegram">
-                      <FaTelegram />
-                    </a>
-                    <a href="https://instagram.com/baitech" target="_blank" rel="noopener noreferrer" className="social-link instagram">
-                      <FaInstagram />
-                    </a>
-                  </div>
-                </div>
-              </div>
+  <div className="contacts-section">
+    <h3>{t('header.socials')}</h3>
+    <div className="contacts-social">
+      {settings?.whatsapp && (
+        <a href={settings.whatsapp} target="_blank" rel="noopener noreferrer" className="social-link whatsapp">
+          <FaWhatsapp />
+        </a>
+      )}
+      {settings?.instagram && (
+        <a href={settings.instagram} target="_blank" rel="noopener noreferrer" className="social-link instagram">
+          <FaInstagram />
+        </a>
+      )}
+    </div>
+  </div>
+</div>
             )}
           </div>
         </div>
@@ -196,8 +203,8 @@ export default function Header() {
           <div className='relative'>
             <HiOutlineShoppingCart />
       {items.length > 0 && (
-  <span className='absolute top-[-10px] right-[-10px] text-[14px] py-[1px] px-[4px] rounded-full bg-red-500 text-white'>
-    {items.length}
+  <span className='absolute top-[-10px] right-[-10px] text-[14px] flex justify-center items-center pr-[0px] pt-[1px] h-[17px] w-[17px] rounded-full bg-[#3AA15B] text-white'>
+    {items.length}  
   </span>
 )}
           </div>

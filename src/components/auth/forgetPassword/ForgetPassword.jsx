@@ -7,8 +7,10 @@ import Button from "@/components/ui/auth/buttton";
 import { useRouter } from "next/navigation";
 import { usePasswordResetRequest } from "@/lib/auth/hooks/hooks";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 function ForgotPassword() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [email, setEmail] = useState("");
   
@@ -18,23 +20,20 @@ function ForgotPassword() {
     e.preventDefault();
 
     if (!email) {
-      toast.error('Введите email');
+      toast.error(t('forgotPassword.messages.enterEmail'));
       return;
     }
 
     try {
-      console.log('📤 Запрос сброса пароля для:', email);
-      
       // Передаем объект с email, а не просто строку
       await passwordResetMutation.mutateAsync({ email });
       
-      toast.success('Код отправлен на ' + email);
+      toast.success(t('forgotPassword.messages.codeSent') + ' ' + email);
       
       // Перенаправляем на страницу ввода кода с email в URL
       router.push(`/resetpassword?email=${encodeURIComponent(email)}`);
     } catch (error) {
-      console.error('Password reset request error:', error);
-    }
+      }
   };
 
   const isLoading = passwordResetMutation.isPending;
@@ -44,17 +43,17 @@ function ForgotPassword() {
       <CloseRegister onClose={() => router.push("/")} />
       <div className="forgot-password-page">
         <h2 className="forgot-password-page__title">
-          Забыли пароль?
+          {t('forgotPassword.title')}
         </h2>
         <h4 className="forgot-password-page__subtitle">
-          Введите почту, к которой привязан ваш аккаунт
+          {t('forgotPassword.subtitle')}
         </h4>
         
         <form className="forgot-password-page__form" onSubmit={handleSubmit}>
           <InputField 
             type="email" 
             required 
-            placeholder="Введите email"
+            placeholder={t('forgotPassword.placeholder')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
@@ -65,7 +64,7 @@ function ForgotPassword() {
               {passwordResetMutation.error?.response?.data?.message || 
                passwordResetMutation.error?.response?.data?.detail ||
                passwordResetMutation.error?.response?.data?.email ||
-               'Ошибка отправки'}
+               t('forgotPassword.messages.sendError')}
             </div>
           )}
 
@@ -75,7 +74,7 @@ function ForgotPassword() {
             loading={isLoading}
             disabled={isLoading}
           >
-            Получить код
+            {t('forgotPassword.button')}
           </Button>
         </form>
       </div>

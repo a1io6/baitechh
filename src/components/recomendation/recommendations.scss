@@ -423,9 +423,11 @@ font-size: 30px;
 
 @media (max-width: 480px) {
   .recommendations {
-    padding: 20px 15px;
+    
+    padding: 0px 0px;
 
     &__title {
+      margin-left: 15px;
       font-size: 20px;
       margin-bottom: 15px;
     }
@@ -439,6 +441,11 @@ font-size: 30px;
     padding: 14px;
     border-radius: 14px;
 
+  &:hover {
+    transform: translateY(0px);
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+    border-color: transparent;
+  }
     &__badge {
       top: 12px;
       left: 12px;

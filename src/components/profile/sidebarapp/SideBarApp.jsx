@@ -128,7 +128,7 @@ export default function SidebarApp() {
     { id: 'returns', label: t('profile.menu.returns'), icon: RotateCcw },
     { id: 'transactions', label: t('profile.menu.transactions'), icon: CreditCard },
     { id: 'bonuses', label: t('profile.menu.bonuses'), icon: Gift },
-    { id: 'logout', label: t('profile.menu.logout'), icon: LogOut },
+    // { id: 'logout', label: t('profile.menu.logout'), icon: LogOut },
   ];
 
   // Если проверяется авторизация
@@ -173,7 +173,7 @@ export default function SidebarApp() {
     switch (activePage) {
       case 'profile':
         return (
-          <div>
+          <div className='fsds'>
             <h1 className="text-[30px] font-bold mb-6">{t('profile.myInfo.title')}</h1>
             {profileLoading ? (
               <div className="flex items-center justify-center py-12">
@@ -239,7 +239,7 @@ export default function SidebarApp() {
         );
       case 'password':
         return (
-          <div>
+          <div className='container'>
            <ChangePassword/>
           </div>
         );
@@ -406,9 +406,9 @@ export default function SidebarApp() {
   );
 
   return (
-    <div className="sidebarprofile flex h-screen container relative">
+    <div className="sidebarprofile flex h-screen relative">
       {/* Основной контент */}
-      <div className="sidebarapp flex-1 relative">
+      <div className="sidebarapp flex-1 relative pb-[30px]">
         <div className="">
           <div className="flex items-center justify-between mb-6 relative">
             <button

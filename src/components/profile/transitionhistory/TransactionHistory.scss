@@ -1,5 +1,7 @@
 .transactionhistory{
     .transactionhistorycard{
+        margin-left: 6px;
+        margin-top: 13px;
     max-width: 308px;
     padding: 20px;
     border-bottom: 1px solid #E5E7EB;
@@ -7,8 +9,11 @@
     justify-content: start;
     align-items: center;
     gap: 20px;
-    box-shadow: 10px 8px 24px rgba(0, 0, 0, 0.05);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.138);
     border-radius: 8px;
+     @media (max-width: 768px) {
+                margin-left: 4px;
+     }
     .details{
         display: flex;
         flex-direction: column;

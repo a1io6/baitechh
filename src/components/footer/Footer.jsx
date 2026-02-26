@@ -2,16 +2,19 @@
 import './style.scss';
 import logo from '../../../assets/svg/logo.svg';
 
-import { FiPhone, FiClock, FiMapPin, } from 'react-icons/fi';
+import { FiPhone, FiClock, FiMapPin } from 'react-icons/fi';
 import { FaWhatsapp, FaInstagram } from 'react-icons/fa';
 import { IoChevronDownSharp } from "react-icons/io5";
 import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { useSiteSettings } from '@/lib/settings/hook';
 
 function Footer() {
   const { t } = useTranslation();
+  const { settings, isLoading } = useSiteSettings();
+
   const [openSections, setOpenSections] = useState({
     info: false,
     client: false,
@@ -27,24 +30,27 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="footer__container">
-        {/* Left column - contacts & socials (always visible) */}
+
+        {/* Контакты */}
         <div className="footer__col footer__col--contacts">
           <Image src={logo} alt="Baitex" className="footer__logo" />
 
           <div className="footer__item">
             <FiPhone />
-            <span>
-              +996 (505) 406 805 <br />
-              +996 (505) 406 805
-            </span>
+            {isLoading ? (
+              <span className="footer__skeleton" />
+            ) : (
+              <a href={`tel:${settings?.phone}`}>{settings?.phone}</a>
+            )}
           </div>
 
           <div className="footer__item">
             <FiClock />
-            <span>
-              {t('footer.workingHours.weekdays')} <br />
-              {t('footer.workingHours.weekend')}
-            </span>
+            {isLoading ? (
+              <span className="footer__skeleton" />
+            ) : (
+              <span>{settings?.work_hours}</span>
+            )}
           </div>
 
           <div className="footer__item">
@@ -56,33 +62,29 @@ function Footer() {
           </div>
 
           <div className="footer__socials">
-            <a
-              href="https://wa.me/996505406805"
+             <a            
+              href={settings?.whatsapp ?? '#'}
               target="_blank"
               rel="noreferrer"
               className="footer__social"
             >
-              <span className="footer__social-icon">
-                <FaWhatsapp />
-              </span>
+              <span className="footer__social-icon"><FaWhatsapp /></span>
               <span className="footer__social-text">WhatsApp</span>
             </a>
 
             <a
-              href="#"
+              href={settings?.instagram ?? '#'}
               target="_blank"
               rel="noreferrer"
               className="footer__social"
             >
-              <span className="footer__social-icon">
-                <FaInstagram />
-              </span>
+              <span className="footer__social-icon"><FaInstagram /></span>
               <span className="footer__social-text">Instagram</span>
             </a>
           </div>
         </div>
 
-        {/* Информация – accordion on mobile */}
+        {/* Информация */}
         <div className="footer__col footer__col--accordion">
           <button
             className="footer__accordion-header"
@@ -90,29 +92,22 @@ function Footer() {
             type="button"
           >
             <h4>{t('footer.information.title')}</h4>
-            <IoChevronDownSharp 
-              className={`footer__accordion-icon ${
-                openSections.info ? 'footer__accordion-icon--open' : ''
-              }`}
+            <IoChevronDownSharp
+              className={`footer__accordion-icon ${openSections.info ? 'footer__accordion-icon--open' : ''}`}
             />
           </button>
-
-          <div
-            className={`footer__accordion-content ${
-              openSections.info ? 'footer__accordion-content--open' : ''
-            }`}
-          >
+          <div className={`footer__accordion-content ${openSections.info ? 'footer__accordion-content--open' : ''}`}>
             <ul>
               <li><Link href="/about">{t('footer.information.aboutUs')}</Link></li>
-              <li><a href="/privacy">{t('footer.information.privacy')}</a></li>
-              <li><a href="/terms">{t('footer.information.terms')}</a></li>
-              <li><a href="/brands">{t('footer.information.manufacturers')}</a></li>
-              <li><a href="/certificates">{t('footer.information.certificates')}</a></li>
+              <li><Link href="/privacy">{t('footer.information.privacy')}</Link></li>
+              <li><Link href="/terms">{t('footer.information.terms')}</Link></li>
+              <li><Link href="/brands">{t('footer.information.manufacturers')}</Link></li>
+              <li><Link href="/certificates">{t('footer.information.certificates')}</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* Клиенту – accordion on mobile */}
+        {/* Клиенту */}
         <div className="footer__col footer__col--accordion">
           <button
             className="footer__accordion-header"
@@ -120,42 +115,39 @@ function Footer() {
             type="button"
           >
             <h4>{t('footer.client.title')}</h4>
-            <IoChevronDownSharp 
-              className={`footer__accordion-icon ${
-                openSections.client ? 'footer__accordion-icon--open' : ''
-              }`}
+            <IoChevronDownSharp
+              className={`footer__accordion-icon ${openSections.client ? 'footer__accordion-icon--open' : ''}`}
             />
           </button>
-
-          <div
-            className={`footer__accordion-content ${
-              openSections.client ? 'footer__accordion-content--open' : ''
-            }`}
-          >
+          <div className={`footer__accordion-content ${openSections.client ? 'footer__accordion-content--open' : ''}`}>
             <ul>
-              <li><a href="/profile">{t('footer.client.account')}</a></li>
-              <li><a href="/orders">{t('footer.client.orderHistory')}</a></li>
-              <li><a href="/return">{t('footer.client.returns')}</a></li>
+              <li><Link href="/profile">{t('footer.client.account')}</Link></li>
+              <li><Link href="/orders">{t('footer.client.orderHistory')}</Link></li>
+              <li><Link href="/return">{t('footer.client.returns')}</Link></li>
             </ul>
           </div>
         </div>
 
-        {/* Map – always visible, but adapts width on mobile */}
+        {/* Карта */}
         <div className="footer__col footer__col--map">
           <div className="footer__map">
             <div className="footer__map-title">{t('footer.map')}</div>
-            <iframe
-              title="2GIS Map"
-              src="https://widgets.2gis.com/widget?type=firmsonmap&options=%7B%22pos%22%3A%7B%22lat%22%3A42.844049%2C%22lon%22%3A74.636407%2C%22zoom%22%3A16%7D%2C%22opt%22%3A%7B%22city%22%3A%22bishkek%22%7D%2C%22org%22%3A%2270000001075101217%22%7D"
-              width="100%"
-              height="400"
-            />
+            {!isLoading && settings?.address && (
+              <iframe
+                title="2GIS Map"
+                src={settings.address}
+                width="100%"
+                height="400"
+                loading="lazy"
+              />
+            )}
           </div>
         </div>
+
       </div>
 
       <div className="footer__bottom">
-        Baitech © 2025 <a href="https://www.instagram.com/a1i.o6/">@a1i.o6</a>
+        Baitech © 2025
       </div>
     </footer>
   );
