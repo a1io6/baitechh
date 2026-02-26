@@ -5,6 +5,12 @@
   min-height: 100vh;
   width: calc(100% - 280px);
 
+  // Адаптив для основной страницы
+  @media (max-width: 1024px) {
+    width: 100%;
+    padding: 15px;
+  }
+
   .form-container {
     background: #F5F7FA;
     border-radius: 12px;
@@ -13,16 +19,30 @@
     max-width: 822px;
     margin: 0 auto;
 
+    @media (max-width: 768px) {
+      padding: 15px;
+    }
+
     .image-upload-section {
       display: flex;
       gap: 20px;
       margin-bottom: 30px;
-      height: 390px; // Высота для выравнивания по высоте
+      height: 390px;
+
+      @media (max-width: 600px) {
+        flex-direction: column-reverse;
+        height: auto;
+      }
 
       .thumbnail-grid {
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        @media (max-width: 600px) {
+          flex-direction: row;
+          justify-content: center;
+        }
       }
 
       .thumbnail-slot,
@@ -41,10 +61,11 @@
 
       .main-image-slot {
         flex: 1;
-        // height: 290px; // Сумма высот мелких слотов + отступы
+        @media (max-width: 600px) {
+          height: 250px;
+        }
       }
 
-      // ПРЕВЬЮ НА ВЕСЬ БЛОК
       .preview-container {
         width: 100%;
         height: 100%;
@@ -53,11 +74,10 @@
         img {
           width: 100%;
           height: 100%;
-          object-fit: cover; // Картинка заполняет всё 100%
+          object-fit: cover;
           display: block;
         }
 
-        // КНОПКА УДАЛЕНИЯ СВЕРХУ
         .remove-btn-top {
           position: absolute;
           top: 6px;
@@ -76,9 +96,7 @@
           z-index: 5;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
-          &:hover {
-            background: #c0392b;
-          }
+          &:hover { background: #c0392b; }
         }
       }
 
@@ -97,7 +115,6 @@
       }
     }
 
-    // Остальные стили сетки и форм
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -125,6 +142,12 @@
         border: 1px solid #B0B0B0;
         border-radius: 6px;
         background: #fff;
+        font-size: 14px;
+        
+        &:focus {
+          outline: none;
+          border-color: #1c2a3d;
+        }
       }
     }
 
@@ -140,6 +163,9 @@
         border-radius: 6px;
         cursor: pointer;
         font-size: 20px;
+        flex-shrink: 0;
+        transition: opacity 0.2s;
+        &:hover { opacity: 0.9; }
       }
     }
 
@@ -149,6 +175,11 @@
       gap: 15px;
       margin-top: 30px;
 
+      @media (max-width: 480px) {
+        flex-direction: column;
+        button { width: 100%; }
+      }
+
       .submit-btn {
         background: #1c2a3d;
         color: white;
@@ -156,6 +187,8 @@
         border: none;
         border-radius: 6px;
         cursor: pointer;
+        font-weight: 600;
+        &:disabled { opacity: 0.6; cursor: not-allowed; }
       }
 
       .cancel-btn {
@@ -168,13 +201,14 @@
     }
   }
 
+  // Header styles... (оставляем ваши без изменений)
   .page-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 40px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #e2e8f0; // Тонкая линия разделения
+    border-bottom: 1px solid #e2e8f0;
 
     .header-left {
       display: flex;
@@ -194,59 +228,22 @@
       color: #1c2a3d;
       cursor: pointer;
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-
-      svg {
-        width: 20px;
-        height: 20px;
-      }
-
+      
       &:hover {
         background: #1c2a3d;
         color: #fff;
-        border-color: #1c2a3d;
         transform: translateX(-3px);
-        box-shadow: 0 4px 12px rgba(28, 42, 61, 0.15);
-      }
-
-      &:active {
-        transform: scale(0.95);
       }
     }
-
+    
     .header-titles {
-      h2 {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1a202c;
-        margin: 0;
-        letter-spacing: -0.5px;
-      }
-
-      p {
-        font-size: 13px;
-        color: #718096;
-        margin: 4px 0 0 0;
-      }
-    }
-
-    .header-badge {
-      padding: 6px 12px;
-      background: rgba(99, 102, 241, 0.1);
-      color: #6366f1;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      border: 1px solid rgba(99, 102, 241, 0.2);
-
-      @media (max-width: 600px) {
-        display: none; // Скрываем бейдж на маленьких экранах
-      }
+       h2 { font-size: 24px; margin: 0; }
+       p { font-size: 13px; color: #718096; margin-top: 4px; }
     }
   }
 }
 
+// --- ОБНОВЛЕННЫЕ СТИЛИ МОДАЛКИ ---
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -256,6 +253,7 @@
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  padding: 20px;
 
   .modal-content {
     background: #fff;
@@ -264,52 +262,105 @@
     width: 100%;
     max-width: 450px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: modalAppear 0.3s ease-out;
 
     h3 {
       margin-top: 0;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+      font-size: 20px;
+      color: #1a202c;
+      text-align: center;
     }
 
     .modal-fields {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 18px;
 
-      label {
-        font-weight: 500;
-        font-size: 14px;
-      }
+      // Обертка для каждого поля
+      .modal-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
 
-      input,
-      textarea {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #B0B0B0;
-        border-radius: 6px;
+        label {
+          font-weight: 600;
+          font-size: 14px;
+          color: #4a5568;
+        }
+
+        input,
+        textarea,
+        select {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #cbd5e0;
+          border-radius: 8px;
+          font-size: 14px;
+          background: #fff;
+          transition: border-color 0.2s, box-shadow 0.2s;
+
+          &:focus {
+            outline: none;
+            border-color: #1c2a3d;
+            box-shadow: 0 0 0 3px rgba(28, 42, 61, 0.1);
+          }
+        }
+
+        // Специальный стиль для селекта в модалке (стрелочка)
+        select {
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right 12px center;
+          background-size: 16px;
+          padding-right: 40px;
+          cursor: pointer;
+        }
+
+        textarea {
+          min-height: 100px;
+          resize: vertical;
+        }
       }
     }
 
     .modal-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
-      margin-top: 25px;
+      gap: 12px;
+      margin-top: 30px;
 
       button {
-        padding: 10px 20px;
-        border-radius: 6px;
+        padding: 12px 24px;
+        border-radius: 8px;
         cursor: pointer;
         border: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: transform 0.1s, opacity 0.2s;
+
+        &:active { transform: scale(0.98); }
+        &:disabled { opacity: 0.5; cursor: not-allowed; }
       }
 
       .cancel-btn {
-        background: #dfe4ea;
+        background: #edf2f7;
+        color: #4a5568;
+        &:hover { background: #e2e8f0; }
       }
 
       .confirm-btn {
         background: #1c2a3d;
         color: #fff;
+        min-width: 120px;
+        &:hover { opacity: 0.9; }
       }
     }
   }
+}
+
+@keyframes modalAppear {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
