@@ -4,12 +4,14 @@ import "./ProductCard.scss";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { productApi } from "@/lib/products/api/useProducts";
+import { useTranslation } from "react-i18next";
 
 const ProductCard = ({ productId }) => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(null);
   const [count, setCount] = useState(1);
+  const {t} = useTranslation()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -35,13 +37,13 @@ const ProductCard = ({ productId }) => {
 
   const addToCart = () => {
     console.log({
-      product: product?.name,
+      product_id: product?.id,
       quantity: count,
     });
   };
 
-  if (loading) return <div className="product">Загрузка...</div>;
-  if (!product) return <div className="product">Товар не найден</div>;
+  if (loading) return <div className="loader"></div>;
+  if (!product) return <div className="product text-center">{t('productCard.notFound')}</div>;
 
   return (
     <div className="product">
@@ -66,11 +68,12 @@ const ProductCard = ({ productId }) => {
       </div>
 
       <div className="product__info">
-        <h1>Артикул: {product.article}</h1>
-        <p className="product__desc">{product.name}</p>
-        <p className="product__descip">{product.description.slice(0, 150)}...</p>
-        <div className="product__price">{product.price.toLocaleString()} сом</div>
-        <div className="product__bonus">{product.bonus || 0} бонусов</div>
+        <h1>{t('productCard.article')}: {product.article}</h1>
+        <p className="product__desc" 
+    >{product.name}</p>
+        <p className="product__descip line-clamp-3" title={product.description}>{product.description.slice(0, 150)}...</p>
+        <div className="product__price">{product.price.toLocaleString()} {t('productCard.currency')}</div>
+        <div className="product__bonus">{product.bonus || 0} {t('productCard.bonuses')}</div>
 
         <div className="product__actions">
           <div className="counter">
@@ -80,7 +83,7 @@ const ProductCard = ({ productId }) => {
           </div>
 
           <button className="add-to-cart" onClick={addToCart}>
-            <ShoppingCart /> Корзина
+            <ShoppingCart /> {t('productCard.addToCart')}
           </button>
         </div>
       </div>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useProducts } from "@/lib/products/hooks/hooks";
 import "./EditProduct.scss";
+import Image from "next/image";
 
 const EditProduct = () => {
   const params = useParams();
@@ -118,7 +119,7 @@ const EditProduct = () => {
       <form className="form-container" onSubmit={handleSubmit}>
         <div className="image-upload-section">
           <div className="thumbnail-grid">
-            {[0, 1, 2].map((idx) => (
+            {[0, 1, 2]?.map((idx) => (
               <div key={idx} className="thumbnail-slot">
                 <input
                   type="file"
@@ -129,7 +130,7 @@ const EditProduct = () => {
                 />
                 <label htmlFor={`thumb-${idx}`}>
                   {previews[idx] ? (
-                    <img src={previews[idx]} alt="Превью" />
+                    <Image src={previews[idx]} alt="Превью" />
                   ) : (
                     <div className="upload-placeholder">📷</div>
                   )}
@@ -148,7 +149,7 @@ const EditProduct = () => {
             />
             <label htmlFor="main-image">
               {previews[3] ? (
-                <img src={previews[3]} alt="Главное фото" />
+                <Image src={previews[3]} alt="Главное фото" />
               ) : (
                 <div className="upload-placeholder-main">Загрузить главное фото</div>
               )}
@@ -218,4 +219,3 @@ const EditProduct = () => {
 };
 
 export default EditProduct;
-// generateStaticParams бул жерден өчүрүлдү, анткени ал layout.jsx файлына көчүрүлдү.

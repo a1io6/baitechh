@@ -2,8 +2,10 @@
 import { productApi } from "@/lib/products/api/useProducts";
 import "./ProductSpecs.scss";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const ProductSpecs = ({ productId }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(true);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +46,7 @@ const ProductSpecs = ({ productId }) => {
         aria-expanded={open}
       >
         <div className="specs__header-content">
-          <span className="specs__header-text">Характеристики</span>
+          <span className="specs__header-text">{t('productSpecs.title')}</span>
         </div>
         <div className={`specs__arrow ${open ? "specs__arrow--open" : ""}`}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -61,13 +63,13 @@ const ProductSpecs = ({ productId }) => {
 
       <div className={`specs__content ${open ? "specs__content--open" : "specs__content--closed"}`}>
         {loading ? (
-          <p>Загрузка...</p>
+          <p>{t('productSpecs.loading')}</p>
         ) : product?.characteristics ? (
           <div style={{ whiteSpace: 'pre-line' }}>
            <p>{formatCharacteristics(product.characteristics)}</p> 
           </div>
         ) : (
-          <p>Характеристики отсутствуют</p>
+          <p>{t('productSpecs.notAvailable')}</p>
         )}
       </div>
     </div>

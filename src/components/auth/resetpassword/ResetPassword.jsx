@@ -1,13 +1,15 @@
 "use client"
 import React, { useState, useRef, Suspense, useEffect } from 'react';
-import './ResetPasswordCode.scss'; // или используйте CodeVerify.scss
+import './ResetPasswordCode.scss';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import CloseRegister from '@/components/ui/auth/closeregister';
 import Button from '@/components/ui/auth/buttton';
 import { usePasswordResetVerify } from '@/lib/auth/hooks/hooks';
+import { useTranslation } from 'react-i18next';
 
 export function ResetPasswordCodeContent() {
+  const { t } = useTranslation();
   const [code, setCode] = useState(['', '', '', '']);
   const inputRefs = useRef([]);
   const router = useRouter();
@@ -24,10 +26,10 @@ export function ResetPasswordCodeContent() {
     if (emailFromUrl) {
       setEmail(emailFromUrl);
     } else {
-      toast.error('Email не найден');
+      toast.error(t('resetPasswordCode.messages.emailNotFound'));
       setTimeout(() => router.push('/forgot-password'), 2000);
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, t]);
 
   const handleChange = (index, value) => {
     if (value !== '' && !/^\d$/.test(value)) {
@@ -107,7 +109,7 @@ export function ResetPasswordCodeContent() {
       setCode(pastedCode);
       setTimeout(() => inputRefs.current[3]?.focus(), 0);
     } else {
-      toast.error('Пожалуйста, вставьте 4-значный код');
+      toast.error(t('resetPasswordCode.messages.paste4Digits'));
     }
   };
 
@@ -116,12 +118,12 @@ export function ResetPasswordCodeContent() {
     const fullCode = code.join('');
     
     if (fullCode.length !== 4) {
-      toast.error('Пожалуйста, введите все 4 цифры');
+      toast.error(t('resetPasswordCode.messages.enter4Digits'));
       return;
     }
 
     if (!email) {
-      toast.error('Email не найден');
+      toast.error(t('resetPasswordCode.messages.emailNotFound'));
       return;
     }
 
@@ -141,7 +143,7 @@ export function ResetPasswordCodeContent() {
         error?.response?.data?.message || 
         error?.response?.data?.detail ||
         error?.response?.data?.error ||
-        'Неверный код. Попробуйте еще раз';
+        t('resetPasswordCode.messages.invalidCode');
       
       toast.error(errorMessage);
       
@@ -158,7 +160,7 @@ export function ResetPasswordCodeContent() {
         <CloseRegister onClose={() => router.push("/")} />
         <div className="forgot-password-page-container">
           <div className="forgot-password-page">
-            <div className="text-center p-6">Загрузка...</div>
+            <div className="text-center p-6">{t('resetPasswordCode.loading')}</div>
           </div>
         </div>
       </div>
@@ -171,10 +173,10 @@ export function ResetPasswordCodeContent() {
       <div className="forgot-password-page-container">
         <div className="forgot-password-page">
           <h2 className="forgot-password-page__title">
-            Подтверждение кода
+            {t('resetPasswordCode.title')}
           </h2>
           <h4 className="forgot-password-page__subtitle">
-            Введите 4-значный код, отправленный на {email}
+            {t('resetPasswordCode.subtitle')} {email}
           </h4>
           
           <form className="forgot-password-page__form" onSubmit={handleSubmit}>
@@ -205,7 +207,7 @@ export function ResetPasswordCodeContent() {
                  verifyCodeMutation.error?.response?.data?.detail || 
                  verifyCodeMutation.error?.response?.data?.error ||
                  verifyCodeMutation.error?.response?.data?.non_field_errors ||
-                 'Неверный код. Попробуйте еще раз'}
+                 t('resetPasswordCode.messages.invalidCode')}
               </div>
             )}
             
@@ -215,7 +217,7 @@ export function ResetPasswordCodeContent() {
               loading={verifyCodeMutation.isPending}
               disabled={isLoading || code.join('').length !== 4}
             >
-              Подтвердить код
+              {t('resetPasswordCode.button')}
             </Button>
           </form>
         </div>
@@ -225,8 +227,10 @@ export function ResetPasswordCodeContent() {
 }
 
 export default function ResetPasswordCode() {
+  const { t } = useTranslation();
+  
   return (
-    <Suspense fallback={<div>Загрузка...</div>}>
+    <Suspense fallback={<div>{t('resetPasswordCode.loading')}</div>}>
       <ResetPasswordCodeContent />
     </Suspense>
   );

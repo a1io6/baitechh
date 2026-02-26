@@ -251,8 +251,8 @@
         "noBonuses": "Unfortunately,\nat the moment you\ndon't have any\navailable bonuses."
       },
       "logout": {
-        "title": "Logout",
-        "confirmation": "Are you sure you want to log out of your account?",
+        "title": "Are you sure you want to log out of your account?",
+        "confirmation": "You can log in again at any time using your details.",
         "confirmButton": "Log Out",
         "cancelButton": "Cancel"
       },
@@ -457,5 +457,111 @@
     "corporateBlock": {
     "title": "Turnkey Comprehensive Solutions",
     "readMore": "Read More"
-  }
+  },
+   "loginPage": {
+      "tabs": {
+        "login": "Login",
+        "register": "Register"
+      },
+      "placeholders": {
+        "name": "Enter name",
+        "surname": "Enter surname",
+        "phone": "Enter phone",
+        "email": "Enter email",
+        "password": "Enter password"
+      },
+      "buttons": {
+        "login": "Log In",
+        "register": "Sign Up"
+      },
+      "termsText": "By registering you agree to our ",
+      "termsLink": "terms of service",
+      "forgotPassword": "Forgot password?",
+      "messages": {
+        "welcomeAdmin": "Welcome",
+        "loginSuccess": "You have successfully logged in!",
+        "acceptTerms": "You must accept the terms of service",
+        "passwordLength": "Password must contain at least 8 characters",
+        "loginError": "Login error",
+        "registerError": "Registration error"
+      }
+    },
+     "forgotPassword": {
+      "title": "Forgot password?",
+      "subtitle": "Enter the email associated with your account",
+      "placeholder": "Enter email",
+      "button": "Get Code",
+      "messages": {
+        "enterEmail": "Enter email",
+        "codeSent": "Code sent to",
+        "sendError": "Send error"
+      }
+    },
+    "codeVerify": {
+      "title": "Code Verification",
+      "subtitle": "Enter the 4-digit code sent to",
+      "loading": "Loading...",
+      "buttons": {
+        "confirm": "Confirm Code",
+        "resend": "Resend Code",
+        "sending": "Sending..."
+      },
+      "messages": {
+        "emailNotFound": "Email not found. Please register again.",
+        "paste4Digits": "Please paste a 4-digit code",
+        "enter4Digits": "Please enter all 4 digits",
+        "codeConfirmed": "Code confirmed successfully!",
+        "invalidCode": "Invalid code. Please try again",
+        "codeResentTo": "Code resent to",
+        "resendError": "Error sending code"
+      }
+    },
+"resetPasswordCode": {
+      "title": "Code Verification",
+      "subtitle": "Enter the 4-digit code sent to",
+      "loading": "Loading...",
+      "button": "Confirm Code",
+      "messages": {
+        "emailNotFound": "Email not found",
+        "paste4Digits": "Please paste a 4-digit code",
+        "enter4Digits": "Please enter all 4 digits",
+        "invalidCode": "Invalid code. Please try again"
+      }
+    },
+     "cart": {
+      "card": "Cart",
+      "title": "Order",
+      "empty": {
+        "title": "Your cart is empty",
+        "description": "Find what you need in the catalog or through search",
+        "goToCatalog": "Go to Catalog"
+      },
+      "checkout": "Checkout",
+      "clearAll": "Clear All"
+    },
+    "productCard": {
+      "loading": "Loading...",
+      "notFound": "Product not found",
+      "article": "Article",
+      "currency": "som",
+      "bonuses": "bonuses",
+      "addToCart": "Cart"
+    },
+    "description": {
+      "title": "Description",
+      "loading": "Loading...",
+      "notAvailable": "Description not available"
+    },
+     "productSpecs": {
+      "title": "Specifications",
+      "loading": "Loading...",
+      "notAvailable": "Specifications not available"
+    },
+      "modalAuth": {
+      "personalAccount": "Personal Account",
+      "logout": "Logout",
+      "messages": {
+        "logoutSuccess": "You have successfully logged out"
+      }
+    }
 }

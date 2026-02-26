@@ -93,7 +93,7 @@ export const useLogin = () => {
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('isAdmin', 'true');
         
-        toast.success('Добро пожаловать в админ панель!');
+        toast.success('Добро пожаловать!');
         
         // Уведомляем об изменении авторизации
         window.dispatchEvent(new Event('authChange'));
@@ -169,6 +169,7 @@ export const usePasswordResetRequest = () => {
     onError: (error) => {
       const message = error.response?.data?.message || 
                      error.response?.data?.detail || 
+                     error.response?.data?.email || 
                      'Ошибка отправки';
       toast.error(message);
     }
