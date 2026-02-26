@@ -30,7 +30,8 @@ const AddProduct = () => {
 
   // Состояния для модальных окон
   const [modalType, setModalType] = useState(null); // 'category' | 'brand' | null
-  const [modalData, setModalData] = useState({ name: "", description: "" });
+  // Добавлено поле parent для привязки категории к бренду
+  const [modalData, setModalData] = useState({ name: "", description: "", parent: "" });
   const [isSubmittingModal, setIsSubmittingModal] = useState(false);
 
   const handleInputChange = (e) => {
@@ -62,13 +63,19 @@ const AddProduct = () => {
   // Сохранение нового бренда или категории из модалки
   const handleAddQuickInfo = async () => {
     if (!modalData.name.trim()) return alert("Название обязательно");
+    
+    // Если создаем категорию, проверяем, выбран ли parent (бренд)
+    if (modalType === "category" && !modalData.parent) {
+      return alert("Необходимо выбрать бренд (parent) для категории");
+    }
+
     setIsSubmittingModal(true);
     try {
       if (modalType === "category") {
         await addCategory({
           name: modalData.name,
           description: modalData.description,
-          root: null,
+          parent: Number(modalData.parent), // Отправляем ID выбранного бренда
         });
       } else if (modalType === "brand") {
         await addBrand({
@@ -77,7 +84,7 @@ const AddProduct = () => {
         });
       }
       setModalType(null);
-      setModalData({ name: "", description: "" });
+      setModalData({ name: "", description: "", parent: "" });
     } catch (error) {
       console.error("Ошибка при создании:", error);
     } finally {
@@ -119,23 +126,47 @@ const AddProduct = () => {
           <div className="modal-content">
             <h3>Добавить {modalType === "category" ? "категорию" : "бренд"}</h3>
             <div className="modal-fields">
-              <label>Название *</label>
-              <input
-                type="text"
-                value={modalData.name}
-                onChange={(e) =>
-                  setModalData({ ...modalData, name: e.target.value })
-                }
-                placeholder="Введите название..."
-              />
-              <label>Описание</label>
-              <textarea
-                value={modalData.description}
-                onChange={(e) =>
-                  setModalData({ ...modalData, description: e.target.value })
-                }
-                placeholder="Необязательное описание..."
-              />
+              
+              {/* Выбор родительского бренда ТОЛЬКО для категории */}
+              {modalType === "category" && (
+                <div className="modal-group">
+                  <label>Выберите бренд (Parent) *</label>
+                  <select
+                    value={modalData.parent}
+                    onChange={(e) => setModalData({ ...modalData, parent: e.target.value })}
+                  >
+                    <option value="">Выберите бренд...</option>
+                    {brands?.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="modal-group">
+                <label>Название *</label>
+                <input
+                  type="text"
+                  value={modalData.name}
+                  onChange={(e) =>
+                    setModalData({ ...modalData, name: e.target.value })
+                  }
+                  placeholder="Введите название..."
+                />
+              </div>
+
+              <div className="modal-group">
+                <label>Описание</label>
+                <textarea
+                  value={modalData.description}
+                  onChange={(e) =>
+                    setModalData({ ...modalData, description: e.target.value })
+                  }
+                  placeholder="Необязательное описание..."
+                />
+              </div>
             </div>
             <div className="modal-actions">
               <button className="cancel-btn" onClick={() => setModalType(null)}>
@@ -177,7 +208,6 @@ const AddProduct = () => {
             <p>Заполните информацию о новом продукте</p>
           </div>
         </div>
-
       </div>
 
       <div className="form-container">
