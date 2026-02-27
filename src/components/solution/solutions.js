@@ -29,7 +29,6 @@ export const SOLUTIONS_DATA = [
     blocks: [
       { id: 201, 
         subtitle: "Освещение", 
-        description: "Башка текст", 
         image: img2 
     },
       { id: 202, 
@@ -37,6 +36,22 @@ export const SOLUTIONS_DATA = [
         description: "Дагы бир башка текст", 
         image: img2 
     }
+    ]
+  },{
+    id: 3, // Экинчи карточка
+    title: "Умный дом",
+    mainDescription: "Бул экинчи карточканын таптакыр башка башкы тексти...",
+    image: img2,
+    blocks: [
+      { id: 201, 
+        subtitle: "Освещение", 
+        image: img2 
+    },
+      { id: 202, 
+        subtitle: "Климат", 
+        description: "Дагы бир башка текст", 
+        image: img2 
+    }   
     ]
   },
   // Ушундай жол менен 3, 4, 5... деп уланта бересиз

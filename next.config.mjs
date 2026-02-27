@@ -29,16 +29,11 @@ const nextConfig = {
         pathname: '/media/**',
       },
       {
-        protocol: 'http',
-        hostname: 'ayla-diandrous-unobscenely.ngrok-free.dev',
-        pathname: '/media/**',
-      },
-      {
-        protocol: 'http',
+        protocol: 'https',
         hostname: '157.230.138.217',
         pathname: '/media/**',
       },
-    ],
+],
   },
 };
 

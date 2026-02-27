@@ -1,3 +1,5 @@
+@use "sass:map";
+
 // Цветовая палитра остается прежней
 $colors: (
   returns: (bg: rgba(127, 140, 141, 0.1), text: #7f8c8d, border: #7f8c8d),
@@ -28,7 +30,7 @@ $colors: (
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 
         &:focus {
-          border-color: map-get(map-get($colors, stock), border);
+          border-color: map.get(map.get($colors, stock), border);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
       }
@@ -205,16 +207,16 @@ $colors: (
 
   @each $name, $map in $colors {
     &--#{$name} {
-      background: map-get($map, bg);
-      border-color: map-get($map, border);
+      background: map.get($map, bg);
+      border-color: map.get($map, border);
 
       &:hover {
-        background: rgba(map-get($map, border), 0.2);
+        background: rgba(map.get($map, border), 0.2);
       }
 
       // Эффект при наведении
       .status-wrapper__select {
-        color: map-get($map, text);
+        color: map.get($map, text);
       }
     }
   }
@@ -256,86 +258,96 @@ $colors: (
     }
   }
 }
-
 .filter-modal {
   position: absolute;
-  top: 50px; // Смещение вниз от кнопки
-  right: 0; // Прижать к правому краю кнопки
-  width: 320px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  padding: 24px;
+  top: 60px;
+  right: 0;
+  width: 320px; // Чуть сузил для компактности
+  height: 364px;
+  background: #f8fbff;
+  border-radius: 16px; // Немного уменьшил радиус
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 16px 20px; // Уменьшил внутренние отступы
   z-index: 1000;
-  border: 1px solid #f0f0f0;
+  border: 1px solid #eef2f7;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; // Распределяет элементы по высоте
 
   &__header h3 {
     text-align: center;
-    font-size: 18px;
+    font-size: 16px; // Было 20px
     color: #001a3d;
-    margin-bottom: 20px;
+    margin-bottom: 12px; // Было 24px
+    font-weight: 700;
   }
 
   &__section {
-    margin-bottom: 20px;
+    margin-bottom: 12px; // Было 20px
+    border-top: 1px solid #e2e8f0;
+    padding-top: 10px; // Было 16px
 
     h4 {
-      font-size: 14px;
+      font-size: 13px; // Было 16px
       color: #64748b;
-      margin-bottom: 10px;
-      font-weight: 400;
+      margin-bottom: 8px;
+      font-weight: 500;
     }
   }
 
   &__chips {
     display: flex;
-    gap: 8px;
+    gap: 6px; // Компактнее
     flex-wrap: wrap;
 
     .chip {
-      padding: 6px 12px;
-      border: 1px solid #e2e8f0;
+      padding: 6px 12px; // Было 10/16
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
       background: #fff;
-      font-size: 13px;
+      font-size: 12px; // Было 14px
       cursor: pointer;
-      color: #001a3d;
+      color: #1e293b;
+      transition: all 0.2s ease;
 
-      &:hover {
-        border-color: #1e3a8a;
+      &.active {
+        border-color: #002855;
+        background: #f0f7ff;
+        color: #002855;
       }
     }
   }
 
   &__dates {
     display: flex;
-    gap: 10px;
+    gap: 8px;
 
     input {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #e2e8f0;
+      padding: 8px; // Было 12px
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
       text-align: center;
-      font-size: 13px;
+      font-size: 12px;
+      color: #1e293b;
+      outline: none;
     }
   }
 
   &__apply {
     width: 100%;
-    padding: 12px;
-    background: #002855; // Темно-синий как на фото
+    padding: 12px; // Было 16px
+    background: #0d2e5e;
     color: #fff;
     border: none;
-    border-radius: 12px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 14px; // Было 18px
     font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 8px;
 
     &:hover {
-      background: #001a3d;
+      background: #071d3d;
     }
   }
-
 }
