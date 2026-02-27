@@ -34,7 +34,9 @@ function TransactionHistory() {
             }`}
           >
             <span>
-              {item.status === "success" ? <GiCheckMark /> : <RxCross2 />}
+              {item.status === "success" ?  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg> : <RxCross2 />}
             </span>
           </div>
 

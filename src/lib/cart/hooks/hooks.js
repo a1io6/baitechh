@@ -44,7 +44,7 @@ export const useDeleteCartItem = () => {
 
   return useMutation({
     mutationFn: (id) => cart.deleteCartItem(id),
-    onSuccess: () => {
+    onSuccess: () => {  
       queryClient.invalidateQueries({ queryKey: ['cart'] })
     },
   })

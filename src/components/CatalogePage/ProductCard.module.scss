@@ -11,7 +11,6 @@
   }
 }
 
-// БЕЙДЖИ
 .badge {
   position: absolute;
   top: 10px;
@@ -31,7 +30,11 @@
 .card.grid {
   display: flex;
   flex-direction: column;
-  text-align: left;
+
+  .mainWrapper {
+    display: flex;
+    flex-direction: column; // 👈 всегда колонка в grid
+  }
 
   .imageSection {
     width: 100%;
@@ -39,15 +42,26 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    img { 
-      max-height: 100%; 
+
+    img {
+      max-height: 100%;
       max-width: 100%;
-      object-fit: contain; 
+      object-fit: cover;
+    }
+
+    @media (max-width: 480px) {
+      height: 150px;
     }
   }
 
   .infoSection {
     margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .purchaseSection {
+    margin-top: 10px;
   }
 
   .priceRow {
@@ -63,6 +77,8 @@
     padding: 8px;
     border-radius: 6px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -72,11 +88,11 @@
 .card.list, .card.full {
   .mainWrapper {
     display: flex;
+    flex-direction: row; // 👈 строка на десктопе
     gap: 20px;
 
-    // Адаптив для мобильных
     @media (max-width: 768px) {
-      flex-direction: column;
+      flex-direction: column; // 👈 колонка на мобилке
     }
   }
 
@@ -84,13 +100,16 @@
     width: 220px;
     flex-shrink: 0;
 
-    img { 
-      width: 100%; 
-      height: auto; 
+    img {
+      width: 100%;
+      height: auto;
       object-fit: contain;
     }
 
-    // Адаптив для мобильных
+    @media (max-width: 1024px) {
+      width: 180px;
+    }
+
     @media (max-width: 768px) {
       width: 100%;
       max-width: 300px;
@@ -104,16 +123,14 @@
     grid-template-columns: 1fr 200px;
     gap: 20px;
 
-    // Адаптив для мобильных
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr 180px;
+    }
+
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
       gap: 15px;
     }
-  }
-
-  .title { 
-    font-size: 16px; 
-    margin: 5px 0; 
   }
 
   .purchaseSection {
@@ -123,7 +140,6 @@
     flex-direction: column;
     justify-content: center;
 
-    // Адаптив для мобильных
     @media (max-width: 768px) {
       border-left: none;
       border-top: 1px solid #f0f0f0;
@@ -148,62 +164,40 @@
     font-weight: 600;
     cursor: pointer;
 
-    &:hover {
-      background: #1e3a8a;
-      color: white;
-    }
-
-    // Адаптив для мобильных
     @media (max-width: 768px) {
       margin-top: 0;
     }
   }
 }
 
-// Специфика для FULL
 .card.full {
   .middleInfo {
     display: block;
-    .specs {
-      font-size: 12px;
-      color: #777;
-      margin-top: 10px;
-      ul { 
-        padding-left: 15px; 
-        margin-top: 5px; 
-      }
-    }
-  }
-}
-
-// В обычном LIST описание короче
-.card.list {
-  .description {
-    font-size: 13px;
-    color: #666;
-    line-height: 1.4;
   }
 }
 
 // Вспомогательные стили
-.article { 
-  font-size: 11px; 
-  color: #999; 
+.article {
+  font-size: 11px;
+  color: #999;
 }
 
-.bonus { 
-  color: #8bc34a; 
-  font-size: 12px; 
-  margin-bottom: 5px; 
+.bonus {
+  color: #8bc34a;
+  font-size: 12px;
+  margin-bottom: 5px;
 }
 
-.price { 
-  font-size: 18px; 
-  font-weight: 700; 
-  color: #2e7d32; 
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2e7d32;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 }
 
-// Dots для grid режима
 .dots {
   display: flex;
   gap: 6px;
@@ -217,52 +211,6 @@
 
     &.active {
       background: #1e3a8a;
-    }
-  }
-}
-
-// Дополнительный адаптив для планшетов
-@media (max-width: 1024px) {
-  .card.list, .card.full {
-    .imageSection {
-      width: 180px;
-    }
-
-    .infoSection {
-      grid-template-columns: 1fr 180px;
-    }
-  }
-}
-
-// Дополнительный адаптив для маленьких экранов
-@media (max-width: 480px) {
-  .card {
-    padding: 12px;
-  }
-
-  .card.grid {
-    .imageSection {
-      height: 150px;
-    }
-  }
-
-  .card.list, .card.full {
-    .title {
-      font-size: 14px;
-    }
-
-    .price {
-      font-size: 16px;
-    }
-
-    .cartBtn {
-      padding: 6px 12px;
-      font-size: 14px;
-
-      svg {
-        width: 18px;
-        height: 18px;
-      }
     }
   }
 }

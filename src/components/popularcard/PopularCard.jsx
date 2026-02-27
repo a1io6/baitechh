@@ -44,36 +44,42 @@ export function PopularCard({ productId }) {
       <h2 className="recommendations__title mb-[40px] mt[40px] text-[30px]">Похожие товары</h2>
       <div className="recommendations-carousel ">
         <Swiper
-          modules={[Pagination]}
-          spaceBetween={20}
-          slidesPerView={2}
-          pagination={false}
-          loop={false}
-          grabCursor={true}
-          breakpoints={{
-            360: {
-              slidesPerView: 2,
-              spaceBetween: 5
-            },
-            640: {
-              slidesPerView: 2.2,
-              spaceBetween: 15
-            },
-            768: {
-              slidesPerView: 3.2,
-              spaceBetween: 18
-            },
-            1024: {
-              slidesPerView: 3.2,
-              spaceBetween: 20
-            },
-            1200: {
-              slidesPerView: 4,
-              spaceBetween: 20
-            }
-          }}
-          className="recommendationsSwiper" 
-        >
+      modules={[Pagination]}
+      spaceBetween={10}
+      slidesPerView={1.5}        // ← было 2
+      centeredSlides={true}      // ← добавить
+      pagination={false}
+      loop={true}
+      grabCursor={true}
+      breakpoints={{
+        380: {
+          slidesPerView: 1.5,    // ← было 2.2
+          spaceBetween: 8,
+          centeredSlides: true   // ← добавить
+        },
+        640: {
+          slidesPerView: 2.2,
+          spaceBetween: 10,
+          centeredSlides: false  // ← выключить на планшетах
+        },
+        768: {
+          slidesPerView: 3.2,
+          spaceBetween: 18,
+          centeredSlides: false
+        },
+        1024: {
+          slidesPerView: 3.2,
+          spaceBetween: 20,
+          centeredSlides: false
+        },
+        1200: {
+          slidesPerView: 4,
+          spaceBetween: 20,
+          centeredSlides: false
+        }
+      }}
+      className="recommendationsSwiper" 
+    >
           {similarProducts.results.map((product) => (
             <SwiperSlide key={product.id}>
               <Card product={product} />

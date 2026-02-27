@@ -1,6 +1,8 @@
 .catalogPage {
-  padding: 30px 20px;
-  background-color: #f9f9f9;
+  padding: 30px 0px;
+  @media (max-width:1200px) {
+     padding: 20px 20px;
+  }
   @media (max-width:768px) {
      padding: 20px 15px;
   }
@@ -146,11 +148,19 @@
 
 @media (max-width: 1100px) {
   .grid.grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr); 
+     &.list {
+    grid-template-columns: 1fr;
+  }
+
+  // Режим: Полный (1 в ряд, подробно)
+  &.full {
+    grid-template-columns: 1fr;
+  }
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .layout {
     flex-direction: column;
   }
@@ -158,7 +168,15 @@
     width: 100%;
   }
   .grid.grid {
+  gap: 5px;
+    grid-template-columns: repeat(2, 1fr);
+      &.list {
     grid-template-columns: 1fr;
+  }
+
+  &.full {
+    grid-template-columns: 1fr;
+  }
   }
 }
 .filterSection {

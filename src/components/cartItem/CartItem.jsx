@@ -3,25 +3,35 @@
 import Image from 'next/image';
 import styles from './Cart.module.scss';
 import { Trash2, Minus, Plus } from 'lucide-react';
-import { useDeleteCartItem } from '@/lib/cart/hooks/hooks';
+import { useCart, useDeleteCartItem, useUpdateCartItem } from '@/lib/cart/hooks/hooks';
+import { useTranslation } from 'react-i18next';
 
 export default function CartItem({ item }) {
+  const { t } = useTranslation();
   const product = item.product || {};
-  const { mutate: deleteItem } = useDeleteCartItem(); // исправлено имя переменной
+  const {data: cartItems} = useCart();
+  const { mutate: deleteItem } = useDeleteCartItem();
+  const { mutate: updateItem, isPending } = useUpdateCartItem();
 
   const handleDelete = () => {
-    if (item.id) {
-      deleteItem(item.id); // передаем id корзины, а не продукта
-    }
+    if (item.id) deleteItem(item.id);
+  };
+
+  const handleIncrement = () => {
+    updateItem({ id: item.id, product_id: product.id, quantity: item.quantity + 1 });
+  };
+
+  const handleDecrement = () => {
+    if (item.quantity <= 1) return;
+    updateItem({ id: item.id, product_id: product.id, quantity: item.quantity - 1 });
   };
 
   return (
     <div className={styles.card}>
-      <div className={styles.indexNumber}>1</div>
       
       <div className={styles.imageBlock}>
         <span className={styles.badge}>
-          {product.is_available ? 'В наличии' : 'Нет в наличии'}
+          {product.is_available ? t('cartItem.inStock') : t('cartItem.outOfStock')}
         </span>
         {product.existing_images?.[0]?.image && (
           <Image
@@ -35,7 +45,7 @@ export default function CartItem({ item }) {
 
       <div className={styles.infoBlock}>
         <div className={styles.header}>
-          <span className={styles.article}>Артикул: {product.article}</span>
+          <span className={styles.article}>{t('cartItem.article')}: {product.article}</span>
           <button className={styles.deleteBtn} onClick={handleDelete}>
             <Trash2 size={18} />
           </button>
@@ -48,17 +58,21 @@ export default function CartItem({ item }) {
         </p>
         
         <div className={styles.priceRow}>
-          <div className={styles.bonus}>{product.bonus || 0} бонусов</div>
+          <div className={styles.bonus}>{product.bonus || 0} {t('cartItem.bonuses')}</div>
           <div className={styles.price}>
-            {Number(item.total_price || product.price || 0).toLocaleString()} сом
+            {Number(item.total_price || product.price || 0).toLocaleString()} {t('cartItem.currency')}
           </div>
         </div>
 
         <div className={styles.footer}>
           <div className={styles.counter}>
-            <button><Minus size={16} /></button>
+            <button onClick={handleDecrement} disabled={isPending || item.quantity <= 1}>
+              <Minus size={16} />
+            </button>
             <span>{item.quantity}</span>
-            <button><Plus size={16} /></button>
+            <button onClick={handleIncrement} disabled={isPending}>
+              <Plus size={16} />
+            </button>
           </div>
           <input type="checkbox" className={styles.checkbox} defaultChecked />
         </div>

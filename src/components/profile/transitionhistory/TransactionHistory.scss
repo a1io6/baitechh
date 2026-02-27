@@ -43,14 +43,16 @@
     }
     .icon{
         width: 32px;
-        padding-top: 3px;
-        height: 31px;
+        height: 32px;
         font-size: 14px;
         color: white;
         border-radius: 50%;
         display: flex;
         justify-content: center;
         align-items: center;
+        span{
+            padding-top: -5px;
+        }
         &--success{
             background-color: #3AA15B;
         }
