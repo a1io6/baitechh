@@ -15,7 +15,7 @@ const resources = {
   ru: {
     translation: translationRU
   },
-  kg: {
+  ky: {
     translation: translationKG
   }
 };

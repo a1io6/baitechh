@@ -5,6 +5,7 @@ import { useInfiniteProducts, useProducts } from '@/lib/products/hooks/hooks';
 import styles from './CatalogPage.module.scss';
 import { LayoutGrid, List, AlignJustify, ChevronDown, X, Search } from 'lucide-react';
 import ProductCard from './ProductCard';
+import Card from '../ui/card/Card';
 
 export default function CatalogPage() {
   const [viewMode, setViewMode] = useState('grid');
@@ -257,7 +258,11 @@ export default function CatalogPage() {
           
           <div className={`${styles.grid} ${styles[viewMode]}`}>
             {products.length > 0 ? (
-              products.map(p => <ProductCard key={p.id} product={p} viewMode={viewMode} />)
+              products.map(p =>
+                viewMode === 'grid'
+                  ? <Card key={p.id} product={p} />
+                  : <ProductCard key={p.id} product={p} viewMode={viewMode} />
+              )
             ) : (
               <div>Товары не найдены</div>
             )}

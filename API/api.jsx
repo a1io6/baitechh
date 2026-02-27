@@ -15,7 +15,6 @@ $api.interceptors.request.use((config) => {
     ? localStorage.getItem("adminToken")
     : null;
 
-  // Если есть админ, используем его токен, иначе — пользователя
   const token = adminToken || userToken;
 
   if (token) {
@@ -24,20 +23,46 @@ $api.interceptors.request.use((config) => {
     console.warn("Токен не найден в localStorage!");
   }
 
+  if (typeof window !== "undefined") {
+    const currentLanguage = localStorage.getItem("language") || "ru";
+    config.headers["Accept-Language"] = currentLanguage;
+  }
+
   config.headers["ngrok-skip-browser-warning"] = "true";
+  
   return config;
 }, (error) => Promise.reject(error));
 
 
-
-// Добавьте перехватчик ответов для обработки ошибок авторизации
 $api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const lang = localStorage.getItem("language") || "ru";
+
+    const translate = (obj) => {
+      if (Array.isArray(obj)) return obj.map(translate);
+      if (obj && typeof obj === "object") {
+        const newObj = {};
+        for (const key in obj) {
+          if (key.endsWith("_ru") || key.endsWith("_en") || key.endsWith("_ky")) continue;
+          const translated = obj[`${key}_${lang}`] ?? obj[`${key}_ru`] ?? obj[key];
+          newObj[key] = translate(translated);
+        }
+        return newObj;
+      }
+      return obj;
+    };
+
+    response.data = translate(response.data);
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('user');
+      if (typeof window !== "undefined") {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+        window.dispatchEvent(new Event('authChange'));
+      }
     }
     return Promise.reject(error);
   }

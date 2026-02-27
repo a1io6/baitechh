@@ -278,7 +278,7 @@ export default function SidebarApp() {
             <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
               <div className='flex item-start justify-between'>
                 <div className="flex items-center gap-[20px]">
-                  <div className="w-8 h-8 pb-[4px] rounded-full bg-green-500 flex items-center justify-center">
+                  <div className="w-8 h-8 pb-[4px] rounded-full bg-[#3AA15B] flex items-center justify-center">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -299,7 +299,7 @@ export default function SidebarApp() {
             <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
               <div className='flex item-start justify-between'>
                 <div className="flex items-center gap-[20px]">
-                  <div className="w-8 h-8 pb-[4px] rounded-full bg-green-500 flex items-center justify-center">
+                  <div className="w-8 h-8 pb-[4px] rounded-full bg-[#3AA15B] flex items-center justify-center">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>

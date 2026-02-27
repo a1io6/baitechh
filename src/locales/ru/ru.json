@@ -563,6 +563,12 @@
       "messages": {
         "logoutSuccess": "Вы успешно вышли из аккаунта"
       }
+    },
+    "cartItem": {
+      "inStock": "В наличии",
+      "outOfStock": "Нет в наличии",
+      "article": "Артикул",
+      "bonuses": "бонусов",
+      "currency": "сом"
     }
-
 }

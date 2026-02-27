@@ -563,5 +563,12 @@
       "messages": {
         "logoutSuccess": "You have successfully logged out"
       }
+    },
+     "cartItem": {
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock",
+      "article": "Article",
+      "bonuses": "bonuses",
+      "currency": "som"
     }
 }

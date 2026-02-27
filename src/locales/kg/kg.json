@@ -563,6 +563,12 @@
       "messages": {
         "logoutSuccess": "Сиз ийгиликтүү чыктыңыз"
       }
+    },
+ "cartItem": {
+      "inStock": "Бар",
+      "outOfStock": "Жок",
+      "article": "Артикул",
+      "bonuses": "бонустар",
+      "currency": "сом"
     }
-
 }

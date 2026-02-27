@@ -431,4 +431,119 @@
     flex-shrink: 0;
   }
 }
+// style.scss (добавьте или обновите эти стили)
+
+.language-selector {
+  position: relative;
+  
+  .language-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #1f2937;
+    
+    &:hover {
+      border-color: #0E2E5B;
+      background: #f9fafb;
+    }
+    
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .arrow-icon {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s;
+      
+      &.open {
+        transform: rotate(180deg);
+      }
+    }
+  }
+  
+  .language-current {
+    font-weight: 500;
+    min-width: 24px;
+    text-align: center;
+  }
+  
+  .language-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 160px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    z-index: 1000;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
+    
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      background: white;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 14px;
+      color: #1f2937;
+      
+      &:hover {
+        background: #f9fafb;
+      }
+      
+      &.active {
+        background: #eff6ff;
+        color: #0E2E5B;
+        font-weight: 500;
+      }
+      
+      &:not(:last-child) {
+        border-bottom: 1px solid #f3f4f6;
+      }
+      
+      svg {
+        flex-shrink: 0;
+        color: #0E2E5B;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Адаптив для мобильных
+@media (max-width: 768px) {
+  .language-selector {
+    .language-menu {
+      right: auto;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+}
 }
