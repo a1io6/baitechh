@@ -2,103 +2,110 @@
 import Under from '@/components/ui/under/Under'
 import Image from 'next/image'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
+
 export function Returns() {
-     const data = [
+    const { t } = useTranslation();
+    
+    const data = [
         {
             id:1,
-            ordernumber:'Заказ №123456',
+            ordernumber: t('returns.orders.order1.number'),
             date:'12.03.2023',
-            status:'Доставлен',
+            status: t('returns.orders.order1.status'),
             price:'12 000',
             currency:'1шт',
             image:'https://avatars.mds.yandex.net/i?id=42dfc155cc47de07e28fe6289b339e3dc9ece450-4902913-images-thumbs&n=13',
-            description:'Доставка по адресу: ул. Пушкина, 10, кв. 5, Москва',
+            description: t('returns.orders.order1.description'),
         },
         {
             id:2,
-            ordernumber:'Заказ №654321',
+            ordernumber: t('returns.orders.order2.number'),
             date:'15.04.2023',
-            status:'В обработке',
+            status: t('returns.orders.order2.status'),
             price:'8 500',
             currency:'2шт',
             image:'https://img.championat.com/c/1200x900/news/big/g/k/v-anime-po-skottu-piligrimu-vernutsya-aktyory-iz-filma-edgara-rajta_16801858041715086869.jpg',
-            description:'Доставка по адресу: пр. Ленина, 25, кв. 12, Санкт-Петербург',
+            description: t('returns.orders.order2.description'),
         },
         {
             id:3,
-            ordernumber:'Заказ №789012',
+            ordernumber: t('returns.orders.order3.number'),
             date:'20.05.2023',
-            status:'Отменен',
+            status: t('returns.orders.order3.status'),
             price:'5 200',
             currency:'1шт',
             image:'https://avatars.mds.yandex.net/i?id=686a9be56666517d45d63247208696bc1fa73646-5870379-images-thumbs&n=13',
-            description:'Доставка по адресу: ул. Советская, 8, кв. 3, Новосибирск',
+            description: t('returns.orders.order3.description'),
         },
         {
             id:4,
-            ordernumber:'Заказ №210987',
+            ordernumber: t('returns.orders.order4.number'),
             date:'25.06.2023',
-            status:'Доставлен', 
+            status: t('returns.orders.order4.status'), 
             price:'15 300',
             currency:'1шт',
             image:'https://avatars.mds.yandex.net/i?id=42dfc155cc47de07e28fe6289b339e3dc9ece450-4902913-images-thumbs&n=13',
-            description:'Доставка по адресу: ул. Гагарина, 14, кв. 7, Екатеринбург',
+            description: t('returns.orders.order4.description'),
         },
         {
             id:5,
-            ordernumber:'Заказ №345678',
+            ordernumber: t('returns.orders.order5.number'),
             date:'30.07.2023',
-            status:'В обработке',
+            status: t('returns.orders.order5.status'),
             price:'9 750',
             currency:'3шт',
             image:'https://img.championat.com/c/1200x900/news/big/g/k/v-anime-po-skottu-piligrimu-vernutsya-aktyory-iz-filma-edgara-rajta_16801858041715086869.jpg',
-            description:'Доставка по адресу: пр. Мира, 30, кв. 15, Казань',
+            description: t('returns.orders.order5.description'),
         }
-    ]
-    const status = data.map((item) => (
-        item.status
-    ))
-      const statusClass = () => {
-    switch (status.status) {
-      case 'Добавлен':
-      case 'Успешно':
-        return 'status status--success'
-      case 'В обработке':
-        return 'status status--pending'
-      case 'Отменен':
-        return 'status status--error'
-      default:
-        return 'status'
-    }
-  }
+    ];
 
-  return (
-    <div className='otderhistory container'>
-        <Under text="История заказов" text1="Все заказы" text2="Доставленные" text3="Отмененные"/>
-        <div className='orderhistorycards'>
-            {
-                data.map((item) => (
-                    <div className='otherhistorycard' key={item.id}>
-      <h1 className='ordernumber'>{item.ordernumber}</h1>
-      <p className='date'>Оформлен {item.date}</p>
+    const getStatusClass = (status) => {
+        const statusKey = status.toLowerCase();
+        if (statusKey.includes(t('returns.statusTypes.delivered').toLowerCase()) || 
+            statusKey.includes(t('returns.statusTypes.success').toLowerCase())) {
+            return 'status status--success';
+        }
+        if (statusKey.includes(t('returns.statusTypes.processing').toLowerCase())) {
+            return 'status status--pending';
+        }
+        if (statusKey.includes(t('returns.statusTypes.cancelled').toLowerCase())) {
+            return 'status status--error';
+        }
+        return 'status';
+    };
 
-      <p className='statuss'>
-        Статус: <span className={statusClass()}>{item.status}</span>
-      </p>
+    return (
+        <div className='otderhistory container'>
+            <Under 
+                text={t('returns.breadcrumbs.orderHistory')} 
+                link={'/'}
+                text1={t('returns.breadcrumbs.allOrders')} 
+                text2={t('returns.breadcrumbs.delivered')} 
+            />
+            <div className='orderhistorycards'>
+                {
+                    data.map((item) => (
+                        <div className='otherhistorycard' key={item.id}>
+                            <h1 className='ordernumber'>{item.ordernumber}</h1>
+                            <p className='date'>{t('returns.ordered')} {item.date}</p>
 
-      <h2 className='price'>Сумма: {item.price} сом</h2>
+                            <p className='statuss'>
+                                {t('returns.status')}: <span className={getStatusClass(item.status)}>{item.status}</span>
+                            </p>
 
-      <div className="orderImg">
-        <Image src={item.image} alt="image" width={20} height={20}/>
-        <span>Камера {item.currency}.</span>
-      </div>
+                            <h2 className='price'>{t('returns.amount')}: {item.price} {t('returns.currency')}</h2>
 
-      <p>{item.description}</p>
-    </div>
-                ))
-            }
+                            <div className="orderImg">
+                                <Image src={item.image} alt="image" width={20} height={20}/>
+                                <span>{t('returns.camera')} {item.currency}.</span>
+                            </div>
+
+                            <p>{item.description}</p>
+                        </div>
+                    ))
+                }
+            </div>
         </div>
-    </div>
-  )
+    )
 }
-

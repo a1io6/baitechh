@@ -49,7 +49,7 @@ verifyRegistration: async (email, otp) => {
 
   // Получение текущего пользователя (если есть такой endpoint)
   getMe: async () => {
-    const { data } = await $api.get('/api/auth/me/');
+    const { data } = await $api.get('/api/profile/me/');
     return data;
   },
 

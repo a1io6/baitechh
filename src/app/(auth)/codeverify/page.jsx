@@ -1,12 +1,13 @@
 import { CodeVerifyContent } from '@/components/auth/code/CodeVerify'
 import React from 'react'
+import { Suspense } from 'react'
 
-function page() {
+function codeverify() {
   return (
-    <>
-      <CodeVerifyContent type="verify"/>
-    </>
+    <Suspense fallback={null}>
+      <CodeVerifyContent type="verify" />
+    </Suspense>
   )
 }
 
-export default page
+export default codeverify

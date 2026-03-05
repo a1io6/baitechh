@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import './style.scss';
 import img from '../../../assets/svg/Vector (41).svg';
@@ -6,38 +7,41 @@ import img2 from '../../../assets/svg/wallet-tick.svg';
 import img3 from '../../../assets/svg/Vector (42).svg';
 import img4 from '../../../assets/svg/6.svg fill.svg';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 function Features() {
+  const { t } = useTranslation();
+
   const features = [
     {
       id: 1,
       icon: img,
-      title: 'Бесплатная доставка',
-      description: 'Бесплатная доставка при покупке от 1000 сом и выше'
+      title: t('features.freeDelivery.title'),
+      description: t('features.freeDelivery.description')
     },
     {
       id: 2,
       icon: img1,
-      title: 'Поддержка 24/7',
-      description: 'Служба технической поддержки работает 24/7'
+      title: t('features.support247.title'),
+      description: t('features.support247.description')
     },
     {
       id: 3,
       icon: img2,
-      title: 'Оплата',
-      description: 'Принимаем оплату как наличными так и картой в онлайн'
+      title: t('features.payment.title'),
+      description: t('features.payment.description')
     },
     {
       id: 4,
       icon: img3,
-      title: 'Гарантия качества',
-      description: 'Оригинальная продукция только от проверенных поставщиков'
+      title: t('features.qualityGuarantee.title'),
+      description: t('features.qualityGuarantee.description')
     },
     {
       id: 5,
       icon: img4,
-      title: 'Выгодные предложения',
-      description: 'В нашем магазине всегда скидки и акции для постоянных клиентов'
+      title: t('features.specialOffers.title'),
+      description: t('features.specialOffers.description')
     }
   ];
 

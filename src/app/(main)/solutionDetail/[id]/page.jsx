@@ -1,12 +1,12 @@
 import SolutionDetailPage from '@/components/solution/SolutionDetail'
 import React from 'react'
 
-function page() {
+export const dynamic = 'force-dynamic'
+
+export default function Page() {
   return (
     <>
       <SolutionDetailPage/>
     </>
   )
-}
-
-export default page
+} 

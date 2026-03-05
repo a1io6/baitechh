@@ -40,7 +40,12 @@ $white: #fff;
   height: 500px;
   position: relative;
   overflow: hidden;
-
+  border-radius: 12px;
+  margin-bottom: 60px;
+  @media (max-width:1024px) {
+    margin-bottom: 0px;
+      border-radius: 0px;
+  }
   &__swiper {
     width: 100%;
     height: 100%;

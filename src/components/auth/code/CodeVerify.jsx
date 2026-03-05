@@ -7,8 +7,10 @@ import { toast } from 'react-hot-toast';
 import CloseRegister from '@/components/ui/auth/closeregister';
 import Button from '@/components/ui/auth/buttton';
 import { useResendActivationCode, useVerifyRegistration } from '@/lib/auth/hooks/hooks';
+import { useTranslation } from 'react-i18next';
 
 export function CodeVerifyContent() {
+  const { t } = useTranslation();
   const [code, setCode] = useState(['', '', '', '']);
   const inputRefs = useRef([]);
   const router = useRouter();
@@ -26,10 +28,10 @@ export function CodeVerifyContent() {
     if (emailFromUrl) {
       setEmail(emailFromUrl);
     } else {
-      toast.error('Email не найден. Пожалуйста, зарегистрируйтесь снова.');
+      toast.error(t('codeVerify.messages.emailNotFound'));
       setTimeout(() => router.push('/register'), 2000);
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, t]);
 
   const handleChange = (index, value) => {
     // Разрешаем только цифры
@@ -124,89 +126,83 @@ export function CodeVerifyContent() {
       // Фокус на последнее поле
       setTimeout(() => inputRefs.current[3]?.focus(), 0);
     } else {
-      toast.error('Пожалуйста, вставьте 4-значный код');
+      toast.error(t('codeVerify.messages.paste4Digits'));
     }
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const fullCode = code.join('');
-  
-  if (fullCode.length !== 4) {
-    toast.error('Пожалуйста, введите все 4 цифры');
-    return;
-  }
-
-  if (!email) {
-    toast.error('Email не найден');
-    return;
-  }
-
-  const payload = {
-    email: email,
-    otp: fullCode
-  };
-  
-  console.log('📦 Payload для отправки:', payload);
-
-  try {
-    console.log('📤 Отправка запроса...');
-    const result = await verifyMutation.mutateAsync(payload);
-    console.log('✅ Результат:', result);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const fullCode = code.join('');
     
-    // Сохраняем токены в localStorage
-    if (result?.access) {
-      localStorage.setItem('access_token', result.access);
-      console.log('✅ Access токен сохранен в localStorage');
+    if (fullCode.length !== 4) {
+      toast.error(t('codeVerify.messages.enter4Digits'));
+      return;
     }
-    
-    if (result?.refresh) {
-      localStorage.setItem('refresh_token', result.refresh);
-      console.log('✅ Refresh токен сохранен в localStorage');
-    }
-    
-    // Можно также сохранить информацию о пользователе, если она приходит
-    if (result?.user) {
-      localStorage.setItem('user', JSON.stringify(result.user));
-      console.log('✅ Данные пользователя сохранены');
-    }
-    
-    toast.success('Код подтвержден успешно!');
-    
-    // Перенаправление на главную страницу или dashboard
-    setTimeout(() => router.push('/'), 1500);
-    
-  } catch (error) {
-    console.error('❌ Ошибка:', error);
-    console.error('Response data:', error?.response?.data);
-    
-    const errorMessage = 
-      error?.response?.data?.message || 
-      error?.response?.data?.detail ||
-      error?.response?.data?.error ||
-      'Неверный код. Попробуйте еще раз';
-    
-    toast.error(errorMessage);
-    
-    setCode(['', '', '', '']);
-    setTimeout(() => inputRefs.current[0]?.focus(), 0);
-  }
-};
-  const handleResendCode = async () => {
-    console.log('📧 Email:', email);
-    
+
     if (!email) {
-      console.log('❌ Email отсутствует!');
-      toast.error('Email не найден');
+      toast.error(t('codeVerify.messages.emailNotFound'));
+      return;
+    }
+
+    const payload = {
+      email: email,
+      otp: fullCode
+    };
+    
+    console.log('📦 Payload для отправки:', payload);
+
+    try {
+      console.log('📤 Отправка запроса...');
+      const result = await verifyMutation.mutateAsync(payload);
+      console.log('✅ Результат:', result);
+      
+      // Сохраняем токены в localStorage
+      if (result?.access) {
+        localStorage.setItem('access_token', result.access);
+        console.log('✅ Access токен сохранен в localStorage');
+      }
+      
+      if (result?.refresh) {
+        localStorage.setItem('refresh_token', result.refresh);
+        console.log('✅ Refresh токен сохранен в localStorage');
+      }
+      
+      // Можно также сохранить информацию о пользователе, если она приходит
+      if (result?.user) {
+        localStorage.setItem('user', JSON.stringify(result.user));
+        console.log('✅ Данные пользователя сохранены');
+      }
+      
+      toast.success(t('codeVerify.messages.codeConfirmed'));
+      
+      // Перенаправление на главную страницу или dashboard
+      setTimeout(() => router.push('/'), 1500);
+      
+    } catch (error) {
+      console.error('❌ Ошибка:', error);
+      console.error('Response data:', error?.response?.data);
+      
+      const errorMessage = 
+        error?.response?.data?.message || 
+        error?.response?.data?.detail ||
+        error?.response?.data?.error ||
+        t('codeVerify.messages.invalidCode');
+      
+      toast.error(errorMessage);
+      
+      setCode(['', '', '', '']);
+      setTimeout(() => inputRefs.current[0]?.focus(), 0);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (!email) {
+      toast.error(t('codeVerify.messages.emailNotFound'));
       return;
     }
 
     try {
-      console.log('📤 Отправляю запрос на повторную отправку кода...');
-      await resendMutation.mutateAsync({ email });
-      console.log('✅ Код успешно отправлен повторно');
-      
-      toast.success('Код отправлен повторно на ' + email);
+      toast.success(t('codeVerify.messages.codeResentTo') + ' ' + email);
       
       // Очищаем код для нового ввода
       setCode(['', '', '', '']);
@@ -219,7 +215,7 @@ const handleSubmit = async (e) => {
         error?.response?.data?.message || 
         error?.response?.data?.detail ||
         error?.response?.data?.error ||
-        'Ошибка при отправке кода';
+        t('codeVerify.messages.resendError');
       
       toast.error(errorMessage);
     }
@@ -234,7 +230,7 @@ const handleSubmit = async (e) => {
         <CloseRegister onClose={() => router.push("/")} />
         <div className="forgot-password-page-container">
           <div className="forgot-password-page">
-            <div className="text-center p-6">Загрузка...</div>
+            <div className="text-center p-6">{t('codeVerify.loading')}</div>
           </div>
         </div>
       </div>
@@ -247,10 +243,10 @@ const handleSubmit = async (e) => {
       <div className="forgot-password-page-container">
         <div className="forgot-password-page">
           <h2 className="forgot-password-page__title">
-            Подтверждение кода
+            {t('codeVerify.title')}
           </h2>
           <h4 className="forgot-password-page__subtitle">
-            Введите 4-значный код, отправленный на {email}
+            {t('codeVerify.subtitle')} {email}
           </h4>
           
           <form className="forgot-password-page__form" onSubmit={handleSubmit}>
@@ -281,7 +277,7 @@ const handleSubmit = async (e) => {
                  verifyMutation.error?.response?.data?.detail || 
                  verifyMutation.error?.response?.data?.non_field_errors || 
                  verifyMutation.error?.response?.data?.error ||
-                 'Неверный код. Попробуйте еще раз'}
+                 t('codeVerify.messages.invalidCode')}
               </div>
             )}
             
@@ -291,7 +287,7 @@ const handleSubmit = async (e) => {
               loading={verifyMutation.isPending}
               disabled={isLoading || code.join('').length !== 4}
             >
-              Подтвердить код
+              {t('codeVerify.buttons.confirm')}
             </Button>
 
             <button
@@ -300,7 +296,7 @@ const handleSubmit = async (e) => {
               className="forgot-password-page__resend-button"
               disabled={isLoading}
             >
-              {resendMutation.isPending ? 'Отправка...' : 'Отправить код повторно'}
+              {resendMutation.isPending ? t('codeVerify.buttons.sending') : t('codeVerify.buttons.resend')}
             </button>
           </form>
         </div>
@@ -310,8 +306,10 @@ const handleSubmit = async (e) => {
 }
 
 export default function CodeVerify() {
+  const { t } = useTranslation();
+  
   return (
-    <Suspense fallback={<div>Загрузка...</div>}>
+    <Suspense fallback={<div>{t('codeVerify.loading')}</div>}>
       <CodeVerifyContent />
     </Suspense>
   );

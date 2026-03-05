@@ -1,15 +1,33 @@
 'use client'
 import { useState, useEffect } from "react";
 import "./ProductCard.scss";
-import { ShoppingCart } from "lucide-react";
+import { IoCartOutline, IoCart } from "react-icons/io5";
 import Image from "next/image";
 import { productApi } from "@/lib/products/api/useProducts";
+import { useTranslation } from "react-i18next";
+import { useCart, useCreateCartItem, useDeleteCartItem } from "@/lib/cart/hooks/hooks";
 
 const ProductCard = ({ productId }) => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(null);
   const [count, setCount] = useState(1);
+  const { t } = useTranslation();
+
+  const { data: cartItems } = useCart();
+  const { mutate: addToCart, isPending: isAdding } = useCreateCartItem();
+  const { mutate: deleteFromCart, isPending: isDeleting } = useDeleteCartItem();
+
+
+const cartItem = cartItems?.find(item => item.product?.id === product?.id || item.product_id === product?.id);
+const isInCart = !!cartItem;
+
+// Синхронизируем count с корзиной
+useEffect(() => {
+  if (cartItem?.quantity) {
+    setCount(cartItem.quantity);
+  }
+}, [cartItem]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -33,15 +51,18 @@ const ProductCard = ({ productId }) => {
   const increment = () => setCount((c) => c + 1);
   const decrement = () => count > 1 && setCount((c) => c - 1);
 
-  const addToCart = () => {
-    console.log({
-      product: product?.name,
-      quantity: count,
-    });
+  const handleCartClick = () => {
+    if (!product?.id) return;
+
+    if (isInCart) {
+      deleteFromCart(cartItem.id);
+    } else {
+      addToCart({ product_id: product.id, quantity: count });
+    }
   };
 
-  if (loading) return <div className="product">Загрузка...</div>;
-  if (!product) return <div className="product">Товар не найден</div>;
+  if (loading) return <div className="loader"></div>;
+  if (!product) return <div className="product text-center">{t('productCard.notFound')}</div>;
 
   return (
     <div className="product">
@@ -66,10 +87,13 @@ const ProductCard = ({ productId }) => {
       </div>
 
       <div className="product__info">
-        <h1>Артикул: {product.article}</h1>
+        <h1>{t('productCard.article')}: {product.article}</h1>
         <p className="product__desc">{product.name}</p>
-        <div className="product__price">{product.price.toLocaleString()} сом</div>
-        <div className="product__bonus">{product.bonus || 0} бонусов</div>
+        <p className="product__descip line-clamp-3" title={product.description}>
+          {product.description.slice(0, 150)}...
+        </p>
+        <div className="product__price">{product.price.toLocaleString()} {t('productCard.currency')}</div>
+        <div className="product__bonus">{product.bonus || 0} {t('productCard.bonuses')}</div>
 
         <div className="product__actions">
           <div className="counter">
@@ -78,8 +102,14 @@ const ProductCard = ({ productId }) => {
             <button onClick={increment}>+</button>
           </div>
 
-          <button className="add-to-cart" onClick={addToCart}>
-            <ShoppingCart /> Корзина
+          <button 
+            className="add-to-cart" 
+            onClick={handleCartClick}
+            disabled={isAdding || isDeleting}
+            style={{ backgroundColor: isInCart ? '#0E2E5B' : '',  color: isInCart ? '#FFFFFF' : ''  }}
+          >
+            {isInCart ? <IoCart size={20} /> : <IoCartOutline size={20} />}
+            {t('productCard.addToCart')}
           </button>
         </div>
       </div>

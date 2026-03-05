@@ -34,3 +34,40 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## HTTPS + Nginx (baitech.kg)
+
+Ready config file:
+- `deployment/nginx/baitech.kg.conf`
+
+It serves static Next export from `/var/www/baitech2/out` and proxies backend endpoints to `http://127.0.0.1:3001`:
+- `/api/`
+- `/products/`
+- `/media/`
+
+### Server steps
+
+1. Build and upload static files:
+```bash
+npm run build
+# copy ./out to /var/www/baitech2/out
+```
+
+2. Set environment for frontend API base URL:
+```bash
+NEXT_PUBLIC_API_URL=https://baitech.kg
+```
+
+3. Install nginx config and reload:
+```bash
+sudo cp deployment/nginx/baitech.kg.conf /etc/nginx/sites-available/baitech.kg.conf
+sudo ln -s /etc/nginx/sites-available/baitech.kg.conf /etc/nginx/sites-enabled/baitech.kg.conf
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+4. Quick checks:
+```bash
+curl -I https://baitech.kg/
+curl -I https://baitech.kg/products/products/
+```

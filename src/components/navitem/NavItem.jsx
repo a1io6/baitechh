@@ -4,16 +4,18 @@ import styles from './Navbar.module.scss';
 import { LayoutGrid, Monitor, Video, FileText, BookOpen } from 'lucide-react';
 import Catalog from '../catalogmenu/Catalog';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 export default function NavItem() {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   const menuItems = [
-    { label: 'Каталог', icon: <LayoutGrid size={18} />, isCatalog: true },
-    { label: 'Комплектующий ПК', link: '/comlectPK', icon: <Monitor size={18} /> },
-    { label: 'Видеонаблюдение', link: '/videosaw', icon: <Video size={18} /> },
-    { label: 'Решение', link: '/solution', icon: <FileText size={18} /> },
-    { label: 'Курсы', link: '/course', icon: <BookOpen size={18} /> },
+    { label: t('navbar.catalog'), icon: <LayoutGrid size={18} />, isCatalog: true },
+    { label: t('navbar.pcComponents'), link: '/comlectPK', icon: <Monitor size={18} /> },
+    { label: t('navbar.videoSurveillance'), link: '/videosaw', icon: <Video size={18} /> },
+    { label: t('navbar.solutions'), link: '/solution', icon: <FileText size={18} /> },
+    { label: t('navbar.courses'), link: '/course', icon: <BookOpen size={18} /> },
   ];
 
   return (
