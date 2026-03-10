@@ -1,6 +1,7 @@
 $bg-light: #F5F7FA;
 $text-color: #00162A;
 .otherhistorycard{
+  margin-left: 6px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -9,8 +10,14 @@ $text-color: #00162A;
     padding: 30px;
     max-width: 698px;
     background-color: $bg-light;
-    border-radius: 8px;
-    box-shadow: 10px 8px 24px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    box-shadow: 10px 8px 24px rgba(0, 0, 0, 0.151);
+    @media (max-width:768px) {
+       margin-left: 4px;
+         gap: 5px;
+          padding: 15px;
+       margin-right: 4px;
+    }
     .ordernumber{
         font-size: 20px;
         font-weight: 400;

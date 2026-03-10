@@ -7,6 +7,7 @@ import 'swiper/css/pagination';
 import './recommendations.scss';
 import Card from '../ui/card/Card';
 import { useProducts } from '@/lib/products/hooks/hooks';
+import { useTranslation } from 'react-i18next';
 
 // Скелетон для загрузки
 const CardSkeleton = () => (
@@ -20,19 +21,18 @@ const CardSkeleton = () => (
 );
 
 export function Recommendations() {
-  // Используем ваш существующий хук
+  const { t } = useTranslation();
   const { products, isLoading, isError } = useProducts();
 
-  // Берем только первые 10 продуктов для рекомендаций
   const recommendedProducts = products.slice(0, 10);
 
   if (isError) {
     return (
       <div className='recommendations'>
-        <h2 className="recommendations__title">Рекомендации</h2>
+        <h2 className="recommendations__title">{t('recommendations.title')}</h2>
         <div className="recommendations__error">
           <p className="text-center text-red-500 py-8">
-            Ошибка загрузки рекомендаций
+            {t('recommendations.error')}
           </p>
         </div>
       </div>
@@ -41,39 +41,45 @@ export function Recommendations() {
 
   return (
     <div className='recommendations'>
-      <h2 className="recommendations__title">Рекомендации</h2>
+      <h2 className="recommendations__title">{t('recommendations.title')}</h2>
       <div className="recommendations-carousel">
-        <Swiper
-          modules={[Pagination]}
-          spaceBetween={20}
-          slidesPerView={1}
-          pagination={false}
-          loop={false}
-          grabCursor={true}
-          breakpoints={{
-            360: {
-              slidesPerView: 1.5,
-              spaceBetween: 15
-            },
-            640: {
-              slidesPerView: 2.5,
-              spaceBetween: 15
-            },
-            768: {
-              slidesPerView: 2.5,
-              spaceBetween: 18
-            },
-            1024: {
-              slidesPerView: 3.2,
-              spaceBetween: 20
-            },
-            1200: {
-              slidesPerView: 4,
-              spaceBetween: 20
-            }
-          }}
-          className="recommendationsSwiper" 
-        >
+      <Swiper
+  modules={[Pagination]}
+  spaceBetween={10}
+  slidesPerView={1.5}        // ← было 2
+  centeredSlides={true}      // ← добавить
+  pagination={false}
+  loop={true}
+  grabCursor={true}
+  breakpoints={{
+    380: {
+      slidesPerView: 1.5,    // ← было 2.2
+      spaceBetween: 8,
+      centeredSlides: true   // ← добавить
+    },
+    640: {
+      slidesPerView: 2.2,
+      spaceBetween: 10,
+      centeredSlides: false  // ← выключить на планшетах
+    },
+    768: {
+      slidesPerView: 3.2,
+      spaceBetween: 18,
+      centeredSlides: false
+    },
+    1024: {
+      slidesPerView: 3.2,
+      spaceBetween: 20,
+      centeredSlides: false
+    },
+    1200: {
+      slidesPerView: 4,
+      spaceBetween: 20,
+      centeredSlides: false
+    }
+  }}
+  className="recommendationsSwiper" 
+>
           {isLoading ? (
             // Скелетоны во время загрузки
             [...Array(6)].map((_, index) => (

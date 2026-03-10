@@ -50,11 +50,13 @@ $desktop: 1024px;
   &__title {
     margin: 0 0 8px 0;
     color: $text-color;
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 600;
     opacity: 0.8;
     cursor: pointer;
-
+   @media (max-width:480px) {
+    font-size: 26px;
+   }
     &.active {
       color: $text-color;
       opacity: 1;

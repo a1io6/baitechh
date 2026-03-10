@@ -4,12 +4,13 @@ import { ShoppingCart } from 'lucide-react';
 import CartItem from '../cartItem/CartItem';
 import Link from 'next/link';
 import { useCart, useClearCart } from '@/lib/cart/hooks/hooks';
-
+import { useTranslation } from 'react-i18next';
+import Under from '../ui/under/Under';
 
 export default function Cart() {
+  const { t } = useTranslation();
   const { data: items = [], isLoading } = useCart();
   const { mutate: clearCart, isPending } = useClearCart();
-
   const isEmpty = items.length === 0;
 
   if (isLoading) {
@@ -18,17 +19,19 @@ export default function Cart() {
 
   return (
     <div className={`${styles.cartWrapper} container`}>
-      <h2 className={styles.title}>Заказ ({items.length})</h2>
+      <Under text={t('aboutCompany.breadcrumbs.home')} link={'/'} text1={t('cart.card')}/>
+      <h2 className={styles.title}>{t('cart.title')} ({items.length})</h2>
 
       {isEmpty ? (
         <div className={styles.emptyCart}>
           <ShoppingCart size={64} strokeWidth={1} />
-          <h3>В корзине пока нет товаров</h3>
-          <p>Найдите то, что вам нужно в каталоге или через поиск</p>
+          <h3>{t('cart.empty.title')}</h3>
+          <p>{t('cart.empty.description')}</p>
           <Link href="/">
-            <button className={styles.btnPrimary}>Перейти в каталог</button>
+            <button className={styles.btnPrimary}>{t('cart.empty.goToCatalog')}</button>
           </Link>
         </div>
+        
       ) : (
         <div className={styles.cartContent}>
           <div className={styles.itemsList}>
@@ -39,7 +42,7 @@ export default function Cart() {
 
           <div className={styles.summary}>
             <button className={styles.btnPrimary}>
-              Оформить заказ
+              {t('cart.checkout')}
             </button>
 
             <button
@@ -47,7 +50,7 @@ export default function Cart() {
               onClick={() => clearCart()}
               disabled={isPending}
             >
-              Удалить всё 🗑️
+              {t('cart.clearAll')} 🗑️
             </button>
           </div>
         </div>

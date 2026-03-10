@@ -1,0 +1,10 @@
+⨯ Error: Page "/(main)/productdetail/[id]/page" is missing param "/productdetail/[id]" in "generateStaticParams()", which is required with "output: export" config.
+    at ignore-listed frames {
+  page: '/productdetail/7'
+}
+⨯ Failed to generate static paths for /productdetail/[id]:
+Error: Page "/(main)/productdetail/[id]/page" is missing param "/productdetail/[id]" in "generateStaticParams()", which is required with "output: export" config.
+    at ignore-listed frames
+⨯ Failed to generate static paths for /productdetail/[id]:
+Error: Page "/(main)/productdetail/[id]/page" is missing param "/productdetail/[id]" in "generateStaticParams()", which is required with "output: export" config.
+    at ignore-listed frames

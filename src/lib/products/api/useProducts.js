@@ -2,12 +2,13 @@ import { $api } from "../../../../API/api";
 const apiClient = $api;
 
 export const productApi = {
-  // Получение всех товаров
-  getAll: async () => {
-    const { data } = await apiClient.get('products/products/');
+  getAll: async (params = {}) => {
+    const { data } = await apiClient.get('products/products/', { 
+        params: params // Axios автоматически превратит {category: 'apple'} в ?category=apple
+    });
     return data;
-  },
-  getSimilar: async (productId) => {
+},
+     getSimilar: async (productId) => {
     const response = await apiClient.get('/products/products/', {
       params: {
         similar_features: productId

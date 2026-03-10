@@ -21,6 +21,7 @@
 }
 
 .sidebar {
+  min-height: 300px ;
   width: 280px;
   border-right: 1px solid #f5f5f5;
   padding: 8px 0;
@@ -80,7 +81,7 @@
   flex: 1;
   padding: 30px 40px;
 
-  .grid {
+  .brandsGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr); // Две колонки как на скрине
     gap: 30px;
@@ -94,6 +95,7 @@
   }
 
   .linkList {
+    display: flex;
     list-style: none;
     padding: 0;
 
