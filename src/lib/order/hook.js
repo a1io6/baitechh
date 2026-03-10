@@ -19,7 +19,26 @@ export const useOrders = (filters = {}) => {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => $api.put(`ordering/statuses/${id}`, { status }),
+    mutationFn: async ({ id, status, statusId }) => {
+      const payloads = [{ status }, { name: status }];
+
+      if (statusId !== undefined && statusId !== null) {
+        payloads.push({ status: statusId }, { status_id: statusId }, { id: statusId });
+      }
+
+      let lastError;
+
+      for (const payload of payloads) {
+        try {
+          const { data } = await $api.patch(`ordering/orders/${id}/change_status/`, payload);
+          return data;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      throw lastError;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
@@ -38,6 +57,8 @@ export const useOrders = (filters = {}) => {
     orders: ordersQuery.data?.results || [],
     stats: ordersQuery.data?.dashboard_stats || {},
     totalCount: ordersQuery.data?.count || 0,
+    nextPageUrl: ordersQuery.data?.next || null,
+    previousPageUrl: ordersQuery.data?.previous || null,
     isLoading: ordersQuery.isLoading,
     isFetching: ordersQuery.isFetching,
     updateStatus: updateStatusMutation.mutate,
