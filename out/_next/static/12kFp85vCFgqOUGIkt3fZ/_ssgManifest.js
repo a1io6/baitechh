@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fedit-product\u002F[id]","\u002Fproductdetail\u002F[id]","\u002FsolutionDetail\u002F[id]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
