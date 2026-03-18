@@ -1,7 +1,7 @@
 "use client"
 import './style.scss';
 import logo from '../../../assets/svg/Байтех лого 2 1.svg';
-import finik from '../../../assets/png/finik.png';
+import finik from '../../../assets/svg/Logo Purple 1.svg';
 
 import { FiPhone, FiClock, FiMapPin, FiGlobe } from 'react-icons/fi';
 import { FaWhatsapp, FaInstagram, FaYoutube } from 'react-icons/fa';

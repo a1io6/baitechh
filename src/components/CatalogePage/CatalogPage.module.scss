@@ -12,7 +12,64 @@
   display: flex;
   gap: 24px;
 }
+// Хлебные крошки
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
 
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumbSep {
+  color: #bbb;
+}
+
+.breadcrumbLink {
+  color: #005bff;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+.breadcrumbCurrent {
+  color: #333;
+  font-weight: 500;
+}
+
+// Подкатегории в сайдбаре
+.subcategoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.subcategoryItem {
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #444;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { background: #f0f7ff; color: #005bff; }
+}
+
+.subcategoryActive {
+  background: #f0f7ff;
+  color: #005bff;
+  font-weight: 500;
+}
 // --- САЙДБАР ---
 .sidebar {
   width: 280px;
