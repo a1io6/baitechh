@@ -1,5 +1,5 @@
 import ProductDetail from "@/components/product/ProductDetail";
-import React from "react";
+import React, { Suspense } from "react";
 
 const PRODUCTS_API_URL = 'https://baitech.kg/products/products/'
 
@@ -28,10 +28,10 @@ export async function generateStaticParams() {
   }
 }
 
-export default function Page() {
+export default function Page({ params }) {
   return (
-    <>
-      <ProductDetail />
-    </>
+    <Suspense fallback={<div>Загрузка...</div>}>
+      <ProductDetail params={params} />
+    </Suspense>
   );
 }

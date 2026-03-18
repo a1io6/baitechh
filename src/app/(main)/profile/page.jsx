@@ -1,10 +1,12 @@
 import SidebarApp from '@/components/profile/sidebarapp/SideBarApp'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 function page() {
   return (
     <>
-      <SidebarApp />
+      <Suspense fallback={null}>
+        <SidebarApp />
+      </Suspense>
     </>
   )
 }

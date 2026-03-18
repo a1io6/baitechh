@@ -112,7 +112,7 @@ const EditProduct = () => {
   return (
     <div className="edit-product-page">
       <div className="page-header">
-        <button className="back-btn" onClick={() => router.back()}>← Назад</button>
+        <button className="back-btn" onClick={() => router.back()}>← </button>
         <h2>Редактирование товара</h2>
       </div>
 
@@ -130,7 +130,7 @@ const EditProduct = () => {
                 />
                 <label htmlFor={`thumb-${idx}`}>
                   {previews[idx] ? (
-                    <Image src={previews[idx]} alt="Превью" />
+                    <Image src={previews[idx]} alt="Превью" width={300} height={300} />
                   ) : (
                     <div className="upload-placeholder">📷</div>
                   )}
@@ -149,7 +149,7 @@ const EditProduct = () => {
             />
             <label htmlFor="main-image">
               {previews[3] ? (
-                <Image src={previews[3]} alt="Главное фото" />
+                <Image src={previews[3]} alt="Главное фото" width={300} height={300} />
               ) : (
                 <div className="upload-placeholder-main">Загрузить главное фото</div>
               )}
