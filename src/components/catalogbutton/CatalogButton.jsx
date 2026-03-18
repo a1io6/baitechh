@@ -1,284 +1,219 @@
 'use client';
-import { useState } from 'react';
-import { 
-  Menu, Wifi, Cpu, Monitor, MousePointer, 
-  HardDrive, Printer, Speaker, Home, 
-  BatteryCharging, Battery, ChevronDown, ChevronRight 
-} from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Menu, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import styles from './CatalogButton.module.scss';
-
-const catalogData = {
-  network: {
-    title: "Сетевое оборудование",
-    icon: <Wifi size={18} />,
-    groups: [
-      {
-        name: "Беспроводное оборудование",
-        links: [
-          { name: "Маршрутизаторы (Роутеры)", hasArrow: true },
-          { name: "Адаптеры Wi-Fi", hasArrow: false },
-          { name: "Точки доступа", hasArrow: false }
-        ]
-      },
-      {
-        name: "Проводное оборудование",
-        links: [
-          { name: "Коммутаторы (Свитчи)", hasArrow: false },
-          { name: "Сетевые карты", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  components: {
-    title: "Компьютерные комплектующие",
-    icon: <Cpu size={18} />,
-    groups: [
-      {
-        name: "Основные компоненты",
-        links: [
-          { name: "Процессоры", hasArrow: false },
-          { name: "Материнские платы", hasArrow: false },
-          { name: "Видеокарты", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  accessories: {
-    title: "Аксессуары",
-    icon: <MousePointer size={18} />,
-    groups: [
-      {
-        name: "Аксессуары для ПК",
-        links: [
-          { name: "Переходники", hasArrow: false },
-          { name: "Кабели и шнуры", hasArrow: true },
-          { name: "USB HUB", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  components: {
-    title: "Компьютерные комплектующие",
-    icon: <Cpu size={18} />,
-    groups: [
-      {
-        name: "Основные компоненты",
-        links: [
-          { name: "Процессоры", hasArrow: false },
-          { name: "Материнские платы", hasArrow: false },
-          { name: "Видеокарты", hasArrow: false },
-          { name: "Оперативная память", hasArrow: false }
-        ]
-      },
-      {
-        name: "Охлаждение и питание",
-        links: [
-          { name: "Блоки питания", hasArrow: false },
-          { name: "Кулеры для процессоров", hasArrow: false },
-          { name: "Корпуса", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  peripherals: {
-    title: "Компьютерная периферия",
-    icon: <Monitor size={18} />,
-    groups: [
-      {
-        name: "Устройства ввода",
-        links: [
-          { name: "Клавиатуры", hasArrow: false },
-          { name: "Мыши", hasArrow: false },
-          { name: "Коврики для мыши", hasArrow: false }
-        ]
-      },
-      {
-        name: "Мониторы",
-        links: [
-          { name: "Игровые мониторы", hasArrow: false },
-          { name: "Кронштейны", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  accessories: {
-    title: "Аксессуары",
-    icon: <MousePointer size={18} />,
-    groups: [
-      {
-        name: "Аксессуары для компьютерных устройств",
-        links: [
-          { name: "Переходники", hasArrow: false },
-          { name: "Кабели и шнуры", hasArrow: true },
-          { name: "USB HUB", hasArrow: false },
-          { name: "Кардридеры", hasArrow: false },
-          { name: "Микрофоны", hasArrow: false },
-          { name: "Сетевые фильтры", hasArrow: false },
-          { name: "Электрические удлинители", hasArrow: false }
-        ]
-      },
-      {
-        name: "Аксессуары для ноутбуков и планшетов",
-        links: [
-          { name: "Блоки питания для ноутбуков", hasArrow: true },
-          { name: "Наклейки на клавиатуру", hasArrow: false },
-          { name: "Чистящие средства", hasArrow: false },
-          { name: "Рюкзаки и сумки", hasArrow: true }
-        ]
-      }
-    ]
-  },
-  storage: {
-    title: "Носители информации",
-    icon: <HardDrive size={18} />,
-    groups: [
-      {
-        name: "USB накопители",
-        links: [
-          { name: "Флеш накопители 16 GB", hasArrow: false },
-          { name: "Флеш накопители 32 GB", hasArrow: false },
-          { name: "Флеш накопители 64 GB", hasArrow: false },
-          { name: "Флеш накопители 128 GB", hasArrow: false }
-        ]
-      },
-      {
-        name: "Внешние накопители",
-        links: [
-          { name: "HDD внешние", hasArrow: false },
-          { name: "SSD внешние", hasArrow: false },
-          { name: "Кейсы для жестких дисков", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  office: {
-    title: "Оргтехника",
-    icon: <Printer size={18} />,
-    groups: [
-      {
-        name: "Печать",
-        links: [
-          { name: "Принтеры и МФУ", hasArrow: false },
-          { name: "Картриджи", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  audio: {
-    title: "Акустические системы/колонки",
-    icon: <Speaker size={18} />,
-    groups: [
-      {
-        name: "Звук",
-        links: [
-          { name: "Колонки для ПК", hasArrow: false },
-          { name: "Портативная акустика", hasArrow: false },
-          { name: "Саундбары", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  smartHome: {
-    title: "Гаджеты для дома",
-    icon: <Home size={18} />,
-    groups: [
-      {
-        name: "Умный дом",
-        links: [
-          { name: "Умные розетки", hasArrow: false },
-          { name: "IP-камеры", hasArrow: false },
-          { name: "Датчики", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  power: {
-    title: "Источники питания",
-    icon: <BatteryCharging size={18} />,
-    groups: [
-      {
-        name: "Защита питания",
-        links: [
-          { name: "ИБП (UPS)", hasArrow: false },
-          { name: "Стабилизаторы напряжения", hasArrow: false }
-        ]
-      }
-    ]
-  },
-  batteries: {
-    title: "Аккумуляторы",
-    icon: <Battery size={18} />,
-    groups: [
-      {
-        name: "Элементы питания",
-        links: [
-          { name: "Батарейки", hasArrow: false },
-          { name: "Зарядные устройства для АКБ", hasArrow: false }
-        ]
-      }
-    ]
-  }
-};
+import { useProducts } from '@/lib/products/hooks/hooks';
+import { productApi } from '@/lib/products/api/useProducts';
+import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '../catalogmenu/Categoryicons';
 
 export default function CatalogButton() {
+  const router = useRouter();
+  const { categories, brands: allBrands, isLoading } = useProducts();
+
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
 
-  const toggleCategory = (key) => {
-    setActiveCategory(activeCategory === key ? null : key);
+  // Бренды: { [subId]: { brands: [], loading: bool, open: bool } }
+  const [subBrandsMap, setSubBrandsMap] = useState({});
+
+  const toggleCategory = (id) => {
+    setActiveCategory((prev) => (prev === id ? null : id));
+  };
+
+  const toggleSubBrands = useCallback(async (sub) => {
+    const current = subBrandsMap[sub.id];
+
+    // Если уже открыт — закрываем
+    if (current?.open) {
+      setSubBrandsMap((prev) => ({
+        ...prev,
+        [sub.id]: { ...prev[sub.id], open: false },
+      }));
+      return;
+    }
+
+    // Если уже загружены — просто открываем
+    if (current?.brands) {
+      setSubBrandsMap((prev) => ({
+        ...prev,
+        [sub.id]: { ...prev[sub.id], open: true },
+      }));
+      return;
+    }
+
+    // Загружаем бренды
+    setSubBrandsMap((prev) => ({
+      ...prev,
+      [sub.id]: { brands: null, loading: true, open: true },
+    }));
+
+    try {
+      const data = await productApi.getByCategory(sub.name);
+      const products = data.results || data;
+      const brandIds = [...new Set(products.map((p) => p.brand))];
+      const filtered = (allBrands || []).filter((b) => brandIds.includes(b.id));
+      setSubBrandsMap((prev) => ({
+        ...prev,
+        [sub.id]: { brands: filtered, loading: false, open: true },
+      }));
+    } catch (e) {
+      console.error(e);
+      setSubBrandsMap((prev) => ({
+        ...prev,
+        [sub.id]: { brands: [], loading: false, open: true },
+      }));
+    }
+  }, [allBrands, subBrandsMap]);
+
+  const handleCategoryClick = (category) => {
+    setIsOpen(false);
+    router.push(`/catalog?category=${encodeURIComponent(category.name)}`);
+  };
+
+  const handleSubcategoryClick = (subcategory) => {
+    setIsOpen(false);
+    router.push(`/catalog?category=${encodeURIComponent(subcategory.name)}`);
+  };
+
+  const handleBrandClick = (sub, brandId) => {
+    setIsOpen(false);
+    router.push(`/catalog?category=${encodeURIComponent(sub.name)}&brand=${brandId}`);
   };
 
   return (
     <div className={styles.catalogWrapper}>
-      <button 
+      <button
         className={styles.catalogButton}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
       >
         <Menu size={18} />
         <span>Каталог</span>
-        <ChevronDown 
-          size={16} 
-          className={`${styles.arrow} ${isOpen ? styles.rotate : ''}`} 
+        <ChevronDown
+          size={16}
+          className={`${styles.arrow} ${isOpen ? styles.rotate : ''}`}
         />
       </button>
 
       {isOpen && (
-        <div className={styles.catalogDropdown}>
-          <ul className={styles.categoryList}>
-            {Object.entries(catalogData).map(([key, item]) => (
-              <li key={key} className={styles.categoryWrapper}>
-                <div 
-                  className={`${styles.categoryItem} ${activeCategory === key ? styles.active : ''}`}
-                  onClick={() => toggleCategory(key)}
-                >
-                  <div className={styles.itemLeft}>
-                    {item.icon}
-                    <span>{item.title}</span>
-                  </div>
-                  <ChevronRight size={14} className={styles.subArrow} />
-                </div>
+        <>
+          <div className={styles.overlay} onClick={() => setIsOpen(false)} />
 
-                {/* Подменю (Аккордеон) */}
-                {activeCategory === key && (
-                  <div className={styles.subDrawer}>
-                    {item.groups.map((group, gIdx) => (
-                      <div key={gIdx} className={styles.subGroup}>
-                        <h4 className={styles.groupName}>{group.name}</h4>
-                        <ul className={styles.linksList}>
-                          {group.links.map((link, lIdx) => (
-                            <li key={lIdx} className={styles.linkItem}>
-                              {link.name}
-                            </li>
-                          ))}
-                        </ul>
+          <div className={styles.catalogDropdown}>
+            {isLoading ? (
+              <div className={styles.loader}>Загрузка...</div>
+            ) : (
+              <ul className={styles.categoryList}>
+                {categories?.map((category) => (
+                  <li key={category.id} className={styles.categoryWrapper}>
+
+                    {/* Строка категории */}
+                    <div className={`${styles.categoryItem} ${activeCategory === category.id ? styles.active : ''}`}>
+                      <button
+                        className={styles.itemLeft}
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        <span className={styles.icon}>
+                          {CATEGORY_ICONS[category.id] ?? DEFAULT_CATEGORY_ICON}
+                        </span>
+                        <span className={styles.itemTitle}>{category.name}</span>
+                      </button>
+
+                      {category.subcategories?.length > 0 ? (
+                        <button
+                          className={styles.toggleBtn}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleCategory(category.id);
+                          }}
+                        >
+                          <ChevronRight
+                            size={15}
+                            className={`${styles.subArrow} ${activeCategory === category.id ? styles.subArrowOpen : ''}`}
+                          />
+                        </button>
+                      ) : (
+                        <ChevronRight size={15} className={styles.subArrow} />
+                      )}
+                    </div>
+
+                    {/* Аккордеон подкатегорий */}
+                    {activeCategory === category.id && category.subcategories?.length > 0 && (
+                      <div className={styles.subDrawer}>
+                        {category.subcategories.map((sub) => {
+                          const subState = subBrandsMap[sub.id];
+                          const isSubOpen = subState?.open;
+
+                          return (
+                            <div key={sub.id} className={styles.subGroup}>
+                              {/* Подкатегория + кнопка раскрытия брендов */}
+                              <div className={styles.subRow}>
+                                <button
+                                  className={styles.subTitle}
+                                  onClick={() => handleSubcategoryClick(sub)}
+                                >
+                                  {sub.name}
+                                </button>
+
+                                <button
+                                  className={styles.brandToggle}
+                                  onClick={() => toggleSubBrands(sub)}
+                                >
+                                  <ChevronRight
+                                    size={13}
+                                    className={`${styles.brandArrow} ${isSubOpen ? styles.brandArrowOpen : ''}`}
+                                  />
+                                </button>
+                              </div>
+
+                              {/* Бренды inline */}
+                              {isSubOpen && (
+                                <div className={styles.brandsInline}>
+                                  {subState?.loading ? (
+                                    <Loader2 size={14} className={styles.spinner} />
+                                  ) : subState?.brands?.length > 0 ? (
+                                    subState.brands.map((brand) => (
+                                      <button
+                                        key={brand.id}
+                                        className={styles.brandChip}
+                                        onClick={() => handleBrandClick(sub, brand.id)}
+                                      >
+                                        {brand.name}
+                                      </button>
+                                    ))
+                                  ) : (
+                                    <span className={styles.noBrands}>Нет брендов</span>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Подкатегории 2-го уровня */}
+                              {sub.subcategories?.length > 0 && (
+                                <ul className={styles.subList}>
+                                  {sub.subcategories.map((child) => (
+                                    <li key={child.id}>
+                                      <button
+                                        className={styles.subItem}
+                                        onClick={() => handleSubcategoryClick(child)}
+                                      >
+                                        {child.name}
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
       )}
     </div>
   );

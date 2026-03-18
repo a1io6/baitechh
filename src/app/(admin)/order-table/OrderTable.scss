@@ -17,6 +17,46 @@ $status-colors: (
   transit: (bg: rgba(230, 167, 0, 0.14), text: #9d6f00, border: #e9c86b)
 );
 
+.return-btn {
+  width: 200px;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  background: var(--color-background-danger, #fff1f0);
+  color: var(--color-text-danger, #e84040);
+  border: 1.5px solid var(--color-border-danger, #e84040);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+  white-space: nowrap;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--color-text-danger, #e84040);
+    color: #fff;
+
+    svg {
+      transform: rotate(-20deg);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
 .dashboard {
   padding: 40px clamp(16px, 3vw, 48px);
   background: $page-bg;

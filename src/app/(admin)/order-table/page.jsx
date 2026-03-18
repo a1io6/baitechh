@@ -108,6 +108,7 @@ const OrderTable = () => {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
+  const [returningItem, setReturningItem] = useState(null); // { orderId, productId }
 
   const {
     orders,
@@ -206,6 +207,37 @@ const OrderTable = () => {
     setFilters(DEFAULT_FILTERS);
     setDraftFilters(DEFAULT_FILTERS);
   };
+
+  // ─── Возврат товара ───────────────────────────────────────────────────────
+  const handleReturn = async (order, item) => {
+    setReturningItem({ orderId: order.id, productId: item.product });
+    try {
+      const response = await fetch(`/api/returns/requests/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: order.id,
+          reason: "Бракованный товар",
+          items: [{ order_item_id: item.product, quantity: item.quantity }],
+        }),
+      });
+
+      if (response.ok) {
+        alert("Возврат успешно оформлен!");
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`Ошибка: ${errorData?.detail || "Не удалось оформить возврат"}`);
+      }
+    } catch {
+      alert("Ошибка сети. Попробуйте снова.");
+    } finally {
+      setReturningItem(null);
+    }
+  };
+
+  const isItemReturning = (orderId, productId) =>
+    returningItem?.orderId === orderId && returningItem?.productId === productId;
+  // ─────────────────────────────────────────────────────────────────────────
 
   const currentPage = page;
   const pageSizeForCalc = (() => {
@@ -418,138 +450,155 @@ const OrderTable = () => {
           )}
 
           <table className="table">
-          <thead>
-            <tr>
-              <th style={{ width: "48px" }}></th>
-              <th>{"№ заказа"}</th>
-              <th>{"Адрес / Клиент"}</th>
-              <th>{"Оплата"}</th>
-              <th>{"Сумма"}</th>
-              <th>{"Статус"}</th>
-              <th>{"Дата"}</th>
-            </tr>
-          </thead>
+            <thead>
+              <tr>
+                <th style={{ width: "48px" }}></th>
+                <th>{"№ заказа"}</th>
+                <th>{"Адрес / Клиент"}</th>
+                <th>{"Оплата"}</th>
+                <th>{"Сумма"}</th>
+                <th>{"Статус"}</th>
+                <th>{"Дата"}</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {orders.map((order) => {
-              const statusMeta =
-                STATUS_MAP[order.status] ||
-                STATUS_BY_API_VALUE[order.status] ||
-                STATUS_MAP[1];
-              const statusValue =
-                Number.isFinite(Number(order.status)) && Number(order.status) > 0
-                  ? Number(order.status)
-                  : Number(
-                      Object.entries(STATUS_MAP).find(([, status]) => status.apiValue === order.status)?.[0] || 1
-                    );
+            <tbody>
+              {orders.map((order) => {
+                const statusMeta =
+                  STATUS_MAP[order.status] ||
+                  STATUS_BY_API_VALUE[order.status] ||
+                  STATUS_MAP[1];
+                const statusValue =
+                  Number.isFinite(Number(order.status)) && Number(order.status) > 0
+                    ? Number(order.status)
+                    : Number(
+                        Object.entries(STATUS_MAP).find(([, status]) => status.apiValue === order.status)?.[0] || 1
+                      );
 
-              return (
-                <React.Fragment key={order.id}>
-                  <tr className="table__row" onClick={() => toggleOrder(order.id)}>
-                    <td>{expandedOrderId === order.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</td>
-                    <td className="fw-bold">#{order.order_number}</td>
-                    <td className="table__address">{order.address}</td>
-                    <td>{getPaymentLabel(order.payment_method)}</td>
-                    <td className="fw-bold">
-                      {order.total_price} {"сом"}
-                    </td>
-                    <td onClick={(event) => event.stopPropagation()}>
-                      <div className={`status-wrapper status-wrapper--${statusMeta.class}`}>
-                        <select
-                          className="status-wrapper__select"
-                          value={statusValue}
-                          disabled={isUpdating}
-                          onChange={(event) => {
-                            const nextStatusId = Number(event.target.value);
-                            const nextStatus = STATUS_MAP[nextStatusId];
+                return (
+                  <React.Fragment key={order.id}>
+                    <tr className="table__row" onClick={() => toggleOrder(order.id)}>
+                      <td>{expandedOrderId === order.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</td>
+                      <td className="fw-bold">#{order.order_number}</td>
+                      <td className="table__address">{order.address}</td>
+                      <td>{getPaymentLabel(order.payment_method)}</td>
+                      <td className="fw-bold">
+                        {order.total_price} {"сом"}
+                      </td>
+                      <td onClick={(event) => event.stopPropagation()}>
+                        <div className={`status-wrapper status-wrapper--${statusMeta.class}`}>
+                          <select
+                            className="status-wrapper__select"
+                            value={statusValue}
+                            disabled={isUpdating}
+                            onChange={(event) => {
+                              const nextStatusId = Number(event.target.value);
+                              const nextStatus = STATUS_MAP[nextStatusId];
 
-                            if (!nextStatus) return;
+                              if (!nextStatus) return;
 
-                            updateStatus({
-                              id: order.id,
-                              status: nextStatus.apiValue,
-                              statusId: nextStatusId,
-                            });
-                          }}
-                        >
-                          {Object.entries(STATUS_MAP).map(([id, status]) => (
-                            <option key={id} value={id}>
-                              {status.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </td>
-                    <td>{order.formatted_date}</td>
-                  </tr>
-
-                  {expandedOrderId === order.id && (
-                    <tr className="items-row">
-                      <td colSpan="7">
-                        <div className="items-container">
-                          {(order.items || []).map((item, index) => (
-                            <div key={index} className="order-details-card">
-                              <div className="item-photo-placeholder">
-                                {item.image && <img src={item.image} alt={item.name} />}
-                              </div>
-
-                              <div className="item-info-grid">
-                                <div className="info-block">
-                                  <span className="info-label">{"№ заказа"}</span>
-                                  <span className="info-value">{order.order_number}</span>
-                                </div>
-
-                                <div className="info-block title">
-                                  <span className="info-label">{"Название"}</span>
-                                  <span className="info-value">{item.name || "Товар"}</span>
-                                </div>
-
-                                <div className="info-block">
-                                  <span className="info-label">{"Цена"}</span>
-                                  <span className="info-value">
-                                    {item.price} {"сом"}
-                                  </span>
-                                </div>
-
-                                <div className="info-block">
-                                  <span className="info-label">{"Адрес"}</span>
-                                  <span className="info-value">{order.address}</span>
-                                </div>
-
-                                <div className="info-block">
-                                  <span className="info-label">{"Артикул"}</span>
-                                  <span className="info-value">{item.sku || "-"}</span>
-                                </div>
-
-                                <div className="info-block">
-                                  <span className="info-label">{"Количество"}</span>
-                                  <span className="info-value">
-                                    {item.quantity} {"шт"}
-                                  </span>
-                                </div>
-
-                                <div className="info-block">
-                                  <span className="info-label">{"Дата"}</span>
-                                  <span className="info-value">
-                                    {order.formatted_date ? order.formatted_date.split(" ")[0] : "-"}
-                                  </span>
-                                </div>
-
-                                <div className="info-block">
-                                  <span className="info-label">{"Статус"}</span>
-                                  <span className="info-value status">{statusMeta.label}</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
+                              updateStatus({
+                                id: order.id,
+                                status: nextStatus.apiValue,
+                                statusId: nextStatusId,
+                              });
+                            }}
+                          >
+                            {Object.entries(STATUS_MAP).map(([id, status]) => (
+                              <option key={id} value={id}>
+                                {status.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </td>
+                      <td>{order.formatted_date}</td>
                     </tr>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
+
+                    {expandedOrderId === order.id && (
+                      <tr className="items-row">
+                        <td colSpan="7">
+                          <div className="items-container">
+                            {(order.items || []).map((item, index) => (
+                              <div key={index} className="order-details-card">
+                                <div className="item-photo-placeholder">
+                                  {item.image && <img src={item.image} alt={item.name} />}
+                                </div>
+
+                                <div className="item-info-grid">
+                                  <div className="info-block">
+                                    <span className="info-label">{"№ заказа"}</span>
+                                    <span className="info-value">{order.order_number}</span>
+                                  </div>
+
+                                  <div className="info-block title">
+                                    <span className="info-label">{"Название"}</span>
+                                    <span className="info-value">{item.name || "Товар"}</span>
+                                  </div>
+
+                                  <div className="info-block">
+                                    <span className="info-label">{"Цена"}</span>
+                                    <span className="info-value">
+                                      {item.price} {"сом"}
+                                    </span>
+                                  </div>
+
+                                  <div className="info-block">
+                                    <span className="info-label">{"Адрес"}</span>
+                                    <span className="info-value">{order.address}</span>
+                                  </div>
+
+                                  <div className="info-block">
+                                    <span className="info-label">{"Артикул"}</span>
+                                    <span className="info-value">{item.sku || "-"}</span>
+                                  </div>
+
+                                  <div className="info-block">
+                                    <span className="info-label">{"Количество"}</span>
+                                    <span className="info-value">
+                                      {item.quantity} {"шт"}
+                                    </span>
+                                  </div>
+
+                                  <div className="info-block">
+                                    <span className="info-label">{"Дата"}</span>
+                                    <span className="info-value">
+                                      {order.formatted_date ? order.formatted_date.split(" ")[0] : "-"}
+                                    </span>
+                                  </div>
+
+                                  <div className="info-block">
+                                    <span className="info-label">{"Статус"}</span>
+                                    <span className="info-value status">{statusMeta.label}</span>
+                                  </div>
+
+                                  {/* ─── Кнопка возврата ─── */}
+                                  <div className="info-block" style={{ gridColumn: "span 2" }}>
+                                    <button
+                                      type="button"
+                                      className="return-btn"
+                                      disabled={isItemReturning(order.id, item.product)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleReturn(order, item);
+                                      }}
+                                    >
+                                      {isItemReturning(order.id, item.product)
+                                        ? "Отправка..."
+                                        : "↩ Оформить возврат"}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
           </table>
         </div>
 

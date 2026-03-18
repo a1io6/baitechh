@@ -1,12 +1,12 @@
 .catalogWrapper {
   position: relative;
-  display: none; // Скрыто на больших экранах
+  display: none;
   width: 100%;
   margin-bottom: 10px;
 
   @media (max-width: 768px) {
     padding: 0px 15px;
-    display: block; // Видно только до 780px
+    display: block;
   }
 }
 
@@ -41,71 +41,138 @@
   overflow: hidden;
 }
 
+.loader {
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+}
+
 .categoryList {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+.categoryWrapper {
+  border-bottom: 1px solid #f9f9f9;
+  &:last-child { border-bottom: none; }
+}
+
 .categoryItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid #f9f9f9;
+  padding: 0;
   cursor: pointer;
-
-  .itemLeft {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #333;
-    font-weight: 500;
-    span{
-      font-size: 14px;
-    }
-  }
-
-  .subArrow {
-    transition: transform 0.2s;
-    color: #ccc;
-  }
 
   &.active {
     background: #f8f9fa;
     .subArrow { transform: rotate(90deg); color: #2c3e50; }
+    .itemTitle { color: #2c3e50; font-weight: 600; }
+    .icon { color: #2c3e50; }
   }
 }
 
-// Выпадающая часть с группами
+// Левая часть — иконка + название
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  color: #005bff;
+  flex-shrink: 0;
+}
+
+.itemTitle {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+// Кнопка стрелки
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.subArrow {
+  color: #ccc;
+  transition: transform 0.2s, color 0.2s;
+
+  &.subArrowOpen {
+    transform: rotate(90deg);
+    color: #2c3e50;
+  }
+}
+
+// ── Аккордеон ─────────────────────────────────────────────────
 .subDrawer {
   background: #fcfcfc;
-  padding: 10px 20px 20px 48px; // Отступ слева, чтобы текст был под названием категории
+  padding: 10px 20px 20px 48px;
   border-bottom: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
 
-  .subGroup {
-    margin-top: 15px;
-  }
+.subGroup {
+  margin-top: 15px;
+}
 
-  .groupName {
-    font-size: 13px;
-    text-transform: uppercase;
-    color: #999;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-  }
+.subTitle {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #999;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-weight: 500;
+  transition: color 0.15s;
 
-  .linksList {
-    list-style: none;
-    padding: 0;
-  }
+  &:hover { color: #2c3e50; }
+}
 
-  .linkItem {
-    padding: 8px 0;
-    font-size: 14px;
-    color: #444;
-    border-bottom: 1px solid #f0f0f0;
+.subList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-    &:last-child { border: none; }
-  }
+.subItem {
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #444;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:last-child { border: none; }
+  &:hover { color: #005bff; }
 }

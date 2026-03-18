@@ -1,77 +1,123 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './CatalogMenu.module.scss';
-import { ChevronRight, LayoutGrid, Tag, Loader2 } from 'lucide-react';
+import { ChevronRight, Loader2 } from 'lucide-react';
 import { useProducts } from '@/lib/products/hooks/hooks';
 import { productApi } from '@/lib/products/api/useProducts';
+import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from './Categoryicons';
 
 export default function Catalog({ onClose }) {
   const router = useRouter();
   const { categories, brands: allBrands, isLoading } = useProducts();
-  
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [categoryBrands, setCategoryBrands] = useState([]);
-  const [isBrandsLoading, setIsBrandsLoading] = useState(false);
 
-  // Инициализация первой категории при загрузке
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [hoveredSub, setHoveredSub] = useState(null);
+  const [subBrands, setSubBrands] = useState([]);
+  const [isBrandsLoading, setIsBrandsLoading] = useState(false);
+  const [popupTop, setPopupTop] = useState(0);
+
+  const hideTimer = useRef(null);
+  const contentRef = useRef(null);
+
   useEffect(() => {
     if (categories?.length > 0 && !activeCategory) {
       setActiveCategory(categories[0]);
     }
   }, [categories]);
 
-  // Загрузка брендов, когда меняется "активная" категория (при наведении)
-  useEffect(() => {
-    async function fetchBrands() {
-      if (!activeCategory) return;
-      setIsBrandsLoading(true);
-      try {
-        const data = await productApi.getByCategory(activeCategory.name);
-        const products = data.results || data;
-        const brandIds = [...new Set(products.map(p => p.brand))];
-        const filtered = allBrands.filter(b => brandIds.includes(b.id));
-        setCategoryBrands(filtered);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsBrandsLoading(false);
-      }
-    }
-    fetchBrands();
-  }, [activeCategory, allBrands]);
+  const fetchBrandsForSub = useCallback(async (sub, btnEl) => {
+    // Считаем top относительно .content
+    const btnRect = btnEl.getBoundingClientRect();
+    const contentRect = contentRef.current?.getBoundingClientRect();
+    setPopupTop((btnRect.top - (contentRect?.top ?? 0)));
 
-  // ГЛАВНОЕ: Клик по категории слева (как в delta.kg)
+    setHoveredSub(sub);
+    setSubBrands([]);
+    setIsBrandsLoading(true);
+
+    try {
+      const data = await productApi.getByCategory(sub.name);
+      const products = data.results || data;
+      const brandIds = [...new Set(products.map((p) => p.brand))];
+      const filtered = (allBrands || []).filter((b) => brandIds.includes(b.id));
+      setSubBrands(filtered);
+    } catch (e) {
+      console.error(e);
+      setSubBrands([]);
+    } finally {
+      setIsBrandsLoading(false);
+    }
+  }, [allBrands]);
+
+  const handleSubMouseEnter = (sub, e) => {
+    clearTimeout(hideTimer.current);
+    fetchBrandsForSub(sub, e.currentTarget);
+  };
+
+  const handleSubMouseLeave = () => {
+    hideTimer.current = setTimeout(() => {
+      setHoveredSub(null);
+      setSubBrands([]);
+    }, 150);
+  };
+
+  const handlePopupMouseEnter = () => clearTimeout(hideTimer.current);
+
+  const handlePopupMouseLeave = () => {
+    hideTimer.current = setTimeout(() => {
+      setHoveredSub(null);
+      setSubBrands([]);
+    }, 150);
+  };
+
   const handleCategoryClick = (category) => {
     onClose();
     router.push(`/catalog?category=${encodeURIComponent(category.name)}`);
   };
 
-  // Клик по бренду справа
-  const handleBrandClick = (brandId) => {
+  const handleSubcategoryClick = (subcategory) => {
     onClose();
-    router.push(`/catalog?category=${encodeURIComponent(activeCategory.name)}&brand=${brandId}`);
+    router.push(`/catalog?category=${encodeURIComponent(subcategory.name)}`);
   };
 
-  if (isLoading) return <div className={styles.overlay}><Loader2 className={styles.spinner} /></div>;
+  const handleBrandClick = (sub, brandId) => {
+    onClose();
+    router.push(`/catalog?category=${encodeURIComponent(sub.name)}&brand=${brandId}`);
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.overlay}>
+        <Loader2 className={styles.spinner} />
+      </div>
+    );
+  }
+
+  const subcategories = activeCategory?.subcategories || [];
+  const half = Math.ceil(subcategories.length / 2);
+  const col1 = subcategories.slice(0, half);
+  const col2 = subcategories.slice(half);
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className={`${styles.catalogContainer} container`}>
-        
-        {/* ЛЕВАЯ ПАНЕЛЬ: Список категорий */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`${styles.catalogContainer} container`}
+      >
+        {/* КОЛОНКА 1: Категории */}
         <aside className={styles.sidebar}>
           {categories?.map((category) => (
             <button
               key={category.id}
               className={`${styles.navButton} ${activeCategory?.id === category.id ? styles.active : ''}`}
-              // При наведении — просто меняем бренды справа
               onMouseEnter={() => setActiveCategory(category)}
-              // ПРИ КЛИКЕ — сразу уходим в каталог (Логика Delta.kg)
               onClick={() => handleCategoryClick(category)}
             >
-              <div className={styles.navButton}>
-                <LayoutGrid size={18} className={styles.icon} />
+              <div className={styles.navLeft}>
+                <span className={styles.icon}>
+                  {CATEGORY_ICONS[category.id] ?? DEFAULT_CATEGORY_ICON}
+                </span>
                 <span className={styles.label}>{category.name}</span>
               </div>
               <ChevronRight size={14} className={styles.chevron} />
@@ -79,30 +125,82 @@ export default function Catalog({ onClose }) {
           ))}
         </aside>
 
-        <main className={styles.content}>
+        {/* КОЛОНКИ 2 и 3: Подкатегории + попап брендов */}
+        {activeCategory && (
+          <main className={styles.content} ref={contentRef}>
+            {subcategories.length > 0 ? (
+              <div className={styles.columnsWrap}>
+                {[col1, col2].map((col, colIdx) => (
+                  <div key={colIdx} className={styles.subColumn}>
+                    {col.map((sub) => (
+                      <div key={sub.id} className={styles.subGroup}>
+                        <button
+                          className={`${styles.subTitle} ${hoveredSub?.id === sub.id ? styles.subTitleActive : ''}`}
+                          onMouseEnter={(e) => handleSubMouseEnter(sub, e)}
+                          onMouseLeave={handleSubMouseLeave}
+                          onClick={() => handleSubcategoryClick(sub)}
+                        >
+                          {sub.name}
+                          <ChevronRight size={13} className={styles.subChevron} />
 
-          <div className={styles.brandsGrid}>
-            {isBrandsLoading ? (
-              <div className={styles.loader}><Loader2 size={20} className={styles.spinner} /></div>
-            ) : (
-              <div className={styles.linkList} style={{display:'flex'}}>
-                {categoryBrands.length > 0 ? (
-                  categoryBrands.map((brand) => (
-                    <div 
-                      key={brand.id} 
-                      className={styles.linkItem} 
-                      onClick={() => handleBrandClick(brand.id)}
-                    >
-                      <span>{brand.name}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className={styles.empty}>В этой категории пока нет брендов</p>
-                )}
+                          {/* Попап внутри кнопки */}
+                          {hoveredSub?.id === sub.id && (
+                            <div
+                              className={styles.brandsPopup}
+                              onMouseEnter={handlePopupMouseEnter}
+                              onMouseLeave={handlePopupMouseLeave}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {isBrandsLoading ? (
+                                <div className={styles.popupLoader}>
+                                  <Loader2 size={16} className={styles.spinner} />
+                                </div>
+                              ) : subBrands.length > 0 ? (
+                                <ul className={styles.brandsList}>
+                                  {subBrands.map((brand) => (
+                                    <li key={brand.id}>
+                                      <button
+                                        className={styles.brandItem}
+                                        onClick={() => handleBrandClick(hoveredSub, brand.id)}
+                                      >
+                                        {brand.name}
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className={styles.popupEmpty}>Нет брендов</p>
+                              )}
+                            </div>
+                          )}
+                        </button>
+
+                        {sub.subcategories?.length > 0 && (
+                          <ul className={styles.subList}>
+                            {sub.subcategories.map((child) => (
+                              <li key={child.id}>
+                                <button
+                                  className={styles.subItem}
+                                  onClick={() => handleSubcategoryClick(child)}
+                                >
+                                  {child.name}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
+            ) : (
+              <p className={styles.empty}>Нет подкатегорий</p>
             )}
-          </div>
-        </main>
+
+
+          </main>
+        )}
       </div>
     </div>
   );
