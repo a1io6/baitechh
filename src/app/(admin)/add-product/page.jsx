@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProducts } from "@/lib/products/hooks/hooks";
 import { Plus, Trash2, X, Camera } from "lucide-react";
@@ -18,11 +19,11 @@ const AddProduct = () => {
     deleteBrand,
   } = useProducts();
 
-  // Состояние формы товара
   const [formData, setFormData] = useState({
     name: "",
     article: "",
     price: "",
+    parentCategory: "",
     category: "",
     brand: "",
     bonus: "",
@@ -31,30 +32,31 @@ const AddProduct = () => {
     images: [null, null, null, null],
   });
 
-  // Состояния для модальных окон
-  const [modalType, setModalType] = useState(null); // 'category' | 'brand' | null
-  // Добавлено поле parent для привязки категории к бренду
-  const [modalData, setModalData] = useState({ name: "", description: "", parent: "" });
+  const [modalType, setModalType] = useState(null);
+  const [modalData, setModalData] = useState({ name: "", parent: "" });
   const [isSubmittingModal, setIsSubmittingModal] = useState(false);
+  const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
     if (name === "bonus") {
       const num = Number(value);
       if (num > 9999 || num < 0) return;
-      setFormData((prev) => ({ ...prev, bonus: num }));
+      setFormData((prev) => ({ ...prev, bonus: value }));
       return;
     }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageUpload = (e, index) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const newImages = [...formData.images];
-      newImages[index] = file;
-      setFormData((prev) => ({ ...prev, images: newImages }));
-    }
+    if (!file) return;
+
+    const newImages = [...formData.images];
+    newImages[index] = file;
+    setFormData((prev) => ({ ...prev, images: newImages }));
   };
 
   const removeImage = (index) => {
@@ -63,40 +65,53 @@ const AddProduct = () => {
     setFormData((prev) => ({ ...prev, images: newImages }));
   };
 
-  // Функция для превращения иерархии категорий в плоский список с отступами
   const flattenCategories = (items, depth = 0) => {
     let flat = [];
     items?.forEach((item) => {
-      flat.push({ ...item, displayName: "— ".repeat(depth) + item.name });
-      if (item.subcategories && item.subcategories.length > 0) {
+      flat.push({ ...item, displayName: `${"— ".repeat(depth)}${item.name}` });
+      if (item.subcategories?.length) {
         flat = flat.concat(flattenCategories(item.subcategories, depth + 1));
       }
     });
     return flat;
   };
 
-  const flatCategories = flattenCategories(categories);
+  const flatCategories = useMemo(() => flattenCategories(categories), [categories]);
+  const rootCategories = useMemo(
+    () => (categories || []).filter((item) => item.parent === null || item.parent === undefined),
+    [categories]
+  );
+  const selectedParentCategory = useMemo(
+    () => rootCategories.find((item) => String(item.id) === String(formData.parentCategory)),
+    [rootCategories, formData.parentCategory]
+  );
+  const availableSubcategories = selectedParentCategory?.subcategories || [];
 
-  // Сохранение нового бренда или категории из модалки
+  const closeModal = () => {
+    setModalType(null);
+    setModalData({ name: "", parent: "" });
+  };
+
   const handleAddQuickInfo = async () => {
-    if (!modalData.name.trim()) return alert("Название обязательно");
+    if (!modalData.name.trim()) {
+      alert("Название обязательно");
+      return;
+    }
 
     setIsSubmittingModal(true);
     try {
       if (modalType === "category") {
         await addCategory({
           name: modalData.name,
-          description: modalData.description,
           parent: modalData.parent ? Number(modalData.parent) : null,
         });
       } else if (modalType === "brand") {
         await addBrand({
           name: modalData.name,
-          description: modalData.description,
         });
       }
-      setModalType(null);
-      setModalData({ name: "", description: "", parent: "" });
+
+      closeModal();
     } catch (error) {
       console.error("Ошибка при создании:", error);
     } finally {
@@ -105,11 +120,13 @@ const AddProduct = () => {
   };
 
   const handleSubmit = async () => {
+    setIsSubmittingProduct(true);
+
     const payload = new FormData();
     payload.append("name", formData.name);
     payload.append("article", formData.article);
     payload.append("price", formData.price);
-    payload.append("category", formData.category);
+    payload.append("category", formData.category || formData.parentCategory);
     payload.append("brand", formData.brand);
     payload.append("bonus", formData.bonus);
     payload.append("description", formData.description);
@@ -125,6 +142,8 @@ const AddProduct = () => {
       router.push("/camera");
     } catch (err) {
       console.error("Ошибка публикации:", err);
+    } finally {
+      setIsSubmittingProduct(false);
     }
   };
 
@@ -132,13 +151,13 @@ const AddProduct = () => {
 
   return (
     <div className="add-product-page">
-      {/* --- МОДАЛЬНОЕ ОКНО --- */}
       {modalType && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <button className="close-modal-btn" onClick={() => setModalType(null)}>
+            <button className="close-modal-btn" onClick={closeModal}>
               <X size={20} />
             </button>
+
             {modalType === "manage-category" || modalType === "manage-brand" ? (
               <>
                 <h3>Управление {modalType === "manage-category" ? "категориями" : "брендами"}</h3>
@@ -149,18 +168,20 @@ const AddProduct = () => {
                       <button
                         className="delete-item-btn"
                         onClick={async () => {
-                          if (window.confirm(`Вы уверены, что хотите удалить ${modalType === "manage-category" ? "категорию" : "бренд"} "${item.name}"?`)) {
-                            try {
-                              if (modalType === "manage-category") {
-                                await deleteCategory(item.id);
-                              } else {
-                                await deleteBrand(item.id);
-                              }
-                              setModalType(null);
-                              setModalData({ name: "", description: "", parent: "" });
-                            } catch (err) {
-                              console.error("Ошибка удаления", err);
+                          const itemType = modalType === "manage-category" ? "категорию" : "бренд";
+                          if (!window.confirm(`Вы уверены, что хотите удалить ${itemType} "${item.name}"?`)) {
+                            return;
+                          }
+
+                          try {
+                            if (modalType === "manage-category") {
+                              await deleteCategory(item.id);
+                            } else {
+                              await deleteBrand(item.id);
                             }
+                            closeModal();
+                          } catch (err) {
+                            console.error("Ошибка удаления", err);
                           }
                         }}
                       >
@@ -170,7 +191,7 @@ const AddProduct = () => {
                   ))}
                 </div>
                 <div className="modal-actions">
-                  <button className="cancel-btn" onClick={() => setModalType(null)}>
+                  <button className="cancel-btn" onClick={closeModal}>
                     Закрыть
                   </button>
                 </div>
@@ -179,57 +200,22 @@ const AddProduct = () => {
               <>
                 <h3>Добавить {modalType === "category" ? "категорию" : "бренд"}</h3>
                 <div className="modal-fields">
-
-                  {/* Выбор родительской КАТЕГОРИИ ТОЛЬКО для категории */}
-                  {modalType === "category" && (
-                    <div className="modal-group">
-                      <label>Выберите родительскую категорию (Parent)</label>
-                      <select
-                        value={modalData.parent}
-                        onChange={(e) => setModalData({ ...modalData, parent: e.target.value })}
-                      >
-                        <option value="">Без родителя (Верхний уровень)</option>
-                        {flatCategories?.map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.displayName}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
                   <div className="modal-group">
                     <label>Название *</label>
                     <input
                       type="text"
                       value={modalData.name}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, name: e.target.value })
-                      }
+                      onChange={(e) => setModalData((prev) => ({ ...prev, name: e.target.value }))}
                       placeholder="Введите название..."
                     />
                   </div>
 
-                  <div className="modal-group">
-                    <label>Описание</label>
-                    <textarea
-                      value={modalData.description}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, description: e.target.value })
-                      }
-                      placeholder="Необязательное описание..."
-                    />
-                  </div>
                 </div>
                 <div className="modal-actions">
-                  <button className="cancel-btn" onClick={() => setModalType(null)}>
+                  <button className="cancel-btn" onClick={closeModal}>
                     Отмена
                   </button>
-                  <button
-                    className="confirm-btn"
-                    onClick={handleAddQuickInfo}
-                    disabled={isSubmittingModal}
-                  >
+                  <button className="confirm-btn" onClick={handleAddQuickInfo} disabled={isSubmittingModal}>
                     {isSubmittingModal ? "..." : "Добавить"}
                   </button>
                 </div>
@@ -241,11 +227,7 @@ const AddProduct = () => {
 
       <div className="page-header">
         <div className="header-left">
-          <button
-            className="back-btn-new"
-            onClick={() => router.back()}
-            aria-label="Назад"
-          >
+          <button className="back-btn-new" onClick={() => router.back()} aria-label="Назад">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -266,22 +248,14 @@ const AddProduct = () => {
       </div>
 
       <div className="form-container">
-        {/* СЕКЦИЯ ИЗОБРАЖЕНИЙ */}
         <div className="image-upload-section">
           <div className="thumbnail-grid">
             {[0, 1, 2].map((idx) => (
               <div key={idx} className="thumbnail-slot">
                 {formData.images[idx] ? (
                   <div className="preview-container">
-                    <img
-                      src={URL.createObjectURL(formData.images[idx])}
-                      alt="Превью"
-                    />
-                    <button
-                      type="button"
-                      className="remove-btn-top"
-                      onClick={() => removeImage(idx)}
-                    >
+                    <img src={URL.createObjectURL(formData.images[idx])} alt="Превью" />
+                    <button type="button" className="remove-btn-top" onClick={() => removeImage(idx)}>
                       ✕
                     </button>
                   </div>
@@ -294,10 +268,7 @@ const AddProduct = () => {
                       id={`thumb-${idx}`}
                       hidden
                     />
-                    <label
-                      htmlFor={`thumb-${idx}`}
-                      className="upload-placeholder"
-                    >
+                    <label htmlFor={`thumb-${idx}`} className="upload-placeholder">
                       <Camera size={24} />
                     </label>
                   </>
@@ -309,15 +280,8 @@ const AddProduct = () => {
           <div className="main-image-slot">
             {formData.images[3] ? (
               <div className="preview-container main">
-                <img
-                  src={URL.createObjectURL(formData.images[3])}
-                  alt="Главное"
-                />
-                <button
-                  type="button"
-                  className="remove-btn-top"
-                  onClick={() => removeImage(3)}
-                >
+                <img src={URL.createObjectURL(formData.images[3])} alt="Главное" />
+                <button type="button" className="remove-btn-top" onClick={() => removeImage(3)}>
                   ✕
                 </button>
               </div>
@@ -339,142 +303,146 @@ const AddProduct = () => {
           </div>
         </div>
 
-        {/* ПОЛЯ ФОРМЫ */}
         <div className="form-grid">
           <div className="form-group">
             <label>Название</label>
-            <input
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
+            <input name="name" type="text" value={formData.name} onChange={handleInputChange} />
           </div>
+
           <div className="form-group">
             <label>Артикул</label>
-            <input
-              name="article"
-              type="text"
-              value={formData.article}
-              onChange={handleInputChange}
-            />
+            <input name="article" type="text" value={formData.article} onChange={handleInputChange} />
           </div>
+
           <div className="form-group">
             <label>Цена (сом)</label>
-            <input
-              name="price"
-              type="number"
-              value={formData.price}
-              onChange={handleInputChange}
-            />
+            <input name="price" type="number" value={formData.price} onChange={handleInputChange} />
           </div>
+
           <div className="form-group">
             <label>Категория</label>
+            <div className="select-wrapper">
+              <select
+                name="parentCategory"
+                value={formData.parentCategory}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    parentCategory: e.target.value,
+                    category: "",
+                  }))
+                }
+              >
+                <option value="">Выберите категорию</option>
+                {rootCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="add-small-btn"
+                onClick={() => {
+                  setModalType("category");
+                  setModalData({ name: "", parent: "" });
+                }}
+              >
+                <Plus size={20} />
+              </button>
+              <button type="button" className="delete-small-btn" onClick={() => setModalType("manage-category")}>
+                <Trash2 size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Подкатегория</label>
             <div className="select-wrapper">
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
+                disabled={!formData.parentCategory || availableSubcategories.length === 0}
               >
-                <option value="">Выберите категорию</option>
-                {flatCategories?.map((cat) => (
+                <option value="">
+                  {formData.parentCategory ? "Выберите подкатегорию" : "Сначала выберите категорию"}
+                </option>
+                {availableSubcategories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
-                    {cat.displayName}
+                    {cat.name}
                   </option>
                 ))}
               </select>
               <button
                 type="button"
                 className="add-small-btn"
-                onClick={() => setModalType("category")}
+                onClick={() => {
+                  setModalType("category");
+                  setModalData({
+                    name: "",
+                    parent: formData.parentCategory || "",
+                  });
+                }}
               >
                 <Plus size={20} />
               </button>
-              <button
-                type="button"
-                className="delete-small-btn"
-                onClick={() => setModalType("manage-category")}
-              >
+              <button type="button" className="delete-small-btn" onClick={() => setModalType("manage-category")}>
                 <Trash2 size={18} />
               </button>
             </div>
           </div>
+
           <div className="form-group">
             <label>Бренд</label>
             <div className="select-wrapper">
-              <select
-                name="brand"
-                value={formData.brand}
-                onChange={handleInputChange}
-              >
+              <select name="brand" value={formData.brand} onChange={handleInputChange}>
                 <option value="">Выберите бренд</option>
-                {brands?.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
+                {brands?.map((brand) => (
+                  <option key={brand.id} value={brand.id}>
+                    {brand.name}
                   </option>
                 ))}
               </select>
               <button
                 type="button"
                 className="add-small-btn"
-                onClick={() => setModalType("brand")}
+                onClick={() => {
+                  setModalType("brand");
+                  setModalData({ name: "", parent: "" });
+                }}
               >
                 <Plus size={20} />
               </button>
-              <button
-                type="button"
-                className="delete-small-btn"
-                onClick={() => setModalType("manage-brand")}
-              >
+              <button type="button" className="delete-small-btn" onClick={() => setModalType("manage-brand")}>
                 <Trash2 size={18} />
               </button>
             </div>
           </div>
+
           <div className="form-group">
             <label>Бонусные баллы (%)</label>
-            <input
-              name="bonus"
-              type="number"
-              value={formData.bonus}
-              onChange={handleInputChange}
-            />
+            <input name="bonus" type="number" value={formData.bonus} onChange={handleInputChange} />
           </div>
         </div>
 
         <div className="full-width-fields">
           <div className="form-group">
             <label>Описание</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-            />
+            <textarea name="description" value={formData.description} onChange={handleInputChange} />
           </div>
           <div className="form-group">
             <label>Характеристики</label>
-            <textarea
-              name="characteristics"
-              value={formData.characteristics}
-              onChange={handleInputChange}
-            />
+            <textarea name="characteristics" value={formData.characteristics} onChange={handleInputChange} />
           </div>
         </div>
 
         <div className="form-actions">
-          <button
-            type="button"
-            className="cancel-btn"
-            onClick={() => router.back()}
-          >
+          <button type="button" className="cancel-btn" onClick={() => router.back()}>
             Отмена
           </button>
-          <button
-            type="button"
-            className="submit-btn"
-            onClick={handleSubmit}
-            disabled={addProduct.isPending}
-          >
-            {addProduct.isPending ? "Публикация..." : "Опубликовать"}
+          <button type="button" className="submit-btn" onClick={handleSubmit} disabled={isSubmittingProduct}>
+            {isSubmittingProduct ? "Публикация..." : "Опубликовать"}
           </button>
         </div>
       </div>

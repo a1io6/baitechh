@@ -7,9 +7,9 @@ import { Settings2, ChevronDown, ChevronUp, CalendarDays, X } from "lucide-react
 import { useOrders } from "@/lib/order/hook";
 
 const STATUS_MAP = {
-  1: { class: "stock", label: "На складе", apiValue: "in_stock" },
+  1: { class: "transit", label: "В пути", apiValue: "on_the_way" },
   2: { class: "delivered", label: "Доставлено", apiValue: "delivered" },
-  3: { class: "transit", label: "В пути", apiValue: "on_the_way" },
+  3: { class: "stock", label: "На складе", apiValue: "in_stock" },
   4: { class: "returns", label: "Возврат", apiValue: "returned" },
 };
 
@@ -17,6 +17,49 @@ const STATUS_BY_API_VALUE = Object.values(STATUS_MAP).reduce((acc, statusMeta) =
   acc[statusMeta.apiValue] = statusMeta;
   return acc;
 }, {});
+
+const STATUS_BY_LABEL = Object.entries(STATUS_MAP).reduce((acc, [id, statusMeta]) => {
+  acc[statusMeta.label.toLowerCase()] = { ...statusMeta, id: Number(id) };
+  return acc;
+}, {});
+
+const resolveStatusMeta = (order) => {
+  const rawCandidates = [
+    order?.status_id,
+    order?.status?.id,
+    order?.status,
+    order?.status_value,
+    order?.status_name,
+    order?.status_display,
+    order?.status_label,
+    order?.status?.name,
+    order?.status?.label,
+  ].filter((value) => value !== undefined && value !== null && value !== "");
+
+  for (const candidate of rawCandidates) {
+    const numericId = Number(candidate);
+
+    if (Number.isFinite(numericId) && STATUS_MAP[numericId]) {
+      return { id: numericId, meta: STATUS_MAP[numericId] };
+    }
+
+    const normalized = String(candidate).trim().toLowerCase();
+
+    if (STATUS_BY_API_VALUE[normalized]) {
+      const matchedId = Number(
+        Object.entries(STATUS_MAP).find(([, status]) => status.apiValue === normalized)?.[0] || 1
+      );
+
+      return { id: matchedId, meta: STATUS_BY_API_VALUE[normalized] };
+    }
+
+    if (STATUS_BY_LABEL[normalized]) {
+      return { id: STATUS_BY_LABEL[normalized].id, meta: STATUS_BY_LABEL[normalized] };
+    }
+  }
+
+  return { id: 1, meta: STATUS_MAP[1] };
+};
 
 const PAYMENT_METHODS = [
   { id: "cash", label: "Наличными" },
@@ -464,16 +507,7 @@ const OrderTable = () => {
 
             <tbody>
               {orders.map((order) => {
-                const statusMeta =
-                  STATUS_MAP[order.status] ||
-                  STATUS_BY_API_VALUE[order.status] ||
-                  STATUS_MAP[1];
-                const statusValue =
-                  Number.isFinite(Number(order.status)) && Number(order.status) > 0
-                    ? Number(order.status)
-                    : Number(
-                        Object.entries(STATUS_MAP).find(([, status]) => status.apiValue === order.status)?.[0] || 1
-                      );
+                const { id: statusValue, meta: statusMeta } = resolveStatusMeta(order);
 
                 return (
                   <React.Fragment key={order.id}>
@@ -549,7 +583,7 @@ const OrderTable = () => {
                                   </div>
 
                                   <div className="info-block">
-                                    <span className="info-label">{"Артикул"}</span>
+                                    <span className="info-label">{"Артикуfл"}</span>
                                     <span className="info-value">{item.sku || "-"}</span>
                                   </div>
 
