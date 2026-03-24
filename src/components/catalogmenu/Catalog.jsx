@@ -14,45 +14,81 @@ export default function Catalog({ onClose }) {
   const [activeCategory, setActiveCategory] = useState(null);
   const [hoveredSub, setHoveredSub] = useState(null);
   const [subBrands, setSubBrands] = useState([]);
+  const [brandsBySubId, setBrandsBySubId] = useState({});
   const [isBrandsLoading, setIsBrandsLoading] = useState(false);
   const [popupTop, setPopupTop] = useState(0);
 
   const hideTimer = useRef(null);
   const contentRef = useRef(null);
+  const currentCategory = activeCategory ?? categories?.[0] ?? null;
 
-  useEffect(() => {
-    if (categories?.length > 0 && !activeCategory) {
-      setActiveCategory(categories[0]);
-    }
-  }, [categories]);
-
-  const fetchBrandsForSub = useCallback(async (sub, btnEl) => {
-    // Считаем top относительно .content
-    const btnRect = btnEl.getBoundingClientRect();
-    const contentRect = contentRef.current?.getBoundingClientRect();
-    setPopupTop((btnRect.top - (contentRect?.top ?? 0)));
-
-    setHoveredSub(sub);
-    setSubBrands([]);
-    setIsBrandsLoading(true);
-
+  const fetchBrandsForSub = useCallback(async (sub) => {
     try {
       const data = await productApi.getByCategory(sub.name);
       const products = data.results || data;
       const brandIds = [...new Set(products.map((p) => p.brand))];
-      const filtered = (allBrands || []).filter((b) => brandIds.includes(b.id));
-      setSubBrands(filtered);
-    } catch (e) {
-      console.error(e);
-      setSubBrands([]);
-    } finally {
-      setIsBrandsLoading(false);
+      return (allBrands || []).filter((brand) => brandIds.includes(brand.id));
+    } catch (error) {
+      console.error(error);
+      return [];
     }
   }, [allBrands]);
 
-  const handleSubMouseEnter = (sub, e) => {
+  useEffect(() => {
+    const preloadBrands = async () => {
+      const subcategories = currentCategory?.subcategories || [];
+      const missingSubs = subcategories.filter((sub) => !(sub.id in brandsBySubId));
+
+      if (missingSubs.length === 0) return;
+
+      const loadedEntries = await Promise.all(
+        missingSubs.map(async (sub) => [sub.id, await fetchBrandsForSub(sub)])
+      );
+
+      setBrandsBySubId((prev) => ({
+        ...prev,
+        ...Object.fromEntries(loadedEntries),
+      }));
+    };
+
+    preloadBrands();
+  }, [brandsBySubId, currentCategory, fetchBrandsForSub]);
+
+  const handleSubMouseEnter = async (sub, event) => {
     clearTimeout(hideTimer.current);
-    fetchBrandsForSub(sub, e.currentTarget);
+
+    const cachedBrands = brandsBySubId[sub.id];
+    if (cachedBrands) {
+      if (cachedBrands.length === 0) {
+        setHoveredSub(null);
+        setSubBrands([]);
+        return;
+      }
+
+      const btnRect = event.currentTarget.getBoundingClientRect();
+      const contentRect = contentRef.current?.getBoundingClientRect();
+      setPopupTop(btnRect.top - (contentRect?.top ?? 0));
+      setHoveredSub(sub);
+      setSubBrands(cachedBrands);
+      return;
+    }
+
+    setIsBrandsLoading(true);
+    const brands = await fetchBrandsForSub(sub);
+    setBrandsBySubId((prev) => ({ ...prev, [sub.id]: brands }));
+    setIsBrandsLoading(false);
+
+    if (brands.length === 0) {
+      setHoveredSub(null);
+      setSubBrands([]);
+      return;
+    }
+
+    const btnRect = event.currentTarget.getBoundingClientRect();
+    const contentRect = contentRef.current?.getBoundingClientRect();
+    setPopupTop(btnRect.top - (contentRect?.top ?? 0));
+    setHoveredSub(sub);
+    setSubBrands(brands);
   };
 
   const handleSubMouseLeave = () => {
@@ -94,7 +130,7 @@ export default function Catalog({ onClose }) {
     );
   }
 
-  const subcategories = activeCategory?.subcategories || [];
+  const subcategories = currentCategory?.subcategories || [];
   const half = Math.ceil(subcategories.length / 2);
   const col1 = subcategories.slice(0, half);
   const col2 = subcategories.slice(half);
@@ -105,12 +141,11 @@ export default function Catalog({ onClose }) {
         onClick={(e) => e.stopPropagation()}
         className={`${styles.catalogContainer} container`}
       >
-        {/* КОЛОНКА 1: Категории */}
         <aside className={styles.sidebar}>
           {categories?.map((category) => (
             <button
               key={category.id}
-              className={`${styles.navButton} ${activeCategory?.id === category.id ? styles.active : ''}`}
+              className={`${styles.navButton} ${currentCategory?.id === category.id ? styles.active : ''}`}
               onMouseEnter={() => setActiveCategory(category)}
               onClick={() => handleCategoryClick(category)}
             >
@@ -125,80 +160,81 @@ export default function Catalog({ onClose }) {
           ))}
         </aside>
 
-        {/* КОЛОНКИ 2 и 3: Подкатегории + попап брендов */}
-        {activeCategory && (
+        {currentCategory && (
           <main className={styles.content} ref={contentRef}>
             {subcategories.length > 0 ? (
               <div className={styles.columnsWrap}>
                 {[col1, col2].map((col, colIdx) => (
                   <div key={colIdx} className={styles.subColumn}>
-                    {col.map((sub) => (
-                      <div key={sub.id} className={styles.subGroup}>
-                        <button
-                          className={`${styles.subTitle} ${hoveredSub?.id === sub.id ? styles.subTitleActive : ''}`}
-                          onMouseEnter={(e) => handleSubMouseEnter(sub, e)}
-                          onMouseLeave={handleSubMouseLeave}
-                          onClick={() => handleSubcategoryClick(sub)}
-                        >
-                          {sub.name}
-                          <ChevronRight size={13} className={styles.subChevron} />
+                    {col.map((sub) => {
+                      const hasBrands = (brandsBySubId[sub.id] || []).length > 0;
 
-                          {/* Попап внутри кнопки */}
-                          {hoveredSub?.id === sub.id && (
-                            <div
-                              className={styles.brandsPopup}
-                              onMouseEnter={handlePopupMouseEnter}
-                              onMouseLeave={handlePopupMouseLeave}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {isBrandsLoading ? (
-                                <div className={styles.popupLoader}>
-                                  <Loader2 size={16} className={styles.spinner} />
-                                </div>
-                              ) : subBrands.length > 0 ? (
-                                <ul className={styles.brandsList}>
-                                  {subBrands.map((brand) => (
-                                    <li key={brand.id}>
-                                      <button
-                                        className={styles.brandItem}
-                                        onClick={() => handleBrandClick(hoveredSub, brand.id)}
-                                      >
-                                        {brand.name}
-                                      </button>
-                                    </li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <p className={styles.popupEmpty}>Нет брендов</p>
-                              )}
-                            </div>
+                      return (
+                        <div key={sub.id} className={styles.subGroup}>
+                          <button
+                            className={`${styles.subTitle} ${hoveredSub?.id === sub.id ? styles.subTitleActive : ''}`}
+                            onMouseEnter={(e) => handleSubMouseEnter(sub, e)}
+                            onMouseLeave={handleSubMouseLeave}
+                            onClick={() => handleSubcategoryClick(sub)}
+                          >
+                            {sub.name}
+                            {hasBrands && (
+                              <ChevronRight size={13} className={styles.subChevron} />
+                            )}
+
+                            {hoveredSub?.id === sub.id && hasBrands && (
+                              <div
+                                className={styles.brandsPopup}
+                                style={{ top: popupTop }}
+                                onMouseEnter={handlePopupMouseEnter}
+                                onMouseLeave={handlePopupMouseLeave}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {isBrandsLoading ? (
+                                  <div className={styles.popupLoader}>
+                                    <Loader2 size={16} className={styles.spinner} />
+                                  </div>
+                                ) : (
+                                  <ul className={styles.brandsList}>
+                                    {subBrands.map((brand) => (
+                                      <li key={brand.id}>
+                                        <button
+                                          className={styles.brandItem}
+                                          onClick={() => handleBrandClick(hoveredSub, brand.id)}
+                                        >
+                                          {brand.name}
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
+                            )}
+                          </button>
+
+                          {sub.subcategories?.length > 0 && (
+                            <ul className={styles.subList}>
+                              {sub.subcategories.map((child) => (
+                                <li key={child.id}>
+                                  <button
+                                    className={styles.subItem}
+                                    onClick={() => handleSubcategoryClick(child)}
+                                  >
+                                    {child.name}
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
                           )}
-                        </button>
-
-                        {sub.subcategories?.length > 0 && (
-                          <ul className={styles.subList}>
-                            {sub.subcategories.map((child) => (
-                              <li key={child.id}>
-                                <button
-                                  className={styles.subItem}
-                                  onClick={() => handleSubcategoryClick(child)}
-                                >
-                                  {child.name}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ))}
+                        </div>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
             ) : (
               <p className={styles.empty}>Нет подкатегорий</p>
             )}
-
-
           </main>
         )}
       </div>

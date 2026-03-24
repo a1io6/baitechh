@@ -1,9 +1,8 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import './Description.scss';
 import { productApi } from '@/lib/products/api/useProducts';
+import './Description.scss';
 import { useTranslation } from 'react-i18next';
-
 function Description({ productId }) {
   const { t } = useTranslation();
   const [product, setProduct] = useState(null);

@@ -80,7 +80,7 @@ export const productApi = {
     return data;
   },
   changeAvailability: async (id, is_available) => {
-    const { data } = await apiClient.patch(`products/products/${id}/`, { is_available });
+    const { data } = await apiClient.patch(`products/products/${id}/availability/`, { is_available });
     return data;
   },
   getCategories: async () => {

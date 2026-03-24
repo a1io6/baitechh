@@ -16,7 +16,7 @@ export default function Home() {
       <Features/>
       <CatalogButton/>
       <Recommendations/>
-      <News/>
+      <News/> 
       {/* <CorporateBlock/> */}
     </div>
   );

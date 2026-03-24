@@ -30,7 +30,7 @@ export async function generateStaticParams() {
 
 export default function Page({ params }) {
   return (
-    <Suspense fallback={<div>Загрузка...</div>}>
+    <Suspense fallback={<div className="loader"></div>}>
       <ProductDetail params={params} />
     </Suspense>
   );

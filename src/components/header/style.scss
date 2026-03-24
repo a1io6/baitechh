@@ -335,6 +335,8 @@
   width: 300px;
   height: 44px;
   position: relative;
+  display: flex;
+  align-items: center;
 
   @media (max-width: 1200px) {
     margin-left: 100px;
@@ -378,21 +380,41 @@
     }
   }
 
+  .header__search-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    color: #000;
+    cursor: pointer;
+
+    @media (max-width: 768px) {
+      right: 8px;
+    }
+  }
+
   .icon {
     position: absolute;
-         top: 50%;
-      right: 10px;
+    top: 50%;
+    right: 0;
     transform: translateY(-50%);
     font-size: 17px;
-    color: #000;
+    color: currentColor;
+    pointer-events: none;
 
     @media (max-width: 1200px) {
-      right: 10px;
+      right: 0;
     }
 
     @media (max-width: 768px) {
       font-size: 16px;
-      right: 8px;
+      right: 0;
     }
   }
 }

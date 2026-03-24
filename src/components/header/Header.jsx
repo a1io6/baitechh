@@ -4,8 +4,9 @@ import Image from 'next/image'
 import logo from '../../../assets/svg/logo.svg'
 import { FiSearch, FiUser, FiPhone, FiMail, FiMapPin, FiChevronDown } from 'react-icons/fi'
 import { HiOutlineShoppingCart } from 'react-icons/hi'
+import { IoCartOutline, IoClose } from 'react-icons/io5'
 import { IoLanguageOutline } from 'react-icons/io5'
-import { FaWhatsapp, FaTelegram, FaInstagram } from 'react-icons/fa'
+import { FaWhatsapp, FaInstagram } from 'react-icons/fa'
 import Link from 'next/link'
 import ModalAuth from '../ui/modalauth/ModalAuth'
 import { useEffect, useRef, useState } from 'react'
@@ -20,6 +21,8 @@ export default function Header() {
   const [isAuth, setIsAuth] = useState(false)
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const [isContactsOpen, setIsContactsOpen] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const modalRef = useRef(null)
   const langMenuRef = useRef(null)
   const contactsRef = useRef(null)
@@ -34,9 +37,11 @@ export default function Header() {
       const userToken = localStorage.getItem('access_token')
       setIsAuth(!!userToken)
     }
+
     checkAuth()
     window.addEventListener('storage', checkAuth)
     window.addEventListener('authChange', checkAuth)
+
     return () => {
       window.removeEventListener('storage', checkAuth)
       window.removeEventListener('authChange', checkAuth)
@@ -55,46 +60,75 @@ export default function Header() {
         setIsContactsOpen(false)
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
 
+  useEffect(() => {
+    const savedLang = localStorage.getItem('language') || 'ru'
+    i18n.changeLanguage(savedLang)
+  }, [i18n])
+
   const handleUserClick = () => {
     if (isAuth) {
-      setIsOpen(!isOpen) 
+      setIsOpen(!isOpen)
     } else {
       router.push('/login')
     }
   }
-// Добавьте в useEffect при монтировании — восстановление языка из localStorage
-useEffect(() => {
-  const savedLang = localStorage.getItem('language') || 'ru'
-  i18n.changeLanguage(savedLang)
-}, [])
 
-const changeLanguage = async (lng) => {
-  await i18n.changeLanguage(lng)
-  localStorage.setItem('language', lng)
-  queryClient.invalidateQueries()
-  setIsLangMenuOpen(false)
-}
+  const handleCartClick = (event) => {
+    const token =
+      localStorage.getItem('access_token') ||
+      localStorage.getItem('acces_token')
 
- const getCurrentLanguage = () => {
-  const lang = i18n.language || localStorage.getItem('language') || 'ru'
-  switch(lang) {
-    case 'en': return 'EN'
-    case 'ru': return 'RU'
-    case 'ky': return 'KG'
-    default: return 'RU'
+    if (!token) {
+      event.preventDefault()
+      setShowAuthModal(true)
+    }
   }
-}
+
+  const changeLanguage = async (lng) => {
+    await i18n.changeLanguage(lng)
+    localStorage.setItem('language', lng)
+    queryClient.invalidateQueries()
+    setIsLangMenuOpen(false)
+  }
+
+  const getCurrentLanguage = () => {
+    const lang = i18n.language || localStorage.getItem('language') || 'ru'
+    switch (lang) {
+      case 'en':
+        return 'EN'
+      case 'ru':
+        return 'RU'
+      case 'ky':
+        return 'KG'
+      default:
+        return 'RU'
+    }
+  }
+
   const languages = [
     { code: 'ru', label: 'Русский' },
     { code: 'en', label: 'English' },
-    { code: 'ky', label: 'Кыргызча' }
+    { code: 'ky', label: 'Кыргызча' },
   ]
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault()
+    const normalizedQuery = searchQuery.trim()
+
+    if (!normalizedQuery) {
+      router.push('/catalog')
+      return
+    }
+
+    router.push(`/catalog?query=${encodeURIComponent(normalizedQuery)}`)
+  }
 
   return (
     <header className="header">
@@ -105,19 +139,22 @@ const changeLanguage = async (lng) => {
               <Image src={logo} alt="Байтех" width={150} height={50} />
             </Link>
           </div>
-          <div className='contacts-wrapper' ref={contactsRef}>
-            <button 
+
+          <div className="contacts-wrapper" ref={contactsRef}>
+            <button
               className={`header__contacts ${isContactsOpen ? 'active' : ''}`}
               onClick={() => setIsContactsOpen(!isContactsOpen)}
             >
               <span>{t('header.contact')}</span>
               <FiChevronDown className="arrow-icon" />
             </button>
-            
+
             {isContactsOpen && (
               <div className="contacts-dropdown">
                 <div className="contacts-section">
-                  <h3><FiPhone /> {t('header.phones')}</h3>
+                  <h3>
+                    <FiPhone /> {t('header.phones')}
+                  </h3>
                   <div className="contacts-list">
                     {isLoading ? (
                       <span className="footer__skeleton" />
@@ -131,7 +168,9 @@ const changeLanguage = async (lng) => {
                 </div>
 
                 <div className="contacts-section">
-                  <h3><FiMail /> Email</h3>
+                  <h3>
+                    <FiMail /> Email
+                  </h3>
                   <div className="contacts-list">
                     {isLoading ? (
                       <span className="footer__skeleton" />
@@ -145,7 +184,9 @@ const changeLanguage = async (lng) => {
                 </div>
 
                 <div className="contacts-section">
-                  <h3><FiMapPin /> {t('header.address')}</h3>
+                  <h3>
+                    <FiMapPin /> {t('header.address')}
+                  </h3>
                   <div className="contacts-list">
                     <div className="contact-item">
                       <FiMapPin />
@@ -162,12 +203,22 @@ const changeLanguage = async (lng) => {
                   <h3>{t('header.socials')}</h3>
                   <div className="contacts-social">
                     {settings?.whatsapp && (
-                      <a href={settings.whatsapp} target="_blank" rel="noopener noreferrer" className="social-link whatsapp">
+                      <a
+                        href={settings.whatsapp}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="social-link whatsapp"
+                      >
                         <FaWhatsapp />
                       </a>
                     )}
                     {settings?.instagram && (
-                      <a href={settings.instagram} target="_blank" rel="noopener noreferrer" className="social-link instagram">
+                      <a
+                        href={settings.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="social-link instagram"
+                      >
                         <FaInstagram />
                       </a>
                     )}
@@ -177,15 +228,26 @@ const changeLanguage = async (lng) => {
             )}
           </div>
         </div>
-        
-        <div className="header__search">
-          <input type="text" placeholder={t('header.search')} />
-          <FiSearch className="icon" />
-        </div>
-        
+
+        <form className="header__search" onSubmit={handleSearchSubmit}>
+          <input
+            type="text"
+            placeholder={t('header.search')}
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          <button
+            type="submit"
+            className="header__search-btn"
+            aria-label={t('header.search')}
+          >
+            <FiSearch className="icon" />
+          </button>
+        </form>
+
         <div className="header__icons">
           <div className="language-selector" ref={langMenuRef}>
-            <button 
+            <button
               className="language-button"
               onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
             >
@@ -193,11 +255,11 @@ const changeLanguage = async (lng) => {
               <span className="language-current">{getCurrentLanguage()}</span>
               <FiChevronDown className={`arrow-icon ${isLangMenuOpen ? 'open' : ''}`} />
             </button>
-            
+
             {isLangMenuOpen && (
               <div className="language-menu">
                 {languages.map((lang) => (
-                  <button 
+                  <button
                     key={lang.code}
                     onClick={() => changeLanguage(lang.code)}
                     className={i18n.language === lang.code ? 'active' : ''}
@@ -205,11 +267,11 @@ const changeLanguage = async (lng) => {
                     <span>{lang.label}</span>
                     {i18n.language === lang.code && (
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path 
-                          d="M13.3332 4L5.99984 11.3333L2.6665 8" 
-                          stroke="currentColor" 
-                          strokeWidth="2" 
-                          strokeLinecap="round" 
+                        <path
+                          d="M13.3332 4L5.99984 11.3333L2.6665 8"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
                           strokeLinejoin="round"
                         />
                       </svg>
@@ -219,29 +281,61 @@ const changeLanguage = async (lng) => {
               </div>
             )}
           </div>
-          
-          <Link href="/cart">
-            <div className='relative'>
+
+          <Link href="/cart" onClick={handleCartClick}>
+            <div className="relative">
               <HiOutlineShoppingCart />
               {items.length > 0 && (
-                <span className='absolute top-[-10px] right-[-10px] text-[14px] flex justify-center items-center pr-[0px] pt-[1px] h-[17px] w-[17px] rounded-full bg-[#3AA15B] text-white'>
-                  {items.length}  
+                <span className="absolute top-[-10px] right-[-10px] text-[14px] flex h-[17px] w-[17px] items-center justify-center rounded-full bg-[#3AA15B] pr-[0px] pt-[1px] text-white">
+                  {items.length}
                 </span>
               )}
             </div>
           </Link>
-          
+
           <div className="relative">
             <FiUser onClick={handleUserClick} />
             {isAuth && isOpen && (
-              <ModalAuth 
-                onClose={() => setIsOpen(false)} 
-                ref={modalRef}
-              />
+              <ModalAuth onClose={() => setIsOpen(false)} ref={modalRef} />
             )}
           </div>
         </div>
       </div>
+
+      {showAuthModal && (
+        <div className="auth-modal__overlay" onClick={() => setShowAuthModal(false)}>
+          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="auth-modal__close"
+              onClick={() => setShowAuthModal(false)}
+              aria-label="Закрыть"
+            >
+              <IoClose size={20} />
+            </button>
+            <div className="auth-modal__icon">
+              <IoCartOutline size={48} />
+            </div>
+            <h3 className="auth-modal__title">{t('auth.modal.title')}</h3>
+            <p className="auth-modal__text">{t('auth.modal.description')}</p>
+            <div className="auth-modal__actions">
+              <Link
+                href="/register"
+                className="auth-modal__btn auth-modal__btn--primary"
+                onClick={() => setShowAuthModal(false)}
+              >
+                {t('auth.modal.register')}
+              </Link>
+              <Link
+                href="/login"
+                className="auth-modal__btn auth-modal__btn--secondary"
+                onClick={() => setShowAuthModal(false)}
+              >
+                {t('auth.modal.login')}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

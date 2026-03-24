@@ -1,113 +1,137 @@
 .card {
   background: #fff;
-  border: 1px solid #eee;
-  border-radius: 8px;
+  border: 1px solid #e7ebf1;
+  border-radius: 18px;
   position: relative;
-  transition: all 0.2s ease-in-out;
-  padding: 15px;
+  transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+  padding: 22px;
 
   &:hover {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-color: #d9e2ec;
+    box-shadow: 0 14px 32px rgba(15, 35, 95, 0.09);
+    transform: translateY(-2px);
   }
 }
 
 .badge {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  top: 14px;
+  left: 14px;
+  font-size: 11px;
+  padding: 5px 9px;
+  border-radius: 999px;
   color: #fff;
   z-index: 2;
-  &.available { background: #8bc34a; }
-  &.waiting { background: #f44336; }
 }
 
-// ----------------------------------------------------
-// РЕЖИМ СЕТКИ (GRID)
-// ----------------------------------------------------
+.available {
+  background: #8bc34a;
+}
+
+.waiting {
+  background: #f44336;
+}
+
 .card.grid {
   display: flex;
   flex-direction: column;
 
   .mainWrapper {
     display: flex;
-    flex-direction: column; // 👈 всегда колонка в grid
+    flex-direction: column;
   }
 
   .imageSection {
     width: 100%;
-    height: 200px;
+    height: 220px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid #eef2f6;
+    border-radius: 14px;
+    padding: 20px;
 
     img {
       max-height: 100%;
       max-width: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     @media (max-width: 480px) {
-      height: 150px;
+      height: 160px;
     }
   }
 
   .infoSection {
-    margin-top: 15px;
+    margin-top: 18px;
     display: flex;
     flex-direction: column;
+    gap: 12px;
   }
 
   .purchaseSection {
-    margin-top: 10px;
+    margin-top: 6px;
   }
 
   .priceRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 12px;
+    gap: 10px;
   }
 
   .cartBtn {
-    border: 1px solid #ddd;
+    border: 1px solid #d6deea;
     background: transparent;
-    padding: 8px;
-    border-radius: 6px;
+    padding: 11px;
+    border-radius: 12px;
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #1e3a8a;
+      color: #1e3a8a;
+    }
   }
 }
 
-// ----------------------------------------------------
-// РЕЖИМ СПИСКА (LIST / FULL)
-// ----------------------------------------------------
-.card.list, .card.full {
+.card.list,
+.card.full {
   .mainWrapper {
     display: flex;
-    flex-direction: row; // 👈 строка на десктопе
-    gap: 20px;
+    flex-direction: row;
+    gap: 26px;
 
     @media (max-width: 768px) {
-      flex-direction: column; // 👈 колонка на мобилке
+      flex-direction: column;
     }
   }
 
   .imageSection {
-    width: 220px;
+    width: 240px;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid #eef2f6;
+    border-radius: 16px;
+    padding: 18px;
 
     img {
       width: 100%;
-      height: auto;
+      height: 190px;
       object-fit: contain;
     }
 
     @media (max-width: 1024px) {
-      width: 180px;
+      width: 200px;
     }
 
     @media (max-width: 768px) {
@@ -120,11 +144,11 @@
   .infoSection {
     flex-grow: 1;
     display: grid;
-    grid-template-columns: 1fr 200px;
-    gap: 20px;
+    grid-template-columns: minmax(0, 1fr) 230px;
+    gap: 26px;
 
     @media (max-width: 1024px) {
-      grid-template-columns: 1fr 180px;
+      grid-template-columns: minmax(0, 1fr) 190px;
     }
 
     @media (max-width: 768px) {
@@ -134,15 +158,15 @@
   }
 
   .purchaseSection {
-    border-left: 1px solid #f0f0f0;
-    padding-left: 20px;
+    border-left: 1px solid #eef2f6;
+    padding-left: 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 
     @media (max-width: 768px) {
       border-left: none;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid #eef2f6;
       padding-left: 0;
       padding-top: 15px;
       flex-direction: row;
@@ -158,11 +182,17 @@
     background: transparent;
     border: 1px solid #1e3a8a;
     color: #1e3a8a;
-    padding: 8px 15px;
-    border-radius: 4px;
-    margin-top: 10px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    margin-top: 12px;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(30, 58, 138, 0.12);
+    }
 
     @media (max-width: 768px) {
       margin-top: 0;
@@ -176,25 +206,53 @@
   }
 }
 
-// Вспомогательные стили
 .article {
-  font-size: 11px;
-  color: #999;
+  font-size: 12px;
+  color: #7b8794;
+  letter-spacing: 0.02em;
+}
+
+.title {
+  font-size: 22px;
+  line-height: 1.22;
+  color: #102a43;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.description {
+  color: #5b7083;
+  line-height: 1.7;
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card.list .description {
+  -webkit-line-clamp: 3;
+}
+
+.card.full .description {
+  -webkit-line-clamp: 5;
 }
 
 .bonus {
   color: #8bc34a;
-  font-size: 12px;
-  margin-bottom: 5px;
+  font-size: 14px;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
 .price {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   color: #2e7d32;
 
   @media (max-width: 480px) {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 
@@ -207,10 +265,24 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #ddd;
+    background: #d8deea;
 
     &.active {
       background: #1e3a8a;
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .description {
+    font-size: 13px;
   }
 }

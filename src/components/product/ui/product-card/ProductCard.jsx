@@ -1,12 +1,14 @@
 'use client'
 import { useState, useEffect } from "react";
-import "./ProductCard.scss";
 import { IoCartOutline, IoCart, IoClose } from "react-icons/io5";
+import { FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
+import './ProductCard.scss';
 import { productApi } from "@/lib/products/api/useProducts";
 import { useTranslation } from "react-i18next";
 import { useCart, useCreateCartItem, useDeleteCartItem } from "@/lib/cart/hooks/hooks";
+import { useSiteSettings } from "@/lib/settings/hook";
 
 const ProductCard = ({ productId }) => {
   const [product, setProduct] = useState(null);
@@ -15,13 +17,18 @@ const ProductCard = ({ productId }) => {
   const [count, setCount] = useState(1);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { t } = useTranslation();
+  const { settings } = useSiteSettings();
 
   const { data: cartItems } = useCart();
   const { mutate: addToCart, isPending: isAdding } = useCreateCartItem();
   const { mutate: deleteFromCart, isPending: isDeleting } = useDeleteCartItem();
 
-  const cartItem = cartItems?.find(item => item.product?.id === product?.id || item.product_id === product?.id);
+  const cartItem = cartItems?.find(
+    (item) => item.product?.id === product?.id || item.product_id === product?.id
+  );
   const isInCart = !!cartItem;
+  const isAvailable = product?.is_available;
+  const whatsappLink = settings?.whatsapp ?? `tel:${settings?.phone ?? ""}`;
 
   useEffect(() => {
     if (cartItem?.quantity) {
@@ -103,22 +110,47 @@ const ProductCard = ({ productId }) => {
           <div className="product__bonus">{product.bonus || 0} {t('productCard.bonuses')}</div>
 
           <div className="product__actions">
-            <div className="counter">
-              <button onClick={decrement}>−</button>
-              <span>{count}</span>
-              <button onClick={increment}>+</button>
-            </div>
+            {isAvailable ? (
+              <>
+                <div className="counter">
+                  <button onClick={decrement}>-</button>
+                  <span>{count}</span>
+                  <button onClick={increment}>+</button>
+                </div>
 
-            <button
-              className="add-to-cart"
-              onClick={handleCartClick}
-              disabled={isAdding || isDeleting}
-              style={{ backgroundColor: isInCart ? '#0E2E5B' : '', color: isInCart ? '#FFFFFF' : '' }}
-            >
-              {isInCart ? <IoCart size={20} /> : <IoCartOutline size={20} />}
-              {t('productCard.addToCart')}
-            </button>
+                <button
+                  className="add-to-cart"
+                  onClick={handleCartClick}
+                  disabled={isAdding || isDeleting}
+                  style={{ backgroundColor: isInCart ? '#0E2E5B' : '', color: isInCart ? '#FFFFFF' : '' }}
+                >
+                  {isInCart ? <IoCart size={20} /> : <IoCartOutline size={20} />}
+                  {t('productCard.addToCart')}
+                </button>
+              </>
+            ) : (
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                className="product-card__availability-btn"
+              >
+                {t("card.checkAvailability")}
+              </a>
+            )}
           </div>
+
+          {!isAvailable && (
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noreferrer"
+              className="product-card__whatsapp"
+            >
+              <FaWhatsapp size={16} />
+              {t("card.whatsapp")}
+            </a>
+          )}
         </div>
       </div>
 

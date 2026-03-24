@@ -1,8 +1,8 @@
 'use client'
 import { productApi } from "@/lib/products/api/useProducts";
-import "./ProductSpecs.scss";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import './ProductSpecs.scss';
 
 const ProductSpecs = ({ productId }) => {
   const { t } = useTranslation();

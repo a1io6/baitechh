@@ -4,7 +4,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import './recommendations.scss';
 import Card from '../ui/card/Card';
 import { useSimilarProducts } from '@/lib/products/hooks/hooks';
 

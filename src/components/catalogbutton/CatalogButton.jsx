@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Menu, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import styles from './CatalogButton.module.scss';
@@ -13,8 +13,6 @@ export default function CatalogButton() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
-
-  // Бренды: { [subId]: { brands: [], loading: bool, open: bool } }
   const [subBrandsMap, setSubBrandsMap] = useState({});
 
   const toggleCategory = (id) => {
@@ -24,7 +22,6 @@ export default function CatalogButton() {
   const toggleSubBrands = useCallback(async (sub) => {
     const current = subBrandsMap[sub.id];
 
-    // Если уже открыт — закрываем
     if (current?.open) {
       setSubBrandsMap((prev) => ({
         ...prev,
@@ -33,8 +30,9 @@ export default function CatalogButton() {
       return;
     }
 
-    // Если уже загружены — просто открываем
     if (current?.brands) {
+      if (current.brands.length === 0) return;
+
       setSubBrandsMap((prev) => ({
         ...prev,
         [sub.id]: { ...prev[sub.id], open: true },
@@ -42,7 +40,6 @@ export default function CatalogButton() {
       return;
     }
 
-    // Загружаем бренды
     setSubBrandsMap((prev) => ({
       ...prev,
       [sub.id]: { brands: null, loading: true, open: true },
@@ -52,19 +49,53 @@ export default function CatalogButton() {
       const data = await productApi.getByCategory(sub.name);
       const products = data.results || data;
       const brandIds = [...new Set(products.map((p) => p.brand))];
-      const filtered = (allBrands || []).filter((b) => brandIds.includes(b.id));
+      const filtered = (allBrands || []).filter((brand) => brandIds.includes(brand.id));
       setSubBrandsMap((prev) => ({
         ...prev,
-        [sub.id]: { brands: filtered, loading: false, open: true },
+        [sub.id]: { brands: filtered, loading: false, open: filtered.length > 0 },
       }));
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
       setSubBrandsMap((prev) => ({
         ...prev,
-        [sub.id]: { brands: [], loading: false, open: true },
+        [sub.id]: { brands: [], loading: false, open: false },
       }));
     }
   }, [allBrands, subBrandsMap]);
+
+  useEffect(() => {
+    const preloadBrands = async () => {
+      const activeSubcategories =
+        categories?.find((category) => category.id === activeCategory)?.subcategories || [];
+
+      const missingSubs = activeSubcategories.filter((sub) => !(sub.id in subBrandsMap));
+      if (missingSubs.length === 0) return;
+
+      const loadedEntries = await Promise.all(
+        missingSubs.map(async (sub) => {
+          try {
+            const data = await productApi.getByCategory(sub.name);
+            const products = data.results || data;
+            const brandIds = [...new Set(products.map((p) => p.brand))];
+            const filtered = (allBrands || []).filter((brand) => brandIds.includes(brand.id));
+            return [sub.id, { brands: filtered, loading: false, open: false }];
+          } catch (error) {
+            console.error(error);
+            return [sub.id, { brands: [], loading: false, open: false }];
+          }
+        })
+      );
+
+      setSubBrandsMap((prev) => ({
+        ...prev,
+        ...Object.fromEntries(loadedEntries),
+      }));
+    };
+
+    if (activeCategory) {
+      preloadBrands();
+    }
+  }, [activeCategory, allBrands, categories, subBrandsMap]);
 
   const handleCategoryClick = (category) => {
     setIsOpen(false);
@@ -106,8 +137,6 @@ export default function CatalogButton() {
               <ul className={styles.categoryList}>
                 {categories?.map((category) => (
                   <li key={category.id} className={styles.categoryWrapper}>
-
-                    {/* Строка категории */}
                     <div className={`${styles.categoryItem} ${activeCategory === category.id ? styles.active : ''}`}>
                       <button
                         className={styles.itemLeft}
@@ -138,16 +167,15 @@ export default function CatalogButton() {
                       )}
                     </div>
 
-                    {/* Аккордеон подкатегорий */}
                     {activeCategory === category.id && category.subcategories?.length > 0 && (
                       <div className={styles.subDrawer}>
                         {category.subcategories.map((sub) => {
                           const subState = subBrandsMap[sub.id];
                           const isSubOpen = subState?.open;
+                          const hasBrands = (subState?.brands || []).length > 0;
 
                           return (
                             <div key={sub.id} className={styles.subGroup}>
-                              {/* Подкатегория + кнопка раскрытия брендов */}
                               <div className={styles.subRow}>
                                 <button
                                   className={styles.subTitle}
@@ -156,23 +184,24 @@ export default function CatalogButton() {
                                   {sub.name}
                                 </button>
 
-                                <button
-                                  className={styles.brandToggle}
-                                  onClick={() => toggleSubBrands(sub)}
-                                >
-                                  <ChevronRight
-                                    size={13}
-                                    className={`${styles.brandArrow} ${isSubOpen ? styles.brandArrowOpen : ''}`}
-                                  />
-                                </button>
+                                {hasBrands && (
+                                  <button
+                                    className={styles.brandToggle}
+                                    onClick={() => toggleSubBrands(sub)}
+                                  >
+                                    <ChevronRight
+                                      size={13}
+                                      className={`${styles.brandArrow} ${isSubOpen ? styles.brandArrowOpen : ''}`}
+                                    />
+                                  </button>
+                                )}
                               </div>
 
-                              {/* Бренды inline */}
-                              {isSubOpen && (
+                              {isSubOpen && hasBrands && (
                                 <div className={styles.brandsInline}>
                                   {subState?.loading ? (
                                     <Loader2 size={14} className={styles.spinner} />
-                                  ) : subState?.brands?.length > 0 ? (
+                                  ) : (
                                     subState.brands.map((brand) => (
                                       <button
                                         key={brand.id}
@@ -182,13 +211,10 @@ export default function CatalogButton() {
                                         {brand.name}
                                       </button>
                                     ))
-                                  ) : (
-                                    <span className={styles.noBrands}>Нет брендов</span>
                                   )}
                                 </div>
                               )}
 
-                              {/* Подкатегории 2-го уровня */}
                               {sub.subcategories?.length > 0 && (
                                 <ul className={styles.subList}>
                                   {sub.subcategories.map((child) => (

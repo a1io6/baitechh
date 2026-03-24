@@ -1,6 +1,6 @@
 'use strict';
 import React from "react";
-import "./breadcrumb.scss";
+import "./Breadcrumb.scss";
 import Link from "next/link";
 
 const Breadcrumb = ({ items }) => {
