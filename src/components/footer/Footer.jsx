@@ -135,7 +135,7 @@ function Footer() {
           <div className={`footer__accordion-content ${openSections.client ? 'footer__accordion-content--open' : ''}`}>
             <ul>
               <li><a href="/profile">{t('footer.client.account')}</a></li>
-              <li><Link href="/orders">{t('footer.client.orderHistory')}</Link></li>
+              <li ><Link href="/orders">{t('footer.client.orderHistory')}</Link></li>
               <li><Link href="/return">{t('footer.client.returns')}</Link></li>
             </ul>
           </div>
@@ -179,7 +179,7 @@ function Footer() {
         <h3>
         Baitech © 2021
         </h3>
-        <h3>Разработано</h3>
+        <h3>Разработано Baitech.company</h3>
       </div>
     </footer>
   );

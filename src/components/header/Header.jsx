@@ -282,7 +282,7 @@ export default function Header() {
             )}
           </div>
 
-          <Link href="/cart" onClick={handleCartClick}>
+          <Link href="/korzina" onClick={handleCartClick}>
             <div className="relative">
               <HiOutlineShoppingCart />
               {items.length > 0 && (

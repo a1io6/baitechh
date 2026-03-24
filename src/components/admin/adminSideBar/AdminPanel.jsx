@@ -25,8 +25,8 @@ const menuItems = [
   {
     id: 2,
     text: "Баннеры",
-    path: "/banners",
-    matchPaths: ["/banners"],
+    path: "/our-banner",
+    matchPaths: ["/our-banner"],
     icon: <ImageIcon size={22} />,
   },
   {
