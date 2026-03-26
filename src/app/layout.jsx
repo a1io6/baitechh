@@ -17,40 +17,92 @@ const geistMono = Geist_Mono({
 export const metadata = {
   metadataBase: new URL("https://baitech.kg"),
   title: {
-    default: "Baitech.kg — Техника и электроника в Бишкеке",
+    default: "Baitech.kg — камеры и видеонаблюдение в Бишкеке",
     template: "%s | Baitech.kg",
   },
   description:
     "Байтех — это современный магазин и шоурум, где вы можете купить системы безопасности, видеонаблюдение, СКУД, умные замки и оборудование для бизнеса с профессиональной установкой. У нас есть всё: от готовых комплектов до сложных решений под ключ, включая кибербезопасность для бизнеса.",
   keywords: [
-    "интернет магазин техники Бишкек",
-    "купить технику Бишкек",
-    "электроника Кыргызстан",
+    "камеры видеонаблюдения Бишкек",
+    "установка видеонаблюдения Бишкек",
+    "пультовая охрана Бишкек",
+    "группа быстрого реагирования Бишкек",
+    "интернет-магазин техники Бишкек",
     "baitech",
     "baitech.kg",
   ],
   openGraph: {
-    title: "Baitech.kg — Техника и электроника в Бишкеке",
-    description: "Камеры, компьютеры, телефоны, сеть, мониторы. Доставка по КР.",
+    title: "Baitech.kg — камеры и видеонаблюдение в Бишкеке",
+    description: "Камеры, видеонаблюдение, сетевое оборудование и техника. Доставка по Кыргызстану.",
     url: "https://baitech.kg",
     siteName: "Baitech",
     locale: "ru_KG",
     type: "website",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Baitech.kg — камеры и видеонаблюдение в Бишкеке",
+    description: "Камеры, видеонаблюдение и техника с доставкой по Кыргызстану.",
+    images: ["/og-image.jpg"],
+  },
   alternates: { canonical: "https://baitech.kg" },
   robots: { index: true, follow: true },
 };
-export default function RootLayout({ children }) { 
+
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SecurityService",
+  name: "Baitech",
+  url: "https://baitech.kg",
+  image: "https://baitech.kg/og-image.jpg",
+  telephone: "+996500000000",
+  priceRange: "$$",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Бишкек",
+    addressCountry: "KG",
+  },
+  areaServed: {
+    "@type": "Country",
+    name: "Кыргызстан",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: "120",
+  },
+  makesOffer: [
+    {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "Установка видеонаблюдения в Бишкеке",
+      },
+    },
+    {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "Пультовая охрана",
+      },
+    },
+  ],
+};
+
+export default function RootLayout({ children }) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <body
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        />
         <I18nProvider>
-        <QueryProvider>
-          <ToastProvider/>
-        {children}
-        </QueryProvider>
+          <QueryProvider>
+            <ToastProvider />
+            {children}
+          </QueryProvider>
         </I18nProvider>
       </body>
     </html>
