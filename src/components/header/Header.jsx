@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import { useCart } from '@/lib/cart/hooks/hooks'
 import { useSiteSettings } from '@/lib/settings/hook'
 import { useQueryClient } from '@tanstack/react-query'
+import { useProducts } from '@/lib/products/hooks/hooks'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -23,13 +24,18 @@ export default function Header() {
   const [isContactsOpen, setIsContactsOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const modalRef = useRef(null)
   const langMenuRef = useRef(null)
   const contactsRef = useRef(null)
+  const desktopSearchRef = useRef(null)
+  const mobileSearchRef = useRef(null)
   const router = useRouter()
   const { t, i18n } = useTranslation()
   const { data: items = [] } = useCart()
   const { settings, isLoading } = useSiteSettings()
+  const { products = [], categories = [] } = useProducts()
   const queryClient = useQueryClient()
 
   useEffect(() => {
@@ -59,6 +65,15 @@ export default function Header() {
       if (contactsRef.current && !contactsRef.current.contains(event.target)) {
         setIsContactsOpen(false)
       }
+      const isOutsideDesktopSearch =
+        !desktopSearchRef.current || !desktopSearchRef.current.contains(event.target)
+      const isOutsideMobileSearch =
+        !mobileSearchRef.current || !mobileSearchRef.current.contains(event.target)
+
+      if (isOutsideDesktopSearch && isOutsideMobileSearch) {
+        setIsSearchOpen(false)
+        setIsMobileSearchOpen(false)
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
@@ -66,11 +81,6 @@ export default function Header() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
-
-  useEffect(() => {
-    const savedLang = localStorage.getItem('language') || 'ru'
-    i18n.changeLanguage(savedLang)
-  }, [i18n])
 
   const handleUserClick = () => {
     if (isAuth) {
@@ -92,14 +102,21 @@ export default function Header() {
   }
 
   const changeLanguage = async (lng) => {
-    await i18n.changeLanguage(lng)
+    if (!lng) return
+    const normalizedCurrent = (i18n.resolvedLanguage || i18n.language || 'ru').split('-')[0]
+    if (normalizedCurrent === lng) {
+      setIsLangMenuOpen(false)
+      return
+    }
+
     localStorage.setItem('language', lng)
+    await i18n.changeLanguage(lng)
     queryClient.invalidateQueries()
     setIsLangMenuOpen(false)
   }
 
   const getCurrentLanguage = () => {
-    const lang = i18n.language || localStorage.getItem('language') || 'ru'
+    const lang = (i18n.resolvedLanguage || i18n.language || localStorage.getItem('language') || 'ru').split('-')[0]
     switch (lang) {
       case 'en':
         return 'EN'
@@ -121,6 +138,8 @@ export default function Header() {
   const handleSearchSubmit = (event) => {
     event.preventDefault()
     const normalizedQuery = searchQuery.trim()
+    setIsSearchOpen(false)
+    setIsMobileSearchOpen(false)
 
     if (!normalizedQuery) {
       router.push('/catalog')
@@ -129,6 +148,94 @@ export default function Header() {
 
     router.push(`/catalog?query=${encodeURIComponent(normalizedQuery)}`)
   }
+
+  const flattenCategories = (items, acc = []) => {
+    items.forEach((category) => {
+      if (!category?.name) return
+      acc.push(category.name)
+      if (Array.isArray(category.subcategories) && category.subcategories.length > 0) {
+        flattenCategories(category.subcategories, acc)
+      }
+    })
+    return acc
+  }
+
+  const normalizedSearch = searchQuery.trim().toLowerCase()
+  const suggestionProducts = normalizedSearch
+    ? products
+      .filter((product) => {
+        const name = String(product?.name || '').toLowerCase()
+        const article = String(product?.article || '').toLowerCase()
+        return name.includes(normalizedSearch) || article.includes(normalizedSearch)
+      })
+      .slice(0, 6)
+    : []
+
+  const suggestionCategories = normalizedSearch
+    ? [...new Set(flattenCategories(categories))]
+      .filter((name) => String(name).toLowerCase().includes(normalizedSearch))
+      .slice(0, 4)
+    : []
+
+  const hasSuggestions = suggestionProducts.length > 0 || suggestionCategories.length > 0
+
+  const handleProductSelect = (id) => {
+    setIsSearchOpen(false)
+    setIsMobileSearchOpen(false)
+    setSearchQuery('')
+    router.push(`/productdetail/${id}`)
+  }
+
+  const handleCategorySelect = (name) => {
+    setIsSearchOpen(false)
+    setIsMobileSearchOpen(false)
+    setSearchQuery('')
+    router.push(`/catalog?category=${encodeURIComponent(name)}`)
+  }
+
+  const renderSearchDropdown = () => (
+    <div className="header__search-dropdown">
+      {hasSuggestions ? (
+        <>
+          {suggestionProducts.length > 0 && (
+            <div className="search-section">
+              <p className="search-section__title">Товары</p>
+              {suggestionProducts.map((product) => (
+                <button
+                  key={product.id}
+                  type="button"
+                  className="search-item"
+                  onClick={() => handleProductSelect(product.id)}
+                >
+                  <span className="search-item__main">{product.name}</span>
+                  <span className="search-item__meta">Артикул: {product.article || '-'}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {suggestionCategories.length > 0 && (
+            <div className="search-section">
+              <p className="search-section__title">Категории</p>
+              {suggestionCategories.map((categoryName) => (
+                <button
+                  key={categoryName}
+                  type="button"
+                  className="search-item search-item--category"
+                  onClick={() => handleCategorySelect(categoryName)}
+                >
+                  <span className="search-item__main">{categoryName}</span>
+                  <span className="search-item__meta">Перейти в каталог</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="search-empty">Ничего не найдено</div>
+      )}
+    </div>
+  )
 
   return (
     <header className="header">
@@ -229,12 +336,18 @@ export default function Header() {
           </div>
         </div>
 
-        <form className="header__search" onSubmit={handleSearchSubmit}>
+        <form className="header__search header__search--desktop" onSubmit={handleSearchSubmit} ref={desktopSearchRef}>
           <input
             type="text"
             placeholder={t('header.search')}
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
+            onChange={(event) => {
+              setSearchQuery(event.target.value)
+              setIsSearchOpen(true)
+            }}
+            onFocus={() => {
+              if (searchQuery.trim()) setIsSearchOpen(true)
+            }}
           />
           <button
             type="submit"
@@ -243,12 +356,69 @@ export default function Header() {
           >
             <FiSearch className="icon" />
           </button>
+
+          {isSearchOpen && searchQuery.trim() && (
+            <div className="header__search-dropdown">
+              {hasSuggestions ? (
+                <>
+                  {suggestionProducts.length > 0 && (
+                    <div className="search-section">
+                      <p className="search-section__title">Товары</p>
+                      {suggestionProducts.map((product) => (
+                        <button
+                          key={product.id}
+                          type="button"
+                          className="search-item"
+                          onClick={() => handleProductSelect(product.id)}
+                        >
+                          <span className="search-item__main">{product.name}</span>
+                          <span className="search-item__meta">Артикул: {product.article || '-'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {suggestionCategories.length > 0 && (
+                    <div className="search-section">
+                      <p className="search-section__title">Категории</p>
+                      {suggestionCategories.map((categoryName) => (
+                        <button
+                          key={categoryName}
+                          type="button"
+                          className="search-item search-item--category"
+                          onClick={() => handleCategorySelect(categoryName)}
+                        >
+                          <span className="search-item__main">{categoryName}</span>
+                          <span className="search-item__meta">Перейти в каталог</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="search-empty">Ничего не найдено</div>
+              )}
+            </div>
+          )}
         </form>
 
         <div className="header__icons">
+          <button
+            type="button"
+            className="mobile-search-toggle"
+            aria-label={t('header.search')}
+            onClick={() => {
+              setIsSearchOpen(false)
+              setIsMobileSearchOpen((prev) => !prev)
+            }}
+          >
+            <FiSearch />
+          </button>
+
           <div className="language-selector" ref={langMenuRef}>
             <button
               className="language-button"
+              type="button"
               onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
             >
               <IoLanguageOutline />
@@ -261,11 +431,12 @@ export default function Header() {
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
+                    type="button"
                     onClick={() => changeLanguage(lang.code)}
-                    className={i18n.language === lang.code ? 'active' : ''}
+                    className={((i18n.resolvedLanguage || i18n.language || 'ru').split('-')[0] === lang.code) ? 'active' : ''}
                   >
                     <span>{lang.label}</span>
-                    {i18n.language === lang.code && (
+                    {((i18n.resolvedLanguage || i18n.language || 'ru').split('-')[0] === lang.code) && (
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path
                           d="M13.3332 4L5.99984 11.3333L2.6665 8"
@@ -301,6 +472,34 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {isMobileSearchOpen && (
+        <div className="mobile-search-panel" ref={mobileSearchRef}>
+          <form className="header__search header__search--mobile" onSubmit={handleSearchSubmit}>
+            <input
+              type="text"
+              placeholder={t('header.search')}
+              value={searchQuery}
+              onChange={(event) => {
+                setSearchQuery(event.target.value)
+                setIsSearchOpen(true)
+              }}
+              onFocus={() => {
+                if (searchQuery.trim()) setIsSearchOpen(true)
+              }}
+              autoFocus
+            />
+            <button
+              type="submit"
+              className="header__search-btn"
+              aria-label={t('header.search')}
+            >
+              <FiSearch className="icon" />
+            </button>
+            {isSearchOpen && searchQuery.trim() && renderSearchDropdown()}
+          </form>
+        </div>
+      )}
 
       {showAuthModal && (
         <div className="auth-modal__overlay" onClick={() => setShowAuthModal(false)}>

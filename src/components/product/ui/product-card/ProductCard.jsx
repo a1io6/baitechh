@@ -37,26 +37,46 @@ const ProductCard = ({ productId }) => {
   }, [cartItem]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchProduct = async () => {
       try {
         const data = await productApi.getById(productId);
+        if (!isMounted) return;
+
         setProduct(data);
         const images = data.existing_images?.map((img) => img.image) || [];
         setActiveImage(images[0] || null);
       } catch (err) {
         console.error("Ошибка загрузки товара:", err);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     if (productId) fetchProduct();
+
+    return () => {
+      isMounted = false;
+    };
   }, [productId]);
 
   const images = product?.existing_images?.map((img) => img.image) || [];
 
   const increment = () => setCount((c) => c + 1);
   const decrement = () => count > 1 && setCount((c) => c - 1);
+  const productName = product?.name || t("productCard.notFound");
+  const productDescription = product?.description || "";
+  const shortDescription =
+    productDescription.length > 150
+      ? `${productDescription.slice(0, 150)}...`
+      : productDescription;
+  const parsedPrice = Number(product?.price);
+  const formattedPrice = Number.isFinite(parsedPrice)
+    ? parsedPrice.toLocaleString()
+    : product?.price || "0";
 
   const handleCartClick = () => {
     if (!product?.id) return;
@@ -87,35 +107,36 @@ const ProductCard = ({ productId }) => {
                 key={img}
                 className={`product__thumb ${activeImage === img ? "active" : ""}`}
                 onClick={() => setActiveImage(img)}
+                type="button"
               >
-                <Image src={img} alt="preview" width={82} height={82} />
+                <Image src={img} alt={`${productName} preview`} width={82} height={82} />
               </button>
             ))}
           </div>
 
           <div className="product__image">
             {activeImage && (
-              <Image src={activeImage} alt={product.name} width={471} height={471} />
+              <Image src={activeImage} alt={productName} width={471} height={471} />
             )}
           </div>
         </div>
 
         <div className="product__info">
-          <h1>{t('productCard.article')}: {product.article}</h1>
-          <p className="product__desc">{product.name}</p>
-          <p className="product__descip line-clamp-3" title={product.description}>
-            {product.description.slice(0, 150)}...
+          <h1>{t('productCard.article')}: {product.article || "-"}</h1>
+          <p className="product__desc">{productName}</p>
+          <p className="product__descip line-clamp-3" title={productDescription}>
+            {shortDescription}
           </p>
-          <div className="product__price">{product.price.toLocaleString()} {t('productCard.currency')}</div>
+          <div className="product__price">{formattedPrice} {t('productCard.currency')}</div>
           <div className="product__bonus">{product.bonus || 0} {t('productCard.bonuses')}</div>
 
           <div className="product__actions">
             {isAvailable ? (
               <>
                 <div className="counter">
-                  <button onClick={decrement}>-</button>
+                  <button onClick={decrement} type="button">-</button>
                   <span>{count}</span>
-                  <button onClick={increment}>+</button>
+                  <button onClick={increment} type="button">+</button>
                 </div>
 
                 <button

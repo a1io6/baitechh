@@ -7,9 +7,10 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import styles from './CheckoutModal.module.scss';
 import { $api } from '../../../API/api';
+import Image from 'next/image';
 
 export default function CheckoutModal({ items, allItems, onClose }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -55,16 +56,12 @@ export default function CheckoutModal({ items, allItems, onClose }) {
 
   const orderMutation = useMutation({
     mutationFn: async (orderData) => {
-      // Удаляем невыбранные товары из корзины
       const unselectedItems = allItems.filter(
         item => !items.find(selected => selected.id === item.id)
       );
-
       await Promise.all(
         unselectedItems.map(item => $api.delete(`/cart/cart-items/${item.id}/`))
       );
-
-      // Создаём заказ (бэкенд берёт оставшиеся товары из корзины)
       const { data } = await $api.post('/ordering/orders/', orderData);
       return data;
     },
@@ -88,12 +85,12 @@ export default function CheckoutModal({ items, allItems, onClose }) {
       return data;
     },
     onSuccess: (data) => {
-      if (data?.payment_url) {
+      // Если QR — редиректим на payment_url
+      if (payment === 'qr' && data?.payment_url) {
         window.location.href = data.payment_url;
       } else {
-        toast.success(t('checkoutModal.messages.paymentSuccess'));
-        onClose();
-        router.push('/orders');
+        // Наличные — показываем финальный экран
+        setStep('cash-success');
       }
     },
     onError: (error) => {
@@ -120,12 +117,37 @@ export default function CheckoutModal({ items, allItems, onClose }) {
   };
 
   const handlePay = () => {
-    if (createdOrder?.id) payMutation.mutate(createdOrder.id);
+    if (payment === 'cash') {
+      setStep('cash-success');
+      return;
+    }
+
+    if (createdOrder?.id) {
+      payMutation.mutate(createdOrder.id);
+    }
   };
+
+  const isCompactModal = step === 'success' || step === 'cash-success';
+  const orderDateRaw = createdOrder?.expected_date || createdOrder?.created_at;
+  const orderDateLabel = createdOrder?.expected_date
+    ? t('checkoutModal.success.expectedDate')
+    : t('checkoutModal.success.orderDate', { defaultValue: 'Дата оформления заказа' });
+  const orderDateValue = orderDateRaw
+    ? new Date(orderDateRaw).toLocaleString(i18n.language || 'ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '-';
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+      <div
+        className={`${styles.modal} ${isCompactModal ? styles.modalCompact : ''}`}
+        onClick={e => e.stopPropagation()}
+      >
         <button className={styles.close} onClick={onClose} aria-label={t('checkoutModal.close')}>
           <X size={20} />
         </button>
@@ -163,7 +185,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
                         <div className={styles.orderCard}>
                           <div className={styles.orderImg}>
                             {img
-                              ? <img src={img} alt={item.product?.name} />
+                              ? <Image width={1} height={1} src={img} alt={item.product?.name} />
                               : <div className={styles.orderImgPlaceholder} />
                             }
                           </div>
@@ -222,12 +244,32 @@ export default function CheckoutModal({ items, allItems, onClose }) {
                   </select>
                 </div>
 
+                {/* Способ оплаты */}
                 <div className={styles.paymentSection}>
-                  <p className={styles.paymentTitle}>{t('checkoutModal.form.payment')}</p>
+                  {/* <p className={styles.paymentTitle}>{t('checkoutModal.form.payment')}</p>
                   <label className={styles.paymentOption}>
-                    <input type="checkbox" checked={payment === 'qr'} onChange={() => setPayment('qr')} />
+                    <input
+                      type="checkbox"
+                      checked={payment === 'cash'}
+                      onChange={() => setPayment('cash')}
+                    />
+                    <span>{t('checkoutModal.form.cash')}</span>
+                  </label> */}
+                  <label className={styles.paymentOption}>
+                    <input
+                      type="checkbox"
+                      checked={payment === 'qr'}
+                      onChange={() => setPayment('qr')}
+                    />
                     <span>{t('checkoutModal.form.qrPayment')}</span>
                   </label>
+                  {/* {payment === 'cash' && (
+                    <p className={styles.paymentHint}>
+                      {t('checkoutModal.form.cashHint', {
+                        defaultValue: 'Оплата наличными не требует QR-оплаты.'
+                      })}
+                    </p>
+                  )} */}
                 </div>
 
                 <button
@@ -242,6 +284,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
           </>
         )}
 
+        {/* Успешный заказ — выбор оплаты */}
         {step === 'success' && createdOrder && (
           <div className={styles.successBlock}>
             <h3 className={styles.title}>{t('checkoutModal.success.title')}</h3>
@@ -251,12 +294,11 @@ export default function CheckoutModal({ items, allItems, onClose }) {
                 <span>{createdOrder.address}</span>
               </p>
               <p className={styles.summaryRow}>
-                <span>{t('checkoutModal.success.expectedDate')}:</span>
+                <span>{orderDateLabel}:</span>
                 <span>{createdOrder.created_at}</span>
               </p>
               <p className={styles.summaryRow}>
                 <span>{t('checkoutModal.success.totalAmount')}:</span>
-                <span></span>
               </p>
               <p className={styles.summaryTotal}>
                 {Number(createdOrder.total_price).toLocaleString()} {t('checkoutModal.form.currency')}
@@ -267,11 +309,38 @@ export default function CheckoutModal({ items, allItems, onClose }) {
               onClick={handlePay}
               disabled={payMutation.isPending}
             >
-              {payMutation.isPending ? t('checkoutModal.success.processingPayment') : t('checkoutModal.success.payButton')}
+              {payMutation.isPending
+                ? t('checkoutModal.success.processingPayment')
+                : payment === 'cash'
+                  ? t('checkoutModal.success.confirmCash', { defaultValue: 'Confirm order' })
+                  : t('checkoutModal.success.payButton')
+              }
             </button>
           </div>
         )}
+
+        {/* Финальный экран для наличных */}
+        {step === 'cash-success' && (
+          <div className={styles.successBlock}>
+            <div className={styles.cashSuccessIcon}>✅</div>
+            <h3 className={styles.title}>
+              {t('checkoutModal.cashSuccess.title', { defaultValue: 'Order created!' })}
+            </h3>
+            <p className={styles.cashSuccessText}>
+              {t('checkoutModal.cashSuccess.message', {
+                defaultValue: 'Thanks for your order! Our manager will contact you soon.'
+              })}
+            </p>
+            <button
+              className={styles.btnPrimary}
+              onClick={() => { onClose(); router.push('/profile?tab=orders'); }}
+            >
+              {t('checkoutModal.cashSuccess.button', { defaultValue: 'Go to orders' })}
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );
-}
+} 

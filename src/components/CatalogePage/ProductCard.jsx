@@ -3,19 +3,23 @@ import Link from 'next/link';
 import styles from './ProductCard.module.scss';
 import { IoCartOutline, IoCart } from 'react-icons/io5';
 import { useCart, useCreateCartItem, useDeleteCartItem } from '@/lib/cart/hooks/hooks';
+import { useTranslation } from 'react-i18next';
 
 export default function ProductCard({ product, viewMode }) {
+  const { t } = useTranslation();
   const imageUrl = product.existing_images?.[0]?.image || '/placeholder.png';
 
   const { data: cartItems } = useCart();
   const { mutate: addToCart, isPending: isAdding } = useCreateCartItem();
   const { mutate: deleteFromCart, isPending: isDeleting } = useDeleteCartItem();
 
-  const cartItem = cartItems?.find(item => item.product?.id === product?.id || item.product_id === product?.id);
+  const cartItem = cartItems?.find(
+    (item) => item.product?.id === product?.id || item.product_id === product?.id
+  );
   const isInCart = !!cartItem;
 
   const handleCartClick = (e) => {
-    e.preventDefault(); // чтобы Link не срабатывал
+    e.preventDefault();
     if (!product?.id) return;
     if (isInCart) {
       deleteFromCart(cartItem.id);
@@ -27,7 +31,7 @@ export default function ProductCard({ product, viewMode }) {
   return (
     <div className={`${styles.card} ${styles[viewMode]}`}>
       <div className={`${styles.badge} ${product.is_available ? styles.available : styles.waiting}`}>
-        {product.is_available ? 'В наличии' : 'Нет в наличии'}
+        {product.is_available ? t('card.inStock') : t('card.outOfStock')}
       </div>
 
       <div className={styles.mainWrapper}>
@@ -36,7 +40,10 @@ export default function ProductCard({ product, viewMode }) {
             <img src={imageUrl} alt={product.name} />
             {viewMode === 'grid' && (
               <div className={styles.dots}>
-                <span className={styles.active}></span><span></span><span></span><span></span>
+                <span className={styles.active}></span>
+                <span></span>
+                <span></span>
+                <span></span>
               </div>
             )}
           </div>
@@ -44,30 +51,40 @@ export default function ProductCard({ product, viewMode }) {
 
         <div className={styles.infoSection}>
           <div className={styles.topInfo}>
-            <span className={styles.article}>Артикул: {product.article}</span>
+            <span className={styles.article}>
+              {t('card.article')}: {product.article}
+            </span>
             <h3 className={styles.title}>{product.name}</h3>
           </div>
 
           <div className={styles.middleInfo}>
             {(viewMode === 'list' || viewMode === 'full') && (
               <p className={styles.description}>
-                {product.description.slice(0, 220)}..
+                {product.description?.slice(0, 220) || t('description.notAvailable')}
               </p>
             )}
           </div>
 
           <div className={styles.purchaseSection}>
-            <div className={styles.bonus}>{product.bonus} бонусов</div>
+            <div className={styles.bonus}>
+              {product.bonus} {t('card.bonuses')}
+            </div>
             <div className={styles.priceRow}>
-              <span className={styles.price}>{Number(product.price).toLocaleString()} сом</span>
+              <span className={styles.price}>
+                {Number(product.price).toLocaleString()} {t('card.currency')}
+              </span>
               <button
                 className={styles.cartBtn}
                 onClick={handleCartClick}
                 disabled={isAdding || isDeleting}
-                style={{ backgroundColor: isInCart ? '#0E2E5B' : '', color: isInCart ? 'white' : '', borderColor: isInCart ? '#0E2E5B' : '' }}
+                style={{
+                  backgroundColor: isInCart ? '#0E2E5B' : '',
+                  color: isInCart ? 'white' : '',
+                  borderColor: isInCart ? '#0E2E5B' : '',
+                }}
               >
                 {isInCart ? <IoCart size={20} /> : <IoCartOutline size={20} />}
-                {viewMode !== 'grid' && <span>Корзина</span>}
+                {viewMode !== 'grid' && <span>{t('productCard.addToCart')}</span>}
               </button>
             </div>
           </div>

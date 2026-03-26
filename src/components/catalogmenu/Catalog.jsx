@@ -16,10 +16,8 @@ export default function Catalog({ onClose }) {
   const [subBrands, setSubBrands] = useState([]);
   const [brandsBySubId, setBrandsBySubId] = useState({});
   const [isBrandsLoading, setIsBrandsLoading] = useState(false);
-  const [popupTop, setPopupTop] = useState(0);
 
   const hideTimer = useRef(null);
-  const contentRef = useRef(null);
   const currentCategory = activeCategory ?? categories?.[0] ?? null;
 
   const fetchBrandsForSub = useCallback(async (sub) => {
@@ -54,7 +52,7 @@ export default function Catalog({ onClose }) {
     preloadBrands();
   }, [brandsBySubId, currentCategory, fetchBrandsForSub]);
 
-  const handleSubMouseEnter = async (sub, event) => {
+  const handleSubMouseEnter = async (sub) => {
     clearTimeout(hideTimer.current);
 
     const cachedBrands = brandsBySubId[sub.id];
@@ -64,10 +62,6 @@ export default function Catalog({ onClose }) {
         setSubBrands([]);
         return;
       }
-
-      const btnRect = event.currentTarget.getBoundingClientRect();
-      const contentRect = contentRef.current?.getBoundingClientRect();
-      setPopupTop(btnRect.top - (contentRect?.top ?? 0));
       setHoveredSub(sub);
       setSubBrands(cachedBrands);
       return;
@@ -83,10 +77,6 @@ export default function Catalog({ onClose }) {
       setSubBrands([]);
       return;
     }
-
-    const btnRect = event.currentTarget.getBoundingClientRect();
-    const contentRect = contentRef.current?.getBoundingClientRect();
-    setPopupTop(btnRect.top - (contentRect?.top ?? 0));
     setHoveredSub(sub);
     setSubBrands(brands);
   };
@@ -161,7 +151,7 @@ export default function Catalog({ onClose }) {
         </aside>
 
         {currentCategory && (
-          <main className={styles.content} ref={contentRef}>
+          <main className={styles.content}>
             {subcategories.length > 0 ? (
               <div className={styles.columnsWrap}>
                 {[col1, col2].map((col, colIdx) => (
@@ -173,7 +163,7 @@ export default function Catalog({ onClose }) {
                         <div key={sub.id} className={styles.subGroup}>
                           <button
                             className={`${styles.subTitle} ${hoveredSub?.id === sub.id ? styles.subTitleActive : ''}`}
-                            onMouseEnter={(e) => handleSubMouseEnter(sub, e)}
+                            onMouseEnter={() => handleSubMouseEnter(sub)}
                             onMouseLeave={handleSubMouseLeave}
                             onClick={() => handleSubcategoryClick(sub)}
                           >
@@ -185,7 +175,6 @@ export default function Catalog({ onClose }) {
                             {hoveredSub?.id === sub.id && hasBrands && (
                               <div
                                 className={styles.brandsPopup}
-                                style={{ top: popupTop }}
                                 onMouseEnter={handlePopupMouseEnter}
                                 onMouseLeave={handlePopupMouseLeave}
                                 onClick={(e) => e.stopPropagation()}

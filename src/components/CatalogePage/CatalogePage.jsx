@@ -1,24 +1,92 @@
-'use client';
+﻿'use client';
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useInfiniteProducts, useProducts } from '@/lib/products/hooks/hooks';
 import { productApi } from '@/lib/products/api/useProducts';
 import styles from './CatalogPage.module.scss';
-import { LayoutGrid, List, AlignJustify, ChevronDown, X, Search, ChevronRight } from 'lucide-react';
+import { LayoutGrid, List, AlignJustify, ChevronDown, Search, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import FullProductCard from './FullProductCard';
 import Card from '../ui/card/Card';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+
+const CATALOG_TEXTS = {
+  ru: {
+    home: 'Главная',
+    catalog: 'Каталог',
+    loading: 'Загрузка...',
+    filterTitle: 'Фильтр товаров',
+    subcategories: 'Подкатегории',
+    category: 'Категория',
+    categorySearch: 'Поиск категории...',
+    brand: 'Бренд',
+    brandSearch: 'Поиск бренда...',
+    price: 'Цена',
+    from: 'От',
+    to: 'До',
+    show: 'Показать',
+    reset: 'Сбросить фильтры',
+    notFound: 'Товары не найдены',
+    notMatched: 'Ничего не найдено',
+    prev: 'Назад',
+    next: 'Вперед',
+  },
+  en: {
+    home: 'Home',
+    catalog: 'Catalog',
+    loading: 'Loading...',
+    filterTitle: 'Product Filters',
+    subcategories: 'Subcategories',
+    category: 'Category',
+    categorySearch: 'Search category...',
+    brand: 'Brand',
+    brandSearch: 'Search brand...',
+    price: 'Price',
+    from: 'From',
+    to: 'To',
+    show: 'Show',
+    reset: 'Reset filters',
+    notFound: 'No products found',
+    notMatched: 'Nothing found',
+    prev: 'Previous',
+    next: 'Next',
+  },
+  ky: {
+    home: 'Башкы бет',
+    catalog: 'Каталог',
+    loading: 'Жүктөлүүдө...',
+    filterTitle: 'Товар фильтрлери',
+    subcategories: 'Подкатегориялар',
+    category: 'Категория',
+    categorySearch: 'Категория издөө...',
+    brand: 'Бренд',
+    brandSearch: 'Бренд издөө...',
+    price: 'Баа',
+    from: 'Баштап',
+    to: 'Чейин',
+    show: 'Көрсөтүү',
+    reset: 'Фильтрлерди тазалоо',
+    notFound: 'Товарлар табылган жок',
+    notMatched: 'Эч нерсе табылган жок',
+    prev: 'Артка',
+    next: 'Алга',
+  },
+};
 
 export default function CatalogPage() {
+  const ITEMS_PER_PAGE = 12;
   const [viewMode, setViewMode] = useState('grid');
+  const [currentPage, setCurrentPage] = useState(1);
   const [categorySearch, setCategorySearch] = useState('');
   const [brandSearch, setBrandSearch] = useState('');
 
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const { brands: allBrands, categories } = useProducts();
+  const { i18n } = useTranslation();
+  const localeKey = (i18n.resolvedLanguage || i18n.language || 'ru').split('-')[0];
+  const tr = CATALOG_TEXTS[localeKey] || CATALOG_TEXTS.ru;
 
   const cat = searchParams.get('category');
   const bnd = searchParams.get('brand');
@@ -32,11 +100,10 @@ export default function CatalogPage() {
   const [categoryBrands, setCategoryBrands] = useState([]);
 
   useEffect(() => {
-    if (!cat) {
-      return;
-    }
+    if (!cat) return;
 
-    productApi.getByCategory(cat)
+    productApi
+      .getByCategory(cat)
       .then((data) => {
         const products = data.results || data;
         const brandIds = [...new Set(products.map((p) => p.brand))];
@@ -75,8 +142,8 @@ export default function CatalogPage() {
 
   const breadcrumbs = useMemo(() => {
     const crumbs = [
-      { label: 'Главная', href: '/' },
-      { label: 'Каталог', href: '/catalog' },
+      { label: tr.home, href: '/' },
+      { label: tr.catalog, href: '/catalog' },
     ];
 
     if (activeCategory) {
@@ -100,9 +167,9 @@ export default function CatalogPage() {
     }
 
     return crumbs;
-  }, [activeCategory, activeSubcategory]);
+  }, [activeCategory, activeSubcategory, tr.catalog, tr.home]);
 
-  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteProducts({
+  const { data, isLoading } = useInfiniteProducts({
     category: cat || undefined,
     brand: bnd || undefined,
     min_price: searchParams.get('min_price') || undefined,
@@ -113,10 +180,6 @@ export default function CatalogPage() {
   const maxPriceFilter = searchParams.get('max_price');
 
   const visibleProducts = useMemo(() => {
-    if (!cat && !query) {
-      return [];
-    }
-
     const pages = data?.pages || [];
     const products = pages.flatMap((p) => p.results || []);
     const min = minPriceFilter === null || minPriceFilter === '' ? null : Number(minPriceFilter);
@@ -136,7 +199,15 @@ export default function CatalogPage() {
       }
       return true;
     });
-  }, [cat, query, data?.pages, minPriceFilter, maxPriceFilter]);
+  }, [query, data?.pages, minPriceFilter, maxPriceFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(visibleProducts.length / ITEMS_PER_PAGE));
+  const paginatedProducts = useMemo(() => {
+    const safePage = Math.min(currentPage, totalPages);
+    const start = (safePage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    return visibleProducts.slice(start, end);
+  }, [visibleProducts, currentPage, totalPages]);
 
   const filteredCategories = useMemo(
     () =>
@@ -147,7 +218,7 @@ export default function CatalogPage() {
   );
 
   const brandSource = useMemo(
-    () => (cat ? categoryBrands : (allBrands || [])),
+    () => (cat ? categoryBrands : allBrands || []),
     [cat, categoryBrands, allBrands]
   );
 
@@ -180,29 +251,20 @@ export default function CatalogPage() {
     setCategorySearch('');
     setBrandSearch('');
     setPriceRange({ min: '', max: '' });
-
-    if (query) {
-      router.push('/catalog');
-      return;
-    }
-
-    if (activeSubcategory?.parent?.name) {
-      router.push(`/catalog?category=${encodeURIComponent(activeSubcategory.parent.name)}`);
-      return;
-    }
-
-    if (activeCategory?.name) {
-      router.push(`/catalog?category=${encodeURIComponent(activeCategory.name)}`);
-      return;
-    }
-
+    setCurrentPage(1);
     router.push('/catalog');
   };
 
-  const hasActiveFilters = cat || bnd || query || priceRange.min || priceRange.max;
-  const shouldShowProducts = Boolean(cat || query);
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  if (isLoading) return <div className={styles.loader}>Загрузка...</div>;
+  const hasActiveFilters = cat || bnd || query || priceRange.min || priceRange.max;
+  const shouldShowProducts = true;
+
+  if (isLoading) return <div className={styles.loader}>{tr.loading}</div>;
 
   return (
     <div className={`${styles.catalogPage} container`}>
@@ -224,16 +286,13 @@ export default function CatalogPage() {
       <div className={styles.layout}>
         <aside className={styles.sidebar}>
           <div className={styles.filterTitle} style={{ display: 'flex', justifyContent: 'space-between' }}>
-            Фильтр товаров
-            {hasActiveFilters && (
-              <X size={14} onClick={handleReset} className={styles.clearIcon} />
-            )}
+            {tr.filterTitle}
           </div>
 
           {subcategories.length > 0 && (
             <div className={styles.filterSection}>
               <div className={styles.filterGroup}>
-                Подкатегории <ChevronDown size={14} />
+                {tr.subcategories} <ChevronDown size={14} />
               </div>
               <div className={styles.subcategoryList}>
                 {subcategories.map((sub) => (
@@ -252,13 +311,13 @@ export default function CatalogPage() {
           {((categories?.length || 0) > 0 || categorySearch) && (
             <div className={styles.filterSection}>
               <div className={styles.filterGroup}>
-                Категория <ChevronDown size={14} />
+                {tr.category} <ChevronDown size={14} />
               </div>
 
               <div style={{ position: 'relative', marginTop: '10px', marginBottom: '10px' }}>
                 <input
                   type="text"
-                  placeholder="Поиск категории..."
+                  placeholder={tr.categorySearch}
                   value={categorySearch}
                   onChange={(e) => setCategorySearch(e.target.value)}
                   style={{
@@ -270,7 +329,17 @@ export default function CatalogPage() {
                     outline: 'none',
                   }}
                 />
-                <Search size={16} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#999', pointerEvents: 'none' }} />
+                <Search
+                  size={16}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#999',
+                    pointerEvents: 'none',
+                  }}
+                />
               </div>
 
               <div className={styles.scrollArea}>
@@ -292,7 +361,7 @@ export default function CatalogPage() {
                     </label>
                   ))
                 ) : (
-                  <div className={styles.emptySearch}>Ничего не найдено</div>
+                  <div className={styles.emptySearch}>{tr.notMatched}</div>
                 )}
               </div>
             </div>
@@ -301,13 +370,13 @@ export default function CatalogPage() {
           {((brandSource.length || 0) > 0 || brandSearch) && (
             <div className={styles.filterSection}>
               <div className={styles.filterGroup}>
-                Бренд <ChevronDown size={14} />
+                {tr.brand} <ChevronDown size={14} />
               </div>
 
               <div style={{ position: 'relative', marginTop: '10px', marginBottom: '10px' }}>
                 <input
                   type="text"
-                  placeholder="Поиск бренда..."
+                  placeholder={tr.brandSearch}
                   value={brandSearch}
                   onChange={(e) => setBrandSearch(e.target.value)}
                   style={{
@@ -319,7 +388,17 @@ export default function CatalogPage() {
                     outline: 'none',
                   }}
                 />
-                <Search size={16} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#999', pointerEvents: 'none' }} />
+                <Search
+                  size={16}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#999',
+                    pointerEvents: 'none',
+                  }}
+                />
               </div>
 
               <div className={styles.scrollArea}>
@@ -340,7 +419,7 @@ export default function CatalogPage() {
                     </label>
                   ))
                 ) : (
-                  <div className={styles.emptySearch}>Ничего не найдено</div>
+                  <div className={styles.emptySearch}>{tr.notMatched}</div>
                 )}
               </div>
             </div>
@@ -348,33 +427,37 @@ export default function CatalogPage() {
 
           <div className={styles.filterSection}>
             <div className={styles.filterGroup}>
-              Цена <ChevronDown size={14} />
+              {tr.price} <ChevronDown size={14} />
             </div>
             <div className={styles.priceInputs}>
               <input
                 type="number"
-                placeholder="От"
+                placeholder={tr.from}
                 value={priceRange.min}
                 onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleApplyPrice(); }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleApplyPrice();
+                }}
               />
               <input
                 type="number"
-                placeholder="До"
+                placeholder={tr.to}
                 value={priceRange.max}
                 onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleApplyPrice(); }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleApplyPrice();
+                }}
               />
             </div>
           </div>
 
           <button className={styles.applyBtn} onClick={handleApplyPrice}>
-            {`Показать (${visibleProducts.length})`}
+            {`${tr.show} (${visibleProducts.length})`}
           </button>
 
           {hasActiveFilters && (
             <button className={styles.resetBtn} onClick={handleReset}>
-              Сбросить фильтры
+              {tr.reset}
             </button>
           )}
         </aside>
@@ -390,24 +473,49 @@ export default function CatalogPage() {
 
           <div className={`${styles.grid} ${styles[viewMode]}`}>
             {shouldShowProducts && visibleProducts.length > 0 ? (
-              visibleProducts.map((p) =>
-                viewMode === 'grid'
-                  ? <Card key={p.id} product={p} />
-                  : viewMode === 'list'
-                    ? <ProductCard key={p.id} product={p} viewMode={viewMode} />
-                    : <FullProductCard key={p.id} product={p} />
+              paginatedProducts.map((p) =>
+                viewMode === 'grid' ? (
+                  <Card key={p.id} product={p} />
+                ) : viewMode === 'list' ? (
+                  <ProductCard key={p.id} product={p} viewMode={viewMode} />
+                ) : (
+                  <FullProductCard key={p.id} product={p} />
+                )
               )
-            ) : !shouldShowProducts ? (
-              <div>Выберите категорию</div>
             ) : (
-              <div>Товары не найдены</div>
+              <div>{tr.notFound}</div>
             )}
           </div>
 
-          {shouldShowProducts && hasNextPage && (
-            <button onClick={() => fetchNextPage()} className={styles.loadMore}>
-              Показать еще
-            </button>
+          {shouldShowProducts && totalPages > 1 && (
+            <div className={styles.pagination}>
+              <button
+                type="button"
+                className={styles.pageBtn}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                {tr.prev}
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  className={`${styles.pageBtn} ${currentPage === page ? styles.pageBtnActive : ''}`}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                type="button"
+                className={styles.pageBtn}
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                {tr.next}
+              </button>
+            </div>
           )}
         </main>
       </div>

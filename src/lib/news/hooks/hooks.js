@@ -4,7 +4,7 @@ import { bannerget } from "../api/api";
 
 export const useBanner = () => {
   return useQuery({
-    queryKey: ['banner'],
+    queryKey: ["news", "event-banners"],
     queryFn: () => bannerget.getBanner(),
     select: (data) => data.results || [],
   });

@@ -56,7 +56,15 @@ function Card({ product }) {
         <Link href={`/productdetail/${product.id}`}>
           <div className="product-card__image">
             {imageSrc ? (
-              <Image src={imageSrc} alt={"product"} width={300} height={300} />
+              <Image
+                src={imageSrc}
+                alt={product?.name || "product"}
+                width={300}
+                height={300}
+                className="product-card__img"
+                sizes="(max-width: 480px) 45vw, (max-width: 768px) 30vw, 300px"
+                quality={95}
+              />
             ) : (
               <div className="image-placeholder">
                 <svg width="100" height="100" viewBox="0 0 100 100" fill="none">

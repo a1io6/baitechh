@@ -111,19 +111,18 @@ $star-color: #FFD700;
   &__image {
     width: 100%;
     height: 260px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin-bottom: 15px;
     border-radius: 8px;
     overflow: hidden;
-    background: $bg-light;
+    background: white;
 
-    img {
+    .product-card__img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      object-position: center;
       transition: transform 0.3s ease;
+      image-rendering: -webkit-optimize-contrast;
     }
 
     .image-placeholder {
@@ -445,7 +444,7 @@ font-size: 30px;
   &:hover {
     transform: translateY(0px);
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
-    border-color: transparent;
+    border-color: #E5E5E5;
   }
     &__badge {
       top: 12px;

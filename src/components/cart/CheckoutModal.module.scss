@@ -21,6 +21,10 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
+.modalCompact {
+  max-width: 560px;
+}
+
 .close {
   position: absolute;
   top: 16px;
@@ -257,7 +261,9 @@
 
 /* Блок успешного заказа */
 .successBlock {
-    max-width: 200px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
   padding: 8px 0;
 }
 
@@ -289,4 +295,45 @@
   font-weight: 700;
   color: #0E2E5B;
   margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .modal {
+    padding: 24px 16px 16px;
+    border-radius: 12px;
+  }
+
+  .modalCompact {
+    max-width: 100%;
+  }
+
+  .title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .orderSummary {
+    padding: 14px;
+    margin: 12px 0 16px;
+  }
+
+  .summaryRow {
+    font-size: 13px;
+  }
+
+  .summaryTotal {
+    font-size: 18px;
+  }
+
+  .btnPrimary {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+.paymentHint {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.35;
 }

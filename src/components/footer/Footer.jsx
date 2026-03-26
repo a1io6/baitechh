@@ -123,7 +123,7 @@ function Footer() {
         <div>
         <div className="footer__col footer__col--accordion">
           <button
-            className="footer__accordion-header"
+            className="footer__accordion-header "
             onClick={() => toggleSection('client')}
             type="button"
           >
@@ -135,8 +135,8 @@ function Footer() {
           <div className={`footer__accordion-content ${openSections.client ? 'footer__accordion-content--open' : ''}`}>
             <ul>
               <li><a href="/profile">{t('footer.client.account')}</a></li>
-              <li ><Link href="/orders">{t('footer.client.orderHistory')}</Link></li>
-              <li><Link href="/return">{t('footer.client.returns')}</Link></li>
+              <li><Link href="/profile?tab=orders">{t('footer.client.orderHistory')}</Link></li>
+              <li><Link href="/profile?tab=returns">{t('footer.client.returns')}</Link></li>
             </ul>
           </div>
         </div>
@@ -175,7 +175,7 @@ function Footer() {
 
       </div>
 
-      <div className="footer__bottom flex justify-center items-center">
+      <div className="footer__bottom flex justify-between items-center gap-5">
         <h3>
         Baitech © 2021
         </h3>
