@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useInfiniteProducts, useProducts } from '@/lib/products/hooks/hooks';
 import { productApi } from '@/lib/products/api/useProducts';
 import styles from './CatalogPage.module.scss';
-import { LayoutGrid, List, AlignJustify, ChevronDown, Search, ChevronRight } from 'lucide-react';
+import { LayoutGrid, List, AlignJustify, ChevronDown, Search, ChevronRight, ChevronLeft } from 'lucide-react';
 import ProductCard from './ProductCard';
 import FullProductCard from './FullProductCard';
 import Card from '../ui/card/Card';
@@ -74,8 +74,19 @@ const CATALOG_TEXTS = {
   },
 };
 
+const sanitizePriceParam = (value, fallback) => {
+  if (value === null || value === '') return fallback;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : fallback;
+};
+
+const clampPrice = (value, min, max) => Math.min(Math.max(value, min), max);
+
 export default function CatalogPage() {
   const ITEMS_PER_PAGE = 12;
+  const PRICE_MIN_LIMIT = 0;
+  const DEFAULT_PRICE_MAX_LIMIT = 200000;
+  const PRICE_STEP = 1000;
   const [viewMode, setViewMode] = useState('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [categorySearch, setCategorySearch] = useState('');
@@ -91,11 +102,9 @@ export default function CatalogPage() {
   const cat = searchParams.get('category');
   const bnd = searchParams.get('brand');
   const query = searchParams.get('query')?.trim() || '';
-
-  const [priceRange, setPriceRange] = useState({
-    min: searchParams.get('min_price') || '',
-    max: searchParams.get('max_price') || '',
-  });
+  const minParam = searchParams.get('min_price');
+  const maxParam = searchParams.get('max_price');
+  const [priceRange, setPriceRange] = useState({ min: PRICE_MIN_LIMIT, max: DEFAULT_PRICE_MAX_LIMIT });
 
   const [categoryBrands, setCategoryBrands] = useState([]);
 
@@ -179,14 +188,46 @@ export default function CatalogPage() {
   const minPriceFilter = searchParams.get('min_price');
   const maxPriceFilter = searchParams.get('max_price');
 
-  const visibleProducts = useMemo(() => {
+  const allProducts = useMemo(() => {
     const pages = data?.pages || [];
-    const products = pages.flatMap((p) => p.results || []);
+    return pages.flatMap((p) => p.results || []);
+  }, [data?.pages]);
+
+  const sliderMaxPrice = useMemo(() => {
+    const prices = allProducts
+      .map((product) => Number(product.price))
+      .filter((price) => Number.isFinite(price) && price >= PRICE_MIN_LIMIT);
+
+    if (prices.length === 0) return DEFAULT_PRICE_MAX_LIMIT;
+
+    const maxPrice = Math.max(...prices);
+    return Math.max(PRICE_STEP, Math.ceil(maxPrice / PRICE_STEP) * PRICE_STEP);
+  }, [allProducts]);
+
+  useEffect(() => {
+    const normalizedMin = clampPrice(
+      sanitizePriceParam(minParam, PRICE_MIN_LIMIT),
+      PRICE_MIN_LIMIT,
+      sliderMaxPrice - PRICE_STEP
+    );
+    const normalizedMax = clampPrice(
+      sanitizePriceParam(maxParam, sliderMaxPrice),
+      normalizedMin + PRICE_STEP,
+      sliderMaxPrice
+    );
+
+    setPriceRange({
+      min: normalizedMin,
+      max: normalizedMax,
+    });
+  }, [minParam, maxParam, sliderMaxPrice]);
+
+  const visibleProducts = useMemo(() => {
     const min = minPriceFilter === null || minPriceFilter === '' ? null : Number(minPriceFilter);
     const max = maxPriceFilter === null || maxPriceFilter === '' ? null : Number(maxPriceFilter);
     const normalizedQuery = query.toLowerCase();
 
-    return products.filter((product) => {
+    return allProducts.filter((product) => {
       const price = Number(product.price);
       const name = String(product.name || '').toLowerCase();
       const article = String(product.article || '').toLowerCase();
@@ -199,7 +240,7 @@ export default function CatalogPage() {
       }
       return true;
     });
-  }, [query, data?.pages, minPriceFilter, maxPriceFilter]);
+  }, [query, allProducts, minPriceFilter, maxPriceFilter]);
 
   const totalPages = Math.max(1, Math.ceil(visibleProducts.length / ITEMS_PER_PAGE));
   const paginatedProducts = useMemo(() => {
@@ -236,24 +277,52 @@ export default function CatalogPage() {
     router.push(`?${params.toString()}`);
   };
 
-  const handleApplyPrice = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (priceRange.min) params.set('min_price', priceRange.min);
-    else params.delete('min_price');
-
-    if (priceRange.max) params.set('max_price', priceRange.max);
-    else params.delete('max_price');
-
-    router.push(`?${params.toString()}`);
-  };
-
   const handleReset = () => {
     setCategorySearch('');
     setBrandSearch('');
-    setPriceRange({ min: '', max: '' });
+    setPriceRange({ min: PRICE_MIN_LIMIT, max: sliderMaxPrice });
     setCurrentPage(1);
     router.push('/catalog');
   };
+
+  const handleMinPriceChange = (event) => {
+    const nextMin = Number(event.target.value);
+    setPriceRange((prev) => ({
+      ...prev,
+      min: clampPrice(nextMin, PRICE_MIN_LIMIT, prev.max - PRICE_STEP),
+    }));
+  };
+
+  const handleMaxPriceChange = (event) => {
+    const nextMax = Number(event.target.value);
+    setPriceRange((prev) => ({
+      ...prev,
+      max: clampPrice(nextMax, prev.min + PRICE_STEP, sliderMaxPrice),
+    }));
+  };
+
+  useEffect(() => {
+    const nextMinParam = priceRange.min > PRICE_MIN_LIMIT ? String(priceRange.min) : null;
+    const nextMaxParam = priceRange.max < sliderMaxPrice ? String(priceRange.max) : null;
+    const isSameAsUrl = (nextMinParam ?? null) === (minParam ?? null) && (nextMaxParam ?? null) === (maxParam ?? null);
+
+    if (isSameAsUrl) return;
+
+    const timeoutId = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (nextMinParam) params.set('min_price', nextMinParam);
+      else params.delete('min_price');
+
+      if (nextMaxParam) params.set('max_price', nextMaxParam);
+      else params.delete('max_price');
+
+      const queryString = params.toString();
+      router.replace(queryString ? `?${queryString}` : '/catalog');
+      setCurrentPage(1);
+    }, 120);
+
+    return () => clearTimeout(timeoutId);
+  }, [priceRange.min, priceRange.max, sliderMaxPrice, minParam, maxParam, searchParams, router]);
 
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
@@ -261,8 +330,13 @@ export default function CatalogPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const hasActiveFilters = cat || bnd || query || priceRange.min || priceRange.max;
+  const hasActiveFilters =
+    cat || bnd || query || searchParams.get('min_price') || searchParams.get('max_price');
   const shouldShowProducts = true;
+  const priceProgressLeft =
+    ((priceRange.min - PRICE_MIN_LIMIT) / Math.max(1, sliderMaxPrice - PRICE_MIN_LIMIT)) * 100;
+  const priceProgressRight =
+    ((priceRange.max - PRICE_MIN_LIMIT) / Math.max(1, sliderMaxPrice - PRICE_MIN_LIMIT)) * 100;
 
   if (isLoading) return <div className={styles.loader}>{tr.loading}</div>;
 
@@ -429,31 +503,41 @@ export default function CatalogPage() {
             <div className={styles.filterGroup}>
               {tr.price} <ChevronDown size={14} />
             </div>
-            <div className={styles.priceInputs}>
-              <input
-                type="number"
-                placeholder={tr.from}
-                value={priceRange.min}
-                onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleApplyPrice();
+            <div className={styles.priceRangeValues}>
+              <span>{tr.from}: {priceRange.min.toLocaleString()}</span>
+              <span>{tr.to}: {priceRange.max.toLocaleString()}</span>
+            </div>
+            <div className={styles.priceSlider}>
+              <div className={styles.priceSliderTrack} />
+              <div
+                className={styles.priceSliderRange}
+                style={{
+                  left: `${priceProgressLeft}%`,
+                  width: `${priceProgressRight - priceProgressLeft}%`,
                 }}
               />
               <input
-                type="number"
-                placeholder={tr.to}
+                type="range"
+                min={PRICE_MIN_LIMIT}
+                max={sliderMaxPrice}
+                step={PRICE_STEP}
+                value={priceRange.min}
+                onChange={handleMinPriceChange}
+                className={`${styles.priceThumb} ${styles.priceThumbMin}`}
+                aria-label={tr.from}
+              />
+              <input
+                type="range"
+                min={PRICE_MIN_LIMIT}
+                max={sliderMaxPrice}
+                step={PRICE_STEP}
                 value={priceRange.max}
-                onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleApplyPrice();
-                }}
+                onChange={handleMaxPriceChange}
+                className={`${styles.priceThumb} ${styles.priceThumbMax}`}
+                aria-label={tr.to}
               />
             </div>
           </div>
-
-          <button className={styles.applyBtn} onClick={handleApplyPrice}>
-            {`${tr.show} (${visibleProducts.length})`}
-          </button>
 
           {hasActiveFilters && (
             <button className={styles.resetBtn} onClick={handleReset}>
@@ -491,11 +575,13 @@ export default function CatalogPage() {
             <div className={styles.pagination}>
               <button
                 type="button"
-                className={styles.pageBtn}
+                className={`${styles.pageBtn} ${styles.pageNavBtn}`}
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
+                aria-label={tr.prev}
+                title={tr.prev}
               >
-                {tr.prev}
+                <ChevronLeft size={16} />
               </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <button
@@ -509,11 +595,13 @@ export default function CatalogPage() {
               ))}
               <button
                 type="button"
-                className={styles.pageBtn}
+                className={`${styles.pageBtn} ${styles.pageNavBtn}`}
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                aria-label={tr.next}
+                title={tr.next}
               >
-                {tr.next}
+                <ChevronRight size={16} />
               </button>
             </div>
           )}

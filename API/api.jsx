@@ -19,7 +19,7 @@ if (!config.headers.Authorization) {
   const token = adminToken || userToken;
 
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `${token}`;
   }
 } 
   if (typeof window !== "undefined") {

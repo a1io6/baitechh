@@ -13,6 +13,34 @@ import { IoCart, IoCartOutline, IoClose } from "react-icons/io5";
 import { FaWhatsapp } from "react-icons/fa";
 import { useSiteSettings } from "@/lib/settings/hook";
 
+const HIGH_PRICE_LIMIT = 100000;
+
+const buildWhatsAppLink = (whatsapp, phone, message) => {
+  const encodedMessage = encodeURIComponent(message);
+  const raw = String(whatsapp || "").trim();
+
+  if (raw) {
+    if (/^https?:\/\//i.test(raw)) {
+      try {
+        const url = new URL(raw);
+        url.searchParams.set("text", message);
+        return url.toString();
+      } catch {
+        const separator = raw.includes("?") ? "&" : "?";
+        return `${raw}${separator}text=${encodedMessage}`;
+      }
+    }
+
+    const digits = raw.replace(/\D/g, "");
+    if (digits) return `https://wa.me/${digits}?text=${encodedMessage}`;
+  }
+
+  const phoneDigits = String(phone || "").replace(/\D/g, "");
+  if (phoneDigits) return `https://wa.me/${phoneDigits}?text=${encodedMessage}`;
+
+  return null;
+};
+
 function Card({ product }) {
   const { t } = useTranslation();
   const { mutate: addToCart, isPending } = useCreateCartItem();
@@ -26,8 +54,13 @@ function Card({ product }) {
   const isInCart = !!cartItem;
   const imageSrc = product?.existing_images?.[0]?.image;
   const isAvailable = product?.is_available;
+  const formattedPrice = Number.isFinite(Number(product?.price))
+    ? Number(product.price).toLocaleString("ru-RU")
+    : "-";
 
-  const WHATSAPP_LINK = settings?.whatsapp; // ← замени на свой номер
+  const isHighPrice = Number(product?.price) >= HIGH_PRICE_LIMIT;
+  const whatsappMessage = `Здравствуйте! Интересует товар: ${product?.name || "-"}, артикул: ${product?.article || "-"}, цена: ${formattedPrice} сом.`;
+  const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
 
   const handleAddToCart = () => {
     if (!product?.id) return;
@@ -88,7 +121,22 @@ function Card({ product }) {
         </ul>
 
         <div className="product-card__footer">
-          {isAvailable ? (
+          {isHighPrice ? (
+            <div className="product-card__contact-price">
+              <p className="product-card__contact-title">{t("card.contactForPrice")}</p>
+              {whatsappLink && (
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="product-card__whatsapp product-card__whatsapp--full"
+                >
+                  <FaWhatsapp size={16} />
+                  {t("card.writeToWhatsApp")}
+                </a>
+              )}
+            </div>
+          ) : isAvailable ? (
             <>
               <div className="product-card__price">
                 <span className="currency">
@@ -109,7 +157,7 @@ function Card({ product }) {
             </>
           ) : (
             <a
-              href={settings?.whatsapp ?? `tel:${settings?.phone}`}
+              href={whatsappLink ?? settings?.whatsapp ?? `tel:${settings?.phone}`}
               target="_blank"
               rel="noreferrer"
               className="product-card__availability-btn"
@@ -119,23 +167,23 @@ function Card({ product }) {
           )}
         </div>
 
-       {!isAvailable?
-        <a
-          href={WHATSAPP_LINK}
-          target="_blank"
-          rel="noreferrer"
-          className="product-card__whatsapp"
-        >
-          <FaWhatsapp size={16} />
-          {t("card.whatsapp")}
-        </a> : ''
-       }
+        {!isAvailable && !isHighPrice && whatsappLink ? (
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noreferrer"
+            className="product-card__whatsapp"
+          >
+            <FaWhatsapp size={16} />
+            {t("card.whatsapp")}
+          </a>
+        ) : null}
       </div>
 
       {showAuthModal && (
         <div className="auth-modal__overlay" onClick={() => setShowAuthModal(false)}>
           <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="auth-modal__close" onClick={() => setShowAuthModal(false)} aria-label="Закрыть">
+            <button className="auth-modal__close" onClick={() => setShowAuthModal(false)} aria-label="Р—Р°РєСЂС‹С‚СЊ">
               <IoClose size={20} />
             </button>
             <div className="auth-modal__icon">
@@ -159,3 +207,5 @@ function Card({ product }) {
 }
 
 export default Card;
+
+

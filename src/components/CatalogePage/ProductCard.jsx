@@ -2,12 +2,43 @@
 import Link from 'next/link';
 import styles from './ProductCard.module.scss';
 import { IoCartOutline, IoCart } from 'react-icons/io5';
+import { FaWhatsapp } from 'react-icons/fa';
 import { useCart, useCreateCartItem, useDeleteCartItem } from '@/lib/cart/hooks/hooks';
 import { useTranslation } from 'react-i18next';
+import { useSiteSettings } from '@/lib/settings/hook';
+
+const HIGH_PRICE_LIMIT = 100000;
+
+const buildWhatsAppLink = (whatsapp, phone, message) => {
+  const encodedMessage = encodeURIComponent(message);
+  const raw = String(whatsapp || '').trim();
+
+  if (raw) {
+    if (/^https?:\/\//i.test(raw)) {
+      try {
+        const url = new URL(raw);
+        url.searchParams.set('text', message);
+        return url.toString();
+      } catch {
+        const separator = raw.includes('?') ? '&' : '?';
+        return `${raw}${separator}text=${encodedMessage}`;
+      }
+    }
+
+    const digits = raw.replace(/\D/g, '');
+    if (digits) return `https://wa.me/${digits}?text=${encodedMessage}`;
+  }
+
+  const phoneDigits = String(phone || '').replace(/\D/g, '');
+  if (phoneDigits) return `https://wa.me/${phoneDigits}?text=${encodedMessage}`;
+
+  return null;
+};
 
 export default function ProductCard({ product, viewMode }) {
   const { t } = useTranslation();
   const imageUrl = product.existing_images?.[0]?.image || '/placeholder.png';
+  const { settings } = useSiteSettings();
 
   const { data: cartItems } = useCart();
   const { mutate: addToCart, isPending: isAdding } = useCreateCartItem();
@@ -17,6 +48,13 @@ export default function ProductCard({ product, viewMode }) {
     (item) => item.product?.id === product?.id || item.product_id === product?.id
   );
   const isInCart = !!cartItem;
+  const isAvailable = product?.is_available;
+  const formattedPrice = Number.isFinite(Number(product?.price))
+    ? Number(product.price).toLocaleString('ru-RU')
+    : '-';
+  const isHighPrice = Number(product?.price) >= HIGH_PRICE_LIMIT;
+  const whatsappMessage = `Здравствуйте! Интересует товар: ${product?.name || '-'}, артикул: ${product?.article || '-'}, цена: ${formattedPrice} сом.`;
+  const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
 
   const handleCartClick = (e) => {
     e.preventDefault();
@@ -66,27 +104,58 @@ export default function ProductCard({ product, viewMode }) {
           </div>
 
           <div className={styles.purchaseSection}>
-            <div className={styles.bonus}>
-              {product.bonus} {t('card.bonuses')}
-            </div>
-            <div className={styles.priceRow}>
-              <span className={styles.price}>
-                {Number(product.price).toLocaleString()} {t('card.currency')}
-              </span>
-              <button
-                className={styles.cartBtn}
-                onClick={handleCartClick}
-                disabled={isAdding || isDeleting}
-                style={{
-                  backgroundColor: isInCart ? '#0E2E5B' : '',
-                  color: isInCart ? 'white' : '',
-                  borderColor: isInCart ? '#0E2E5B' : '',
-                }}
-              >
-                {isInCart ? <IoCart size={20} /> : <IoCartOutline size={20} />}
-                {viewMode !== 'grid' && <span>{t('productCard.addToCart')}</span>}
-              </button>
-            </div>
+            {isHighPrice ? (
+              <div className={styles.contactPrice}>
+                <p className={styles.contactTitle}>{t('card.contactForPrice')}</p>
+                {whatsappLink && (
+                  <a href={whatsappLink} target="_blank" rel="noreferrer" className={styles.whatsappBtn}>
+                    <FaWhatsapp size={16} />
+                    <span>{t('card.writeToWhatsApp')}</span>
+                  </a>
+                )}
+              </div>
+            ) : isAvailable ? (
+              <>
+                <div className={styles.bonus}>
+                  {product.bonus || 0} {t('card.bonuses')}
+                </div>
+                <div className={styles.priceRow}>
+                  <span className={styles.price}>
+                    {Number(product.price).toLocaleString()} {t('card.currency')}
+                  </span>
+                  <button
+                    className={styles.cartBtn}
+                    onClick={handleCartClick}
+                    disabled={isAdding || isDeleting}
+                    style={{
+                      backgroundColor: isInCart ? '#0E2E5B' : '',
+                      color: isInCart ? 'white' : '',
+                      borderColor: isInCart ? '#0E2E5B' : '',
+                    }}
+                  >
+                    {isInCart ? <IoCart size={20} /> : <IoCartOutline size={20} />}
+                    {viewMode !== 'grid' && <span>{t('productCard.addToCart')}</span>}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className={styles.contactPrice}>
+                <a
+                  href={whatsappLink ?? settings?.whatsapp ?? `tel:${settings?.phone}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.availabilityBtn}
+                >
+                  {t('card.checkAvailability')}
+                </a>
+                {whatsappLink && (
+                  <a href={whatsappLink} target="_blank" rel="noreferrer" className={styles.whatsappBtn}>
+                    <FaWhatsapp size={16} />
+                    <span>{t('card.whatsapp')}</span>
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

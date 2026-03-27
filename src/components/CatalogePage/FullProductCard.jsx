@@ -3,12 +3,43 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './FullProductCard.module.scss';
 import { IoCartOutline, IoCart } from 'react-icons/io5';
+import { FaWhatsapp } from 'react-icons/fa';
 import { useCart, useCreateCartItem, useDeleteCartItem } from '@/lib/cart/hooks/hooks';
 import { useTranslation } from 'react-i18next';
+import { useSiteSettings } from '@/lib/settings/hook';
+
+const HIGH_PRICE_LIMIT = 100000;
+
+const buildWhatsAppLink = (whatsapp, phone, message) => {
+  const encodedMessage = encodeURIComponent(message);
+  const raw = String(whatsapp || '').trim();
+
+  if (raw) {
+    if (/^https?:\/\//i.test(raw)) {
+      try {
+        const url = new URL(raw);
+        url.searchParams.set('text', message);
+        return url.toString();
+      } catch {
+        const separator = raw.includes('?') ? '&' : '?';
+        return `${raw}${separator}text=${encodedMessage}`;
+      }
+    }
+
+    const digits = raw.replace(/\D/g, '');
+    if (digits) return `https://wa.me/${digits}?text=${encodedMessage}`;
+  }
+
+  const phoneDigits = String(phone || '').replace(/\D/g, '');
+  if (phoneDigits) return `https://wa.me/${phoneDigits}?text=${encodedMessage}`;
+
+  return null;
+};
 
 export default function FullProductCard({ product }) {
   const { t } = useTranslation();
   const imageUrl = product.existing_images?.[0]?.image || '/placeholder.png';
+  const { settings } = useSiteSettings();
 
   const { data: cartItems } = useCart();
   const { mutate: addToCart, isPending: isAdding } = useCreateCartItem();
@@ -18,6 +49,13 @@ export default function FullProductCard({ product }) {
     (item) => item.product?.id === product?.id || item.product_id === product?.id
   );
   const isInCart = !!cartItem;
+  const isAvailable = product?.is_available;
+  const formattedPrice = Number.isFinite(Number(product?.price))
+    ? Number(product.price).toLocaleString('ru-RU')
+    : '-';
+  const isHighPrice = Number(product?.price) >= HIGH_PRICE_LIMIT;
+  const whatsappMessage = `Здравствуйте! Интересует товар: ${product?.name || '-'}, артикул: ${product?.article || '-'}, цена: ${formattedPrice} сом.`;
+  const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
 
   const handleCartClick = (e) => {
     e.preventDefault();
@@ -63,28 +101,79 @@ export default function FullProductCard({ product }) {
           </p>
 
           <div className={styles.footer}>
-            <div className={styles.meta}>
-              <div className={styles.bonus}>
-                {product.bonus || 0} {t('card.bonuses')}
+            {isHighPrice ? (
+              <div className={styles.contactPrice}>
+                <p className={styles.contactTitle}>{t('card.contactForPrice')}</p>
+                {whatsappLink && (
+                  <button
+                    type="button"
+                    className={styles.whatsappBtn}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      window.open(whatsappLink, '_blank', 'noopener,noreferrer');
+                    }}
+                  >
+                    <FaWhatsapp size={16} />
+                    <span>{t('card.writeToWhatsApp')}</span>
+                  </button>
+                )}
               </div>
-              <div className={styles.price}>
-                {Number(product.price).toLocaleString()} {t('card.currency')}
-              </div>
-            </div>
+            ) : isAvailable ? (
+              <>
+                <div className={styles.meta}>
+                  <div className={styles.bonus}>
+                    {product.bonus || 0} {t('card.bonuses')}
+                  </div>
+                  <div className={styles.price}>
+                    {Number(product.price).toLocaleString()} {t('card.currency')}
+                  </div>
+                </div>
 
-            <button
-              className={styles.cartBtn}
-              onClick={handleCartClick}
-              disabled={isAdding || isDeleting}
-              style={{
-                backgroundColor: isInCart ? '#0E2E5B' : '',
-                color: isInCart ? '#fff' : '',
-                borderColor: isInCart ? '#0E2E5B' : '',
-              }}
-            >
-              {isInCart ? <IoCart size={20} /> : <IoCartOutline size={20} />}
-              <span>{t('productCard.addToCart')}</span>
-            </button>
+                <button
+                  className={styles.cartBtn}
+                  onClick={handleCartClick}
+                  disabled={isAdding || isDeleting}
+                  style={{
+                    backgroundColor: isInCart ? '#0E2E5B' : '',
+                    color: isInCart ? '#fff' : '',
+                    borderColor: isInCart ? '#0E2E5B' : '',
+                  }}
+                >
+                  {isInCart ? <IoCart size={20} /> : <IoCartOutline size={20} />}
+                  <span>{t('productCard.addToCart')}</span>
+                </button>
+              </>
+            ) : (
+              <div className={styles.contactPrice}>
+                <button
+                  type="button"
+                  className={styles.availabilityBtn}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const fallbackLink = whatsappLink ?? settings?.whatsapp ?? `tel:${settings?.phone}`;
+                    window.open(fallbackLink, '_blank', 'noopener,noreferrer');
+                  }}
+                >
+                  {t('card.checkAvailability')}
+                </button>
+                {whatsappLink && (
+                  <button
+                    type="button"
+                    className={styles.whatsappBtn}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      window.open(whatsappLink, '_blank', 'noopener,noreferrer');
+                    }}
+                  >
+                    <FaWhatsapp size={16} />
+                    <span>{t('card.whatsapp')}</span>
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Link>

@@ -242,7 +242,9 @@
     "checkAvailability": "Уточнить наличие",
     "bonuses": "бонусов",
     "currency": "сом",
-    "addToCart": "Добавить в корзину"
+    "addToCart": "Добавить в корзину",
+    "contactForPrice": "Свяжитесь с нами насчет цены",
+    "writeToWhatsApp": "Написать нам"
   },
   "profile": {
     "loading": "Загрузка...",

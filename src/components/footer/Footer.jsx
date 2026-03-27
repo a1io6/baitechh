@@ -120,10 +120,9 @@ function Footer() {
         </div>
 
         {/* Клиенту */}
-        <div>
         <div className="footer__col footer__col--accordion">
           <button
-            className="footer__accordion-header "
+            className="footer__accordion-header"
             onClick={() => toggleSection('client')}
             type="button"
           >
@@ -146,7 +145,7 @@ function Footer() {
             onClick={() => toggleSection('payment')}
             type="button"
           >
-            <h4 style={{marginTop:'20px'}}>{t('footer.client.title2')}</h4>
+            <h4>{t('footer.client.title2')}</h4>
             <IoChevronDownSharp
               className={`footer__accordion-icon ${openSections.payment ? 'footer__accordion-icon--open' : ''}`}
             />
@@ -154,7 +153,6 @@ function Footer() {
           <div className={`footer__accordion-content ${openSections.payment ? 'footer__accordion-content--open' : ''}`}>
             <Image src={finik} alt="Finik" />
           </div>
-        </div>
         </div>
 
         {/* Карта */}

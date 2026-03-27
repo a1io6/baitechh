@@ -246,6 +246,39 @@
   font-weight: 600;
 }
 
+.contactPrice {
+  width: 100%;
+}
+
+.contactTitle {
+  margin: 0 0 10px;
+  color: #d43f3a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.availabilityBtn {
+  display: inline-block;
+  color: #d43f3a;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+
+.whatsappBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #25d366;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
 .price {
   font-size: 22px;
   font-weight: 700;

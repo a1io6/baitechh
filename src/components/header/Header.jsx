@@ -193,6 +193,16 @@ export default function Header() {
     router.push(`/catalog?category=${encodeURIComponent(name)}`)
   }
 
+  const getCompanyMapUrl = () => {
+    const rawMapUrl = String(settings?.address || '').trim()
+    if (rawMapUrl.startsWith('http://') || rawMapUrl.startsWith('https://')) {
+      return rawMapUrl
+    }
+
+    const addressText = t('footer.address.street')
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressText)}`
+  }
+
   const renderSearchDropdown = () => (
     <div className="header__search-dropdown">
       {hasSuggestions ? (
@@ -295,14 +305,19 @@ export default function Header() {
                     <FiMapPin /> {t('header.address')}
                   </h3>
                   <div className="contacts-list">
-                    <div className="contact-item">
+                    <a
+                      href={getCompanyMapUrl()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="contact-item"
+                    >
                       <FiMapPin />
                       {isLoading ? (
                         <span className="footer__skeleton" />
                       ) : (
                         <span>{t('footer.address.street')}</span>
                       )}
-                    </div>
+                    </a>
                   </div>
                 </div>
 
