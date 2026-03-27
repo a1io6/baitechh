@@ -45,8 +45,8 @@
   },
   "footer": {
     "workingHours": {
-      "weekdays": "MonвЂ“Fri: 09:00вЂ“18:00",
-      "weekend": "Sat: 10:00вЂ“15:30, Sun вЂ” closed"
+      "weekdays": "Mon–Fri: 09:00–18:00",
+      "weekend": "Sat: 10:00–15:30, Sun — closed"
     },
     "address": {
       "street": "Bishkek, Kok Jar 51",
@@ -91,7 +91,7 @@
     "goalText": "Our goal is to create safe, smart and efficient spaces using modern technologies and practical experience.",
     "footer": [
       "The company works directly with trusted manufacturers and factories, including those from China, which allows us to offer competitive prices, original equipment and flexible cooperation terms. Dealer conditions are available for corporate clients and partners.",
-      "Our team consists of more than 20 specialists: engineers, designers, technical department, sales department, marketing and accounting. This approach allows us to support the client at all stages вЂ” from consultation and design to launch and service maintenance.",
+      "Our team consists of more than 20 specialists: engineers, designers, technical department, sales department, marketing and accounting. This approach allows us to support the client at all stages — from consultation and design to launch and service maintenance.",
       "We value quality, reliability and responsibility, so we implement each project taking into account safety standards, technical requirements and client objectives."
     ],
     "imageAlt": "Our team"
@@ -125,17 +125,17 @@
     "administration": {
       "title": "The website administration reserves the right to:",
       "list": [
-        "вЂў change the content of the website without prior notice;",
-        "вЂў update prices, descriptions of products and services;",
-        "вЂў restrict access to the website if necessary."
+        "• change the content of the website without prior notice;",
+        "• update prices, descriptions of products and services;",
+        "• restrict access to the website if necessary."
       ]
     },
     "users": {
       "title": "Website users agree to:",
       "list": [
-        "вЂў provide accurate information when filling out forms;",
-        "вЂў not disrupt the website's functionality;",
-        "вЂў not use website materials without the copyright holder's permission."
+        "• provide accurate information when filling out forms;",
+        "• not disrupt the website's functionality;",
+        "• not use website materials without the copyright holder's permission."
       ]
     },
     "footer": [
@@ -202,7 +202,7 @@
         ]
       }
     },
-    "conclusion": "We select equipment individually based on client needs вЂ” from budget solutions to professional systems for large facilities. All deliveries are accompanied by technical support, warranty and service maintenance."
+    "conclusion": "We select equipment individually based on client needs — from budget solutions to professional systems for large facilities. All deliveries are accompanied by technical support, warranty and service maintenance."
   },
   "certificates": {
     "breadcrumbs": {
@@ -374,27 +374,27 @@
     },
     "orders": {
       "order1": {
-        "number": "Order в„–123456",
+        "number": "Order №123456",
         "status": "Delivered",
         "description": "Delivery to: Pushkin St., 10, apt. 5, Moscow"
       },
       "order2": {
-        "number": "Order в„–654321",
+        "number": "Order №654321",
         "status": "Processing",
         "description": "Delivery to: Lenin Ave., 25, apt. 12, St. Petersburg"
       },
       "order3": {
-        "number": "Order в„–789012",
+        "number": "Order №789012",
         "status": "Cancelled",
         "description": "Delivery to: Sovetskaya St., 8, apt. 3, Novosibirsk"
       },
       "order4": {
-        "number": "Order в„–210987",
+        "number": "Order №210987",
         "status": "Delivered",
         "description": "Delivery to: Gagarin St., 14, apt. 7, Yekaterinburg"
       },
       "order5": {
-        "number": "Order в„–345678",
+        "number": "Order №345678",
         "status": "Processing",
         "description": "Delivery to: Mira Ave., 30, apt. 15, Kazan"
       }
@@ -421,32 +421,32 @@
     },
     "orders": {
       "order1": {
-        "number": "Order в„–123456",
+        "number": "Order №123456",
         "status": "Delivered",
         "description": "Delivery to: Pushkin St., 10, apt. 5, Moscow"
       },
       "order2": {
-        "number": "Order в„–654321",
+        "number": "Order №654321",
         "status": "Processing",
         "description": "Delivery to: Lenin Ave., 25, apt. 12, St. Petersburg"
       },
       "order3": {
-        "number": "Order в„–789012",
+        "number": "Order №789012",
         "status": "Cancelled",
         "description": "Delivery to: Sovetskaya St., 8, apt. 3, Novosibirsk"
       },
       "order4": {
-        "number": "Order в„–210987",
+        "number": "Order №210987",
         "status": "Delivered",
         "description": "Delivery to: Gagarin St., 14, apt. 7, Yekaterinburg"
       },
       "order5": {
-        "number": "Order в„–345678",
+        "number": "Order №345678",
         "status": "Processing",
         "description": "Delivery to: Mira Ave., 30, apt. 15, Kazan"
       }
     },
-    "orderNumber": "Order ?",
+    "orderNumber": "Order №",
     "address": "Address",
     "reason": "Reason",
     "article": "Art.",
@@ -477,7 +477,7 @@
     "home": "Home",
     "courses": "Courses",
     "title": "Video Surveillance Systems Courses",
-    "description": "Learn video surveillance systems from scratch! This course is for those who want a new profession or additional income. No fluff вЂ” only what is really needed for work. Learn to install, configure, and maintain modern video surveillance systems from scratch.",
+    "description": "Learn video surveillance systems from scratch! This course is for those who want a new profession or additional income. No fluff — only what is really needed for work. Learn to install, configure, and maintain modern video surveillance systems from scratch.",
     "programTitle": "Course program:",
     "program": [
       "Basics of local networks",
@@ -499,9 +499,9 @@
       "Possibility to receive certificates from top brands Hikvision and Dahua"
     ],
     "footerCourses": [
-      "Course list: ACS вЂ” Access Control System",
-      "VSS вЂ” Video Surveillance Systems",
-      "FAS вЂ” Fire and Security Alarm Systems",
+      "Course list: ACS — Access Control System",
+      "VSS — Video Surveillance Systems",
+      "FAS — Fire and Security Alarm Systems",
       "Training and preparation for project implementation"
     ]
   },
@@ -674,5 +674,3 @@
     }
   }
 }
-
-
