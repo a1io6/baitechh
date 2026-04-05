@@ -10,6 +10,34 @@ import { useTranslation } from "react-i18next";
 import { useCart, useCreateCartItem, useDeleteCartItem } from "@/lib/cart/hooks/hooks";
 import { useSiteSettings } from "@/lib/settings/hook";
 
+const HIGH_PRICE_LIMIT = 100000;
+
+const buildWhatsAppLink = (whatsapp, phone, message) => {
+  const encodedMessage = encodeURIComponent(message);
+  const raw = String(whatsapp || "").trim();
+
+  if (raw) {
+    if (/^https?:\/\//i.test(raw)) {
+      try {
+        const url = new URL(raw);
+        url.searchParams.set("text", message);
+        return url.toString();
+      } catch {
+        const separator = raw.includes("?") ? "&" : "?";
+        return `${raw}${separator}text=${encodedMessage}`;
+      }
+    }
+
+    const digits = raw.replace(/\D/g, "");
+    if (digits) return `https://wa.me/${digits}?text=${encodedMessage}`;
+  }
+
+  const phoneDigits = String(phone || "").replace(/\D/g, "");
+  if (phoneDigits) return `https://wa.me/${phoneDigits}?text=${encodedMessage}`;
+
+  return null;
+};
+
 const ProductCard = ({ productId }) => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +56,6 @@ const ProductCard = ({ productId }) => {
   );
   const isInCart = !!cartItem;
   const isAvailable = product?.is_available;
-  const whatsappLink = settings?.whatsapp ?? `tel:${settings?.phone ?? ""}`;
 
   useEffect(() => {
     if (cartItem?.quantity) {
@@ -77,11 +104,18 @@ const ProductCard = ({ productId }) => {
   const formattedPrice = Number.isFinite(parsedPrice)
     ? parsedPrice.toLocaleString()
     : product?.price || "0";
+  const isHighPrice = Number.isFinite(parsedPrice) && parsedPrice >= HIGH_PRICE_LIMIT;
+  const whatsappMessage = `Здравствуйте! Интересует товар: ${product?.name || "-"}, артикул: ${product?.article || "-"}, цена: ${formattedPrice} сом.`;
+  const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
 
   const handleCartClick = () => {
     if (!product?.id) return;
 
-    const token = localStorage.getItem("access_token");
+    const token =
+      localStorage.getItem("access_token") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("accesToken") ||
+      localStorage.getItem("acces_token");
     if (!token) {
       setShowAuthModal(true);
       return;
@@ -127,11 +161,29 @@ const ProductCard = ({ productId }) => {
           <p className="product__descip line-clamp-3" title={productDescription}>
             {shortDescription}
           </p>
-          <div className="product__price">{formattedPrice} {t('productCard.currency')}</div>
-          <div className="product__bonus">{product.bonus || 0} {t('productCard.bonuses')}</div>
+          {isHighPrice ? (
+            <div className="product__contact-title">{t("card.contactForPrice")}</div>
+          ) : (
+            <>
+              <div className="product__price">{formattedPrice} {t('productCard.currency')}</div>
+              <div className="product__bonus">{product.bonus || 0} {t('productCard.bonuses')}</div>
+            </>
+          )}
 
           <div className="product__actions">
-            {isAvailable ? (
+            {isHighPrice ? (
+              whatsappLink ? (
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="product-card__whatsapp"
+                >
+                  <FaWhatsapp size={16} />
+                  {t("card.writeToWhatsApp")}
+                </a>
+              ) : null
+            ) : isAvailable ? (
               <>
                 <div className="counter">
                   <button onClick={decrement} type="button">-</button>
@@ -151,7 +203,7 @@ const ProductCard = ({ productId }) => {
               </>
             ) : (
               <a
-                href={whatsappLink}
+                href={whatsappLink ?? settings?.whatsapp ?? `tel:${settings?.phone ?? ""}`}
                 target="_blank"
                 rel="noreferrer"
                 className="product-card__availability-btn"
@@ -161,9 +213,9 @@ const ProductCard = ({ productId }) => {
             )}
           </div>
 
-          {!isAvailable && (
+          {!isAvailable && !isHighPrice && (
             <a
-              href={whatsappLink}
+              href={whatsappLink ?? settings?.whatsapp ?? `tel:${settings?.phone ?? ""}`}
               target="_blank"
               rel="noreferrer"
               className="product-card__whatsapp"

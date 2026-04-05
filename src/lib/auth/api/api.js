@@ -75,7 +75,7 @@ passwordResetComplete: async (new_password, confirm_password) => {
   const token = localStorage.getItem('reset_access_token');
   const { data } = await $api.post('/api/password-reset/complete/', 
     { new_password, confirm_password },
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: token } }
   );
   return data;
 },

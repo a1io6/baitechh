@@ -4,7 +4,7 @@ import { Recommendations } from "@/components/recomendation/Recommendations";
 import { News } from "@/components/News/News";
 import '../globals.css'
 import CatalogButton from "@/components/catalogbutton/CatalogButton";
-import FloatingButton from "@/components/handlClick/HandleClick";
+
 
 export const metadata = {
   title: "Камеры и видеонаблюдение в Бишкеке",
@@ -16,7 +16,6 @@ export const metadata = {
 export default function Home() {
   return (
     <div className="">
-      <FloatingButton/>
       <Banner/>
       <Features/>
       <CatalogButton/>

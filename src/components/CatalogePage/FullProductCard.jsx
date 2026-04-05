@@ -1,8 +1,10 @@
 'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { createPortal } from 'react-dom';
 import styles from './FullProductCard.module.scss';
-import { IoCartOutline, IoCart } from 'react-icons/io5';
+import { IoCartOutline, IoCart, IoEyeOutline, IoClose } from 'react-icons/io5';
 import { FaWhatsapp } from 'react-icons/fa';
 import { useCart, useCreateCartItem, useDeleteCartItem } from '@/lib/cart/hooks/hooks';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +41,12 @@ const buildWhatsAppLink = (whatsapp, phone, message) => {
 export default function FullProductCard({ product }) {
   const { t } = useTranslation();
   const imageUrl = product.existing_images?.[0]?.image || '/placeholder.png';
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const productId = product?.id ?? product?.pk ?? product?.product_id ?? product?.product?.id;
+  const productDetailPath = productId
+    ? `/productdetail/${encodeURIComponent(String(productId))}`
+    : "#";
   const { settings } = useSiteSettings();
 
   const { data: cartItems } = useCart();
@@ -46,7 +54,7 @@ export default function FullProductCard({ product }) {
   const { mutate: deleteFromCart, isPending: isDeleting } = useDeleteCartItem();
 
   const cartItem = cartItems?.find(
-    (item) => item.product?.id === product?.id || item.product_id === product?.id
+    (item) => item.product?.id === productId || item.product_id === productId
   );
   const isInCart = !!cartItem;
   const isAvailable = product?.is_available;
@@ -59,14 +67,18 @@ export default function FullProductCard({ product }) {
 
   const handleCartClick = (e) => {
     e.preventDefault();
-    if (!product?.id) return;
+    if (!productId) return;
 
     if (isInCart) {
       deleteFromCart(cartItem.id);
     } else {
-      addToCart({ product_id: product.id, quantity: 1 });
+      addToCart({ product_id: productId, quantity: 1 });
     }
   };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className={styles.card}>
@@ -74,8 +86,20 @@ export default function FullProductCard({ product }) {
         {product.is_available ? t('card.inStock') : t('card.outOfStock')}
       </div>
 
-      <Link href={`/productdetail/${product.id}`} className={styles.wrapper}>
+      <Link href={productDetailPath} className={styles.wrapper}>
         <div className={styles.imageSection}>
+          <button
+            type="button"
+            className={styles.previewBtn}
+            aria-label="Просмотр фото"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setIsPreviewOpen(true);
+            }}
+          >
+            <IoEyeOutline size={18} />
+          </button>
           <Image
             src={imageUrl}
             alt={product.name}
@@ -177,6 +201,25 @@ export default function FullProductCard({ product }) {
           </div>
         </div>
       </Link>
+
+      {mounted && isPreviewOpen
+        ? createPortal(
+            <div className={styles.previewOverlay} onClick={() => setIsPreviewOpen(false)}>
+              <div className={styles.previewModal} onClick={(event) => event.stopPropagation()}>
+                <button
+                  type="button"
+                  className={styles.previewClose}
+                  aria-label="Close preview"
+                  onClick={() => setIsPreviewOpen(false)}
+                >
+                  <IoClose size={20} />
+                </button>
+                <img src={imageUrl} alt={product.name} className={styles.previewImage} />
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
 }

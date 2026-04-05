@@ -18,6 +18,9 @@ function ModalAuth({ onClose }) {
   const handleLogout = () => {
     // Удаляем только пользовательские токены
     localStorage.removeItem('access_token')
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('accesToken')
+    localStorage.removeItem('acces_token')
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('user')
     

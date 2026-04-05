@@ -2,6 +2,8 @@
 import './style.scss';
 import logo from '../../../assets/svg/Байтех лого 2 1.svg';
 import finik from '../../../assets/svg/Logo Purple 1.svg';
+import mbank from '../../../assets/svg/Component 19.svg';
+import optima from '../../../assets/svg/image-removebg-preview (6) 1.svg';
 
 import { FiPhone, FiClock, FiMapPin, FiGlobe } from 'react-icons/fi';
 import { FaWhatsapp, FaInstagram, FaYoutube } from 'react-icons/fa';
@@ -151,6 +153,8 @@ function Footer() {
             />
           </button>
           <div className={`footer__accordion-content ${openSections.payment ? 'footer__accordion-content--open' : ''}`}>
+            <Image src={mbank} alt="Finik" />
+            <Image src={optima} alt="Finik" className='ml-[-5px] mb-[3px] ' />
             <Image src={finik} alt="Finik" />
           </div>
         </div>

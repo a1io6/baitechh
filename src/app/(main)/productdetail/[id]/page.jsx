@@ -1,9 +1,11 @@
 import ProductDetail from "@/components/product/ProductDetail";
 import React, { Suspense } from "react";
 
-const PRODUCTS_API_URL = 'https://baitech.kg/products/products/'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://baitech.kg";
+const PRODUCTS_API_URL = `${API_BASE_URL.replace(/\/$/, "")}/products/products/`;
+const FALLBACK_IDS = ["1", "2", "3"];
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   try {

@@ -40,7 +40,11 @@ export default function Header() {
 
   useEffect(() => {
     const checkAuth = () => {
-      const userToken = localStorage.getItem('access_token')
+      const userToken =
+        localStorage.getItem('access_token') ||
+        localStorage.getItem('accessToken') ||
+        localStorage.getItem('accesToken') ||
+        localStorage.getItem('acces_token')
       setIsAuth(!!userToken)
     }
 
@@ -93,6 +97,8 @@ export default function Header() {
   const handleCartClick = (event) => {
     const token =
       localStorage.getItem('access_token') ||
+      localStorage.getItem('accessToken') ||
+      localStorage.getItem('accesToken') ||
       localStorage.getItem('acces_token')
 
     if (!token) {

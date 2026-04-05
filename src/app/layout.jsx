@@ -3,6 +3,7 @@ import "./globals.css";
 import QueryProvider from "../../QueryProvider";
 import I18nProvider from "@/provider/I18nProvider/I18nProvider";
 import ToastProvider from "@/provider/toastProvider/ToastProvider";
+import FloatingButton from "@/components/handlClick/HandleClick";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,7 @@ export const metadata = {
   ],
   openGraph: {
     title: "Baitech.kg — камеры и видеонаблюдение в Бишкеке",
-    description: "Камеры, видеонаблюдение, сетевое оборудование и техника. Доставка по Кыргызстану.",
+    description: "Байтех — это современный магазин и шоурум, где вы можете купить системы безопасности, видеонаблюдение, СКУД, умные замки и оборудование для бизнеса с профессиональной установкой. У нас есть всё: от готовых комплектов до сложных решений под ключ, включая кибербезопасность для бизнеса.",
     url: "https://baitech.kg",
     siteName: "Baitech",
     locale: "ru_KG",
@@ -43,7 +44,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Baitech.kg — камеры и видеонаблюдение в Бишкеке",
-    description: "Камеры, видеонаблюдение и техника с доставкой по Кыргызстану.",
+    description: "Байтех — это современный магазин и шоурум, где вы можете купить системы безопасности, видеонаблюдение, СКУД, умные замки и оборудование для бизнеса с профессиональной установкой. У нас есть всё: от готовых комплектов до сложных решений под ключ, включая кибербезопасность для бизнеса.",
     images: ["/og-image.jpg"],
   },
   alternates: { canonical: "https://baitech.kg" },
@@ -104,6 +105,7 @@ export default function RootLayout({ children }) {
             {children}
           </QueryProvider>
         </I18nProvider>
+             <FloatingButton/>
       </body>
     </html>
   );

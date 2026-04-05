@@ -10,7 +10,7 @@ export const $api = axios.create({
 $api.interceptors.request.use((config) => {
 if (!config.headers.Authorization) {
   const userToken = typeof window !== "undefined"
-    ? localStorage.getItem("access_token")
+    ? localStorage.getItem("accessToken")
     : null;
   const adminToken = typeof window !== "undefined"
     ? localStorage.getItem("adminToken")
@@ -19,7 +19,7 @@ if (!config.headers.Authorization) {
   const token = adminToken || userToken;
 
   if (token) {
-    config.headers.Authorization = `${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
 } 
   if (typeof window !== "undefined") {

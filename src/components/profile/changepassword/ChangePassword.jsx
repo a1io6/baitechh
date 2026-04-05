@@ -99,7 +99,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="bg-[#F5F7FA] min-h-screen">
+    <div className=" min-h-screen">
       <div className="max-w-[545px]">
         <div className="mb-8 lg:mb-[40px]">
           <Under 

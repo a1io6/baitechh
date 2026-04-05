@@ -7,6 +7,18 @@ import Cookies from "js-cookie";
 import { authService } from "../api/api";
 import toast from "react-hot-toast";
 
+const clearAuthStorage = () => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("accesToken");
+  localStorage.removeItem("acces_token");
+  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("adminToken");
+  localStorage.removeItem("adminRefreshToken");
+  localStorage.removeItem("isAdmin");
+  localStorage.removeItem("user");
+};
+
 // Регистрация
 export const useRegister = () => {
   return useMutation({
@@ -73,7 +85,7 @@ export const useLogin = () => {
       
       // ✅ СНАЧАЛА очищаем все старые данные
       queryClient.clear();
-      localStorage.clear();
+      clearAuthStorage();
       
       // Обновляем кеш пользователя
       if (data.user) {
@@ -82,13 +94,14 @@ export const useLogin = () => {
       }
 
       const isAdmin = data.user?.role === 'admin' || 
-                      data.role || 
+                      data.role === 'admin' || 
                       data.user?.is_staff || 
                       data.user?.is_superuser;
 
       if (isAdmin) {
         // ✅ Для админа используем access_token (единообразие)
         localStorage.setItem('access_token', data.access);
+        localStorage.setItem('accessToken', data.access);
         localStorage.setItem('refresh_token', data.refresh);
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('isAdmin', 'true');
@@ -102,6 +115,7 @@ export const useLogin = () => {
       } else {
         // ✅ Для обычного пользователя тоже access_token
         localStorage.setItem('access_token', data.access);
+        localStorage.setItem('accessToken', data.access);
         localStorage.setItem('refresh_token', data.refresh);
         localStorage.setItem('user', JSON.stringify(data.user));
         
@@ -133,7 +147,7 @@ export const useLogout = () => {
     onSuccess: () => {
       // ✅ Полная очистка
       queryClient.clear();
-      localStorage.clear();
+      clearAuthStorage();
       Cookies.remove('access');
       Cookies.remove('refresh');
       
@@ -146,7 +160,7 @@ export const useLogout = () => {
     onError: (error) => {
       // Даже при ошибке logout делаем локальный выход
       queryClient.clear();
-      localStorage.clear();
+      clearAuthStorage();
       Cookies.remove('access');
       Cookies.remove('refresh');
       

@@ -159,6 +159,7 @@ export function CodeVerifyContent() {
       // Сохраняем токены в localStorage
       if (result?.access) {
         localStorage.setItem('access_token', result.access);
+        localStorage.setItem('accessToken', result.access);
         console.log('✅ Access токен сохранен в localStorage');
       }
       

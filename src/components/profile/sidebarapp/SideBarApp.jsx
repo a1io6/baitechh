@@ -27,7 +27,11 @@ export default function SidebarApp() {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('access_token');
+      const token =
+        localStorage.getItem('access_token') ||
+        localStorage.getItem('accessToken') ||
+        localStorage.getItem('accesToken') ||
+        localStorage.getItem('acces_token');
       if (!token) {
         setIsAuthenticated(false);
         setIsCheckingAuth(false);
@@ -46,6 +50,8 @@ export default function SidebarApp() {
   const { data: profile, isLoading: profileLoading } = useMyProfile({
     enabled: isAuthenticated
   });
+  const bonusBalance = Number(profile?.bonus_balance ?? 0);
+  const bonusUpdatedAt = profile?.bonus_updated_at || profile?.updated_at || null;
   
   const patchMutation = usePatchProfile();
 
@@ -86,6 +92,9 @@ export default function SidebarApp() {
   const handleLogout = () => {
     queryClient.clear();
     localStorage.removeItem('access_token');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('accesToken');
+    localStorage.removeItem('acces_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     setProfileForm({ name: '', surname: '', email: '', number: '' });
@@ -192,70 +201,50 @@ export default function SidebarApp() {
         return <><TransactionHistory/></>;
       case 'bonuses':
         return (
-          <div>
-            <h1 className="text-[20px] font-[500] mb-4">
-              {t('profile.bonuses.title')} {profile?.bonuses || 200}
-            </h1>
-            <p className="text-[14px] text-gray-500 mb-2">{t('profile.bonuses.history')}</p>
-            <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
-              <div className='flex item-start justify-between'>
-                <div className="flex items-center gap-[20px]">
-                  <div className="w-8 h-8 pb-[4px] rounded-full bg-[#3AA15B] flex items-center justify-center">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </div>
-                  <div>
-                    <p className="text-[20px] font-[500] text-[#00162A]">{profile?.bonuses || 20000} {t('profile.bonuses.currency')}</p>
-                    <p className="text-[14px] text-gray-500">20.03.2026</p>
-                  </div>
-                </div>
-                <h4 className='text-[18px] font-[400] text-[#3AA15B]'>20 {t('profile.bonuses.bonusesText')}</h4>
-              </div>
-            </div>
-            <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 mb-4 shadow-sm">
-              <div className='flex item-start justify-between'>
-                <div className="flex items-center gap-[20px]">
-                  <div className="w-8 h-8 pb-[4px] rounded-full bg-[#3AA15B] flex items-center justify-center">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.3332 7.33333L6.6665 14L3.33317 10.6667" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </div>
-                  <div>
-                    <p className="text-[20px] font-[500] text-[#00162A]">{profile?.used_bonuses || 20000} {t('profile.bonuses.currency')}</p>
-                    <p className="text-[12px] text-[#00162ACC] font-[500]">24.04.2026</p>
-                  </div>
-                </div>
-                <h4 className='text-[18px] font-[400] text-[#3AA15B]'>20 {t('profile.bonuses.bonusesText')}</h4>
-              </div>
-            </div>
-            <h2 className="text-[16px] font-semibold mb-3">{t('profile.bonuses.bonusHistory')}</h2>
-            {(!profile?.bonus_history || profile.bonus_history.length === 0) ? (
-              <div className="bg-transperent rounded-2xl border border-gray-100 py-16 px-8 text-center">
-                <div className="w-24 h-24 mx-auto mb-2 rounded-full flex items-center justify-center">
-                  <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-                    <circle cx="30" cy="30" r="28" stroke="#9CA3AF" strokeWidth="2"/>
-                    <circle cx="20" cy="24" r="2.5" fill="#9CA3AF"/>
-                    <circle cx="40" cy="24" r="2.5" fill="#9CA3AF"/>
-                    <path d="M20 40C20 40 23 36 30 36C37 36 40 40 40 40" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round"/>
-                  </svg>
-                </div>
-                <p className="text-[15px] text-gray-700 leading-relaxed">{t('profile.bonuses.noBonuses')}</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {profile.bonus_history.map((item, index) => (
-                  <div key={index} className="bg-white rounded-[15px] border border-gray-200 p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-[14px] font-medium text-gray-900">{item.description}</p>
-                        <p className="text-[12px] text-gray-500 mt-1">{item.date}</p>
-                      </div>
-                      <p className={`text-[16px] font-bold ${item.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {item.amount > 0 ? '+' : ''}{item.amount}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+        <div>
+  <h1 className="text-[20px] font-[500] mb-4">
+    {t('profile.bonuses.title')}
+  </h1>
+
+  {bonusBalance > 0 ? (
+    <div className="bg-[#F5F7FA] max-w-[420px] rounded-[8px] p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-[20px]">
+          <div className="w-8 h-8 rounded-full bg-[#3AA15B] flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 8.5L6 12.5L14 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
+          <div>
+            <p className="text-[18px] font-[500] text-[#00162A]">
+              {bonusBalance.toLocaleString('ru-RU')} {t('profile.bonuses.currency')}
+            </p>
+            <p className="text-[13px] text-gray-500">
+              {t('profile.bonuses.available')}
+            </p>
+          </div>
+        </div>
+        <span className="text-[14px] font-[500] text-[#3AA15B]">
+          + {bonusBalance.toLocaleString('ru-RU')} {t('profile.bonuses.bonusesText')}
+        </span>
+      </div>
+    </div>
+  ) : (
+    <div className="max-w-[420px] rounded-2xl border border-gray-100 py-16 px-8 text-center">
+      <div className="w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+        <svg width="48" height="48" viewBox="0 0 60 60" fill="none">
+          <circle cx="30" cy="30" r="28" stroke="#9CA3AF" strokeWidth="2"/>
+          <circle cx="20" cy="24" r="2.5" fill="#9CA3AF"/>
+          <circle cx="40" cy="24" r="2.5" fill="#9CA3AF"/>
+          <path d="M20 40C20 40 23 36 30 36C37 36 40 40 40 40" stroke="#9CA3AF" strokeWidth="3" strokeLinecap="round"/>
+        </svg>
+      </div>
+      <p className="text-[14px] text-gray-500">
+        {t('profile.bonuses.empty')}
+      </p>
+    </div>
+  )}
+</div>
         );
       default:
         return null;

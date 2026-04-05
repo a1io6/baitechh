@@ -58,6 +58,7 @@ const LoginPage = ({ type = "login" }) => {
           // Только для пользователя — сохраняем в access_token
           if (response?.access) {
             localStorage.setItem('access_token', response.access);
+            localStorage.setItem('accessToken', response.access);
           }
           if (response?.refresh) {
             localStorage.setItem('refresh_token', response.refresh);

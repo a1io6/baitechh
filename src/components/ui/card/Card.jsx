@@ -1,15 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import "./style.scss";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import {
   useCart,
   useCreateCartItem,
   useDeleteCartItem,
 } from "@/lib/cart/hooks/hooks";
-import { IoCart, IoCartOutline, IoClose } from "react-icons/io5";
+import { IoCart, IoCartOutline, IoClose, IoEyeOutline } from "react-icons/io5";
 import { FaWhatsapp } from "react-icons/fa";
 import { useSiteSettings } from "@/lib/settings/hook";
 
@@ -42,29 +44,40 @@ const buildWhatsAppLink = (whatsapp, phone, message) => {
 };
 
 function Card({ product }) {
+  const router = useRouter();
   const { t } = useTranslation();
   const { mutate: addToCart, isPending } = useCreateCartItem();
   const { mutate: deleteFromCart } = useDeleteCartItem();
   const { data: cartItems } = useCart();
   const { settings } = useSiteSettings();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const productId = product?.id ?? product?.pk ?? product?.product_id ?? product?.product?.id;
+  const productDetailPath = productId
+    ? `/productdetail/${encodeURIComponent(String(productId))}`
+    : "#";
   const cartItem = cartItems?.find(
-    (item) => item.product?.id === product?.id || item.product_id === product?.id
+    (item) => item.product?.id === productId || item.product_id === productId
   );
   const isInCart = !!cartItem;
-  const imageSrc = product?.existing_images?.[0]?.image;
+  const imageSrc = product?.existing_images?.[0]?.image || "/placeholder.png";
   const isAvailable = product?.is_available;
   const formattedPrice = Number.isFinite(Number(product?.price))
     ? Number(product.price).toLocaleString("ru-RU")
     : "-";
-
   const isHighPrice = Number(product?.price) >= HIGH_PRICE_LIMIT;
-  const whatsappMessage = `Здравствуйте! Интересует товар: ${product?.name || "-"}, артикул: ${product?.article || "-"}, цена: ${formattedPrice} сом.`;
+
+  const whatsappMessage = `Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ! РРЅС‚РµСЂРµСЃСѓРµС‚ С‚РѕРІР°СЂ: ${product?.name || "-"}, Р°СЂС‚РёРєСѓР»: ${product?.article || "-"}, С†РµРЅР°: ${formattedPrice} СЃРѕРј.`;
   const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
 
   const handleAddToCart = () => {
-    if (!product?.id) return;
-    const token = localStorage.getItem("access_token");
+    if (!productId) return;
+    const token =
+      localStorage.getItem("access_token") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("accesToken") ||
+      localStorage.getItem("acces_token");
     if (!token) {
       setShowAuthModal(true);
       return;
@@ -72,13 +85,42 @@ function Card({ product }) {
     if (isInCart) {
       deleteFromCart(cartItem.id);
     } else {
-      addToCart({ product_id: product.id, quantity: 1 });
+      addToCart({ product_id: productId, quantity: 1 });
     }
   };
 
+  const handleCardClick = (event) => {
+    const target = event.target;
+    if (target.closest("a, button, input, textarea, select, label, [role='button']")) {
+      return;
+    }
+    if (productId) {
+      router.push(productDetailPath);
+    }
+  };
+
+  const handleCardKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (productId) {
+        router.push(productDetailPath);
+      }
+    }
+  };
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <>
-      <div className="product-card">
+      <div
+        className="product-card"
+        onClick={handleCardClick}
+        onKeyDown={handleCardKeyDown}
+        role="link"
+        tabIndex={0}
+      >
         <div
           className="product-card__badge"
           style={{ backgroundColor: isAvailable ? "#94C184" : "#E35845" }}
@@ -86,8 +128,20 @@ function Card({ product }) {
           {isAvailable ? t("card.inStock") : t("card.outOfStock")}
         </div>
 
-        <Link href={`/productdetail/${product.id}`}>
+        <Link href={productDetailPath}>
           <div className="product-card__image">
+            <button
+              type="button"
+              className="product-card__preview-btn"
+              aria-label="РџСЂРѕСЃРјРѕС‚СЂ С„РѕС‚Рѕ"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setShowImageModal(true);
+              }}
+            >
+              <IoEyeOutline size={18} />
+            </button>
             {imageSrc ? (
               <Image
                 src={imageSrc}
@@ -112,7 +166,7 @@ function Card({ product }) {
         <h3 className="product-card__article">
           {t("card.article")}: {product.article}
         </h3>
-        <h3 className="product-card__title">
+        <h3 className="product-card__title" title={product.name}>
           {product.name}
         </h3>
 
@@ -147,7 +201,7 @@ function Card({ product }) {
                 </span>
               </div>
               <button
-                className="product-card__cart"
+                className={`product-card__cart ${isInCart ? "product-card__cart--active" : ""}`}
                 aria-label={t("card.addToCart")}
                 onClick={handleAddToCart}
                 disabled={isPending}
@@ -167,6 +221,7 @@ function Card({ product }) {
           )}
         </div>
 
+
         {!isAvailable && !isHighPrice && whatsappLink ? (
           <a
             href={whatsappLink}
@@ -180,10 +235,39 @@ function Card({ product }) {
         ) : null}
       </div>
 
+      {mounted && showImageModal
+        ? createPortal(
+            <div className="product-card__preview-overlay" onClick={() => setShowImageModal(false)}>
+              <div className="product-card__preview-modal" onClick={(event) => event.stopPropagation()}>
+                <button
+                  type="button"
+                  className="product-card__preview-close"
+                  aria-label="Close preview"
+                  onClick={() => setShowImageModal(false)}
+                >
+                  <IoClose size={20} />
+                </button>
+                {imageSrc ? (
+                  <Image
+                    src={imageSrc}
+                    alt={product?.name || "product"}
+                    width={1400}
+                    height={1000}
+                    className="product-card__preview-image"
+                  />
+                ) : (
+                  <div className="product-card__preview-empty">No image</div>
+                )}
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+
       {showAuthModal && (
         <div className="auth-modal__overlay" onClick={() => setShowAuthModal(false)}>
           <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="auth-modal__close" onClick={() => setShowAuthModal(false)} aria-label="Р—Р°РєСЂС‹С‚СЊ">
+            <button className="auth-modal__close" onClick={() => setShowAuthModal(false)} aria-label="Р вЂ”Р В°Р С”РЎР‚РЎвЂ№РЎвЂљРЎРЉ">
               <IoClose size={20} />
             </button>
             <div className="auth-modal__icon">
