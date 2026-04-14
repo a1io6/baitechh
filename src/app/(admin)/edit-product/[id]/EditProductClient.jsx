@@ -11,7 +11,7 @@ const EditProduct = () => {
   const id = params.id;
   const router = useRouter();
 
-  const { products, categories, brands, updateProduct, isInitialLoading, isLoading } = useProducts();
+  const { products, categories, brands, updateProduct, isInitialLoading, isLoading, isPending} = useProducts();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -27,7 +27,6 @@ const EditProduct = () => {
 
   const [imageFiles, setImageFiles] = useState([null, null, null, null]);
   const [previews, setPreviews] = useState([null, null, null, null]);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (id && products) {
@@ -79,7 +78,6 @@ const EditProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
 
     const formDataPayload = new FormData();
     formDataPayload.append("name", formData.name);
@@ -102,12 +100,10 @@ const EditProduct = () => {
     } catch (err) {
       console.error("Ошибка при обновлении:", err);
       alert("Ошибка при сохранении данных.");
-    } finally {
-      setSaving(false);
-    }
+    } 
   };
 
-  if (isInitialLoading || isLoading) return <div className="loader"/>;
+  if (isInitialLoading ) return <div className="loader"/>;
 
   return (
     <div className="edit-product-page">
@@ -209,9 +205,9 @@ const EditProduct = () => {
 
         <div className="form-actions">
           <button type="button" className="cancel-btn" onClick={() => router.back()}>Отмена</button>
-          <button type="submit" className="submit-btn" disabled={saving}>
-            {saving ? "Сохранение..." : "Сохранить изменения"}
-          </button>
+        <button type="submit" className="submit-btn" disabled={isPending}>
+  {isPending ? "Сохранение..." : "Сохранить изменения"}
+</button>
         </div>
       </form>
     </div>

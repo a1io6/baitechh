@@ -285,6 +285,7 @@
     "bonuses": {
       "title": "Сиздин бонустарыңыз",
       "history": "Тарых",
+      "available": "Жеткиликтүү бонустар",
       "currency": "сом",
       "bonusesText": "бонустар",
       "bonusHistory": "Бонустардын тарыхы",

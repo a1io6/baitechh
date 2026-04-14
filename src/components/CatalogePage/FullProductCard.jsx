@@ -62,7 +62,9 @@ export default function FullProductCard({ product }) {
     ? Number(product.price).toLocaleString('ru-RU')
     : '-';
   const isHighPrice = Number(product?.price) >= HIGH_PRICE_LIMIT;
-  const whatsappMessage = `Здравствуйте! Интересует товар: ${product?.name || '-'}, артикул: ${product?.article || '-'}, цена: ${formattedPrice} сом.`;
+  const whatsappMessage = isHighPrice
+    ? `Здравствуйте! Интересует товар: ${product?.name || '-'}, артикул: ${product?.article || '-'}.`
+    : `Здравствуйте! Интересует товар: ${product?.name || '-'}, артикул: ${product?.article || '-'}, цена: ${formattedPrice} сом.`;
   const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
 
   const handleCartClick = (e) => {

@@ -78,7 +78,7 @@ export function Recommendations() {
               </SwiperSlide>
             ))
           ) : recommendedProducts.length === 0 ? (
-            <div className="w-full text-center py-8 text-gray-500">No recommendations yet</div>
+            <div className="w-full text-center py-8 text-gray-500">Нет рекомендаций</div>
           ) : (
             recommendedProducts.map((product) => (
               <SwiperSlide key={product.id}>

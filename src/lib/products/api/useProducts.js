@@ -75,8 +75,8 @@ export const productApi = {
     const { data } = await apiClient.patch(`products/products/${id}/`, payload);
     return data;
   },
-  put: async (id, payload) => {
-    const { data } = await apiClient.put(`products/products/${id}/`, payload);
+  patch: async (id, payload) => {
+    const { data } = await apiClient.patch(`products/products/${id}/`, payload);
     return data;
   },
   changeAvailability: async (id, is_available) => {

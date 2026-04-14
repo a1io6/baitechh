@@ -31,6 +31,29 @@ function Footer() {
     }));
   };
 
+  const getMapEmbedUrl = () => {
+    const rawAddress = String(settings?.address || "").trim();
+    const fallbackAddress = t("footer.address.street");
+
+    if (!rawAddress) {
+      return `https://www.google.com/maps?q=${encodeURIComponent(fallbackAddress)}&output=embed`;
+    }
+
+    if (/^https?:\/\//i.test(rawAddress)) {
+      if (rawAddress.includes("maps.app.goo.gl")) {
+        return `https://www.google.com/maps?q=${encodeURIComponent(fallbackAddress)}&output=embed`;
+      }
+
+      if (rawAddress.includes("google.com/maps") && !rawAddress.includes("output=embed")) {
+        const separator = rawAddress.includes("?") ? "&" : "?";
+        return `${rawAddress}${separator}output=embed`;
+      }
+      return rawAddress;
+    }
+
+    return `https://www.google.com/maps?q=${encodeURIComponent(rawAddress)}&output=embed`;
+  };
+
   return (
     <footer className="footer">
       <div className="footer__container">
@@ -163,13 +186,14 @@ function Footer() {
         <div className="footer__col footer__col--map">
           <div className="footer__map">
             <div className="footer__map-title">{t('footer.map')}</div>
-            {!isLoading && settings?.address && (
+            {!isLoading && (
               <iframe
                 title="2GIS Map"
-                src={settings.address}
+                src={getMapEmbedUrl()}
                 width="100%"
                 height="400"
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             )}
           </div>
@@ -181,7 +205,7 @@ function Footer() {
         <h3>
         Baitech © 2021
         </h3>
-        <h3>Разработано Baitech.company</h3>
+        <h3>Разработано Baitech company</h3>
       </div>
     </footer>
   );

@@ -380,7 +380,19 @@ font-size: 30px;
     }
 
     &__nav {
-      display: none;
+      display: flex;
+      width: 34px;
+      height: 34px;
+      top: 42%;
+      z-index: 8;
+
+      &--prev {
+        left: 6px;
+      }
+
+      &--next {
+        right: 6px;
+      }
     }
 
     .swiper-button-prev,

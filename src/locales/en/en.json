@@ -285,6 +285,7 @@
     "bonuses": {
       "title": "Your bonuses",
       "history": "History",
+        "available": "Available bonuses",
       "currency": "som",
       "bonusesText": "bonuses",
       "bonusHistory": "Bonus History",

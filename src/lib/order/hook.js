@@ -20,10 +20,24 @@ export const useOrders = (filters = {}) => {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status, statusId }) => {
-      const payloads = [{ status }, { name: status }];
+      const normalizedStatus = status ?? statusId;
+
+      if (id === undefined || id === null || normalizedStatus === undefined || normalizedStatus === null) {
+        throw new Error("Order id and status are required to update status.");
+      }
+
+      const payloads = [];
+      const pushPayload = (payload) => {
+        const exists = payloads.some((item) => JSON.stringify(item) === JSON.stringify(payload));
+        if (!exists) payloads.push(payload);
+      };
+
+      pushPayload({ status: normalizedStatus });
+      pushPayload({ name: normalizedStatus });
 
       if (statusId !== undefined && statusId !== null) {
-        payloads.push({ status: statusId }, { status_id: statusId }, { id: statusId });
+        pushPayload({ status: statusId });
+        pushPayload({ status_id: statusId });
       }
 
       let lastError;
@@ -62,6 +76,7 @@ export const useOrders = (filters = {}) => {
     isLoading: ordersQuery.isLoading,
     isFetching: ordersQuery.isFetching,
     updateStatus: updateStatusMutation.mutate,
+    updateStatusAsync: updateStatusMutation.mutateAsync,
     isUpdating: updateStatusMutation.isPending,
     statuses: getStatuses.data,
   };

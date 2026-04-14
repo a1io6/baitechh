@@ -105,7 +105,9 @@ const ProductCard = ({ productId }) => {
     ? parsedPrice.toLocaleString()
     : product?.price || "0";
   const isHighPrice = Number.isFinite(parsedPrice) && parsedPrice >= HIGH_PRICE_LIMIT;
-  const whatsappMessage = `Здравствуйте! Интересует товар: ${product?.name || "-"}, артикул: ${product?.article || "-"}, цена: ${formattedPrice} сом.`;
+  const whatsappMessage = isHighPrice
+    ? `Здравствуйте! Интересует товар: ${product?.name || "-"}, артикул: ${product?.article || "-"}.`
+    : `Здравствуйте! Интересует товар: ${product?.name || "-"}, артикул: ${product?.article || "-"}, цена: ${formattedPrice} сом.`;
   const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
 
   const handleCartClick = () => {

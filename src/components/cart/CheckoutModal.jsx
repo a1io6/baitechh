@@ -68,7 +68,13 @@ export default function CheckoutModal({ items, allItems, onClose }) {
     onSuccess: (data) => {
       queryClient.invalidateQueries(['cart']);
       setCreatedOrder(data);
-      setStep('success');
+
+      // Если наличные — сразу переходим на финальный экран, не вызываем /pay/
+      if (payment === 'cash' || data?.payment_method === 'cash') {
+        setStep('cash-success');
+      } else {
+        setStep('success');
+      }
     },
     onError: (error) => {
       const msg = error?.response?.data?.detail ||
@@ -85,12 +91,8 @@ export default function CheckoutModal({ items, allItems, onClose }) {
       return data;
     },
     onSuccess: (data) => {
-      // Если QR — редиректим на payment_url
-      if (payment === 'qr' && data?.payment_url) {
+      if (data?.payment_url) {
         window.location.href = data.payment_url;
-      } else {
-        // Наличные — показываем финальный экран
-        setStep('cash-success');
       }
     },
     onError: (error) => {
@@ -117,7 +119,8 @@ export default function CheckoutModal({ items, allItems, onClose }) {
   };
 
   const handlePay = () => {
-    if (payment === 'cash') {
+    // Наличные — НЕ вызываем /pay/, просто показываем финальный экран
+    if (payment === 'cash' || createdOrder?.payment_method === 'cash') {
       setStep('cash-success');
       return;
     }
@@ -244,17 +247,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
                   </select>
                 </div>
 
-                {/* Способ оплаты */}
                 <div className={styles.paymentSection}>
-                  {/* <p className={styles.paymentTitle}>{t('checkoutModal.form.payment')}</p>
-                  <label className={styles.paymentOption}>
-                    <input
-                      type="checkbox"
-                      checked={payment === 'cash'}
-                      onChange={() => setPayment('cash')}
-                    />
-                    <span>{t('checkoutModal.form.cash')}</span>
-                  </label> */}
                   <label className={styles.paymentOption}>
                     <input
                       type="checkbox"
@@ -263,13 +256,14 @@ export default function CheckoutModal({ items, allItems, onClose }) {
                     />
                     <span>{t('checkoutModal.form.qrPayment')}</span>
                   </label>
-                  {/* {payment === 'cash' && (
-                    <p className={styles.paymentHint}>
-                      {t('checkoutModal.form.cashHint', {
-                        defaultValue: 'Оплата наличными не требует QR-оплаты.'
-                      })}
-                    </p>
-                  )} */}
+                  <label className={styles.paymentOption}>
+                    <input
+                      type="checkbox"
+                      checked={payment === 'cash'}
+                      onChange={() => setPayment('cash')}
+                    />
+                    <span>{t('checkoutModal.form.cash')}</span>
+                  </label>
                 </div>
 
                 <button
@@ -284,7 +278,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
           </>
         )}
 
-        {/* Успешный заказ — выбор оплаты */}
+        {/* Успешный заказ QR — выбор оплаты */}
         {step === 'success' && createdOrder && (
           <div className={styles.successBlock}>
             <h3 className={styles.title}>{t('checkoutModal.success.title')}</h3>
@@ -295,7 +289,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
               </p>
               <p className={styles.summaryRow}>
                 <span>{orderDateLabel}:</span>
-                <span>{createdOrder.created_at}</span>
+                <span>{orderDateValue}</span>
               </p>
               <p className={styles.summaryRow}>
                 <span>{t('checkoutModal.success.totalAmount')}:</span>
@@ -311,9 +305,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
             >
               {payMutation.isPending
                 ? t('checkoutModal.success.processingPayment')
-                : payment === 'cash'
-                  ? t('checkoutModal.success.confirmCash', { defaultValue: 'Confirm order' })
-                  : t('checkoutModal.success.payButton')
+                : t('checkoutModal.success.payButton')
               }
             </button>
           </div>
@@ -324,18 +316,18 @@ export default function CheckoutModal({ items, allItems, onClose }) {
           <div className={styles.successBlock}>
             <div className={styles.cashSuccessIcon}>✅</div>
             <h3 className={styles.title}>
-              {t('checkoutModal.cashSuccess.title', { defaultValue: 'Order created!' })}
+              {t('checkoutModal.cashSuccess.title', { defaultValue: 'Заказ оформлен!' })}
             </h3>
             <p className={styles.cashSuccessText}>
               {t('checkoutModal.cashSuccess.message', {
-                defaultValue: 'Thanks for your order! Our manager will contact you soon.'
+                defaultValue: 'Спасибо за заказ! Наш менеджер скоро свяжется с вами.'
               })}
             </p>
             <button
               className={styles.btnPrimary}
               onClick={() => { onClose(); router.push('/profile?tab=orders'); }}
             >
-              {t('checkoutModal.cashSuccess.button', { defaultValue: 'Go to orders' })}
+              {t('checkoutModal.cashSuccess.button', { defaultValue: 'Перейти к заказам' })}
             </button>
           </div>
         )}
@@ -343,4 +335,4 @@ export default function CheckoutModal({ items, allItems, onClose }) {
       </div>
     </div>
   );
-} 
+}

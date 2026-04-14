@@ -68,7 +68,9 @@ function Card({ product }) {
     : "-";
   const isHighPrice = Number(product?.price) >= HIGH_PRICE_LIMIT;
 
-  const whatsappMessage = `Р—РґСЂР°РІСЃС‚РІСѓР№С‚Рµ! РРЅС‚РµСЂРµСЃСѓРµС‚ С‚РѕРІР°СЂ: ${product?.name || "-"}, Р°СЂС‚РёРєСѓР»: ${product?.article || "-"}, С†РµРЅР°: ${formattedPrice} СЃРѕРј.`;
+  const whatsappMessage = isHighPrice
+    ? "Здравствуйте! Интересует товар: " + (product?.name || "-") + ", артикул: " + (product?.article || "-") + "."
+    : "Здравствуйте! Интересует товар: " + (product?.name || "-") + ", артикул: " + (product?.article || "-") + ", цена: " + formattedPrice + " сом.";
   const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
 
   const handleAddToCart = () => {
@@ -150,7 +152,8 @@ function Card({ product }) {
                 height={300}
                 className="product-card__img"
                 sizes="(max-width: 480px) 45vw, (max-width: 768px) 30vw, 300px"
-                quality={95}
+                quality={75}
+                loading="eager"
               />
             ) : (
               <div className="image-placeholder">

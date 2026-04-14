@@ -1,5 +1,5 @@
 ﻿'use client';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useInfiniteProducts, useProducts } from '@/lib/products/hooks/hooks';
 import { productApi } from '@/lib/products/api/useProducts';
@@ -92,6 +92,9 @@ export default function CatalogPage() {
   const [categorySearch, setCategorySearch] = useState('');
   const [brandSearch, setBrandSearch] = useState('');
 
+  // ─── Храним предыдущие товары, пока грузятся новые (как на Delta.kg) ───
+  const [staleProducts, setStaleProducts] = useState([]);
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const { brands: allBrands, categories } = useProducts();
@@ -178,7 +181,7 @@ export default function CatalogPage() {
     return crumbs;
   }, [activeCategory, activeSubcategory, tr.catalog, tr.home]);
 
-  const { data, isLoading } = useInfiniteProducts({
+  const { data, isLoading, isFetching } = useInfiniteProducts({
     category: cat || undefined,
     brand: bnd || undefined,
     min_price: searchParams.get('min_price') || undefined,
@@ -193,8 +196,20 @@ export default function CatalogPage() {
     return pages.flatMap((p) => p.results || []);
   }, [data?.pages]);
 
+  // ─── Обновляем staleProducts только когда загрузка завершена ───
+  useEffect(() => {
+    if (!isLoading && !isFetching && allProducts.length > 0) {
+      setStaleProducts(allProducts);
+    }
+  }, [isLoading, isFetching, allProducts]);
+
+  // ─── Показываем либо свежие товары, либо старые пока грузится ───
+  const displayProducts = allProducts.length > 0 ? allProducts : staleProducts;
+  const isRefetching = (isLoading || isFetching) && staleProducts.length > 0;
+  const isInitialLoading = isLoading && staleProducts.length === 0;
+
   const sliderMaxPrice = useMemo(() => {
-    const prices = allProducts
+    const prices = displayProducts
       .map((product) => Number(product.price))
       .filter((price) => Number.isFinite(price) && price >= PRICE_MIN_LIMIT);
 
@@ -202,7 +217,7 @@ export default function CatalogPage() {
 
     const maxPrice = Math.max(...prices);
     return Math.max(PRICE_STEP, Math.ceil(maxPrice / PRICE_STEP) * PRICE_STEP);
-  }, [allProducts]);
+  }, [displayProducts]);
 
   useEffect(() => {
     const normalizedMin = clampPrice(
@@ -227,7 +242,7 @@ export default function CatalogPage() {
     const max = maxPriceFilter === null || maxPriceFilter === '' ? null : Number(maxPriceFilter);
     const normalizedQuery = query.toLowerCase();
 
-    return allProducts.filter((product) => {
+    return displayProducts.filter((product) => {
       const price = Number(product.price);
       const name = String(product.name || '').toLowerCase();
       const article = String(product.article || '').toLowerCase();
@@ -240,7 +255,7 @@ export default function CatalogPage() {
       }
       return true;
     });
-  }, [query, allProducts, minPriceFilter, maxPriceFilter]);
+  }, [query, displayProducts, minPriceFilter, maxPriceFilter]);
 
   const totalPages = Math.max(1, Math.ceil(visibleProducts.length / ITEMS_PER_PAGE));
   const paginatedProducts = useMemo(() => {
@@ -317,9 +332,9 @@ export default function CatalogPage() {
       else params.delete('max_price');
 
       const queryString = params.toString();
-      router.replace(queryString ? `?${queryString}` : '/catalog');
+      router.replace(queryString ? `?${queryString}` : '/catalog', { scroll: false });
       setCurrentPage(1);
-    }, 120);
+    }, 600);
 
     return () => clearTimeout(timeoutId);
   }, [priceRange.min, priceRange.max, sliderMaxPrice, minParam, maxParam, searchParams, router]);
@@ -332,13 +347,15 @@ export default function CatalogPage() {
 
   const hasActiveFilters =
     cat || bnd || query || searchParams.get('min_price') || searchParams.get('max_price');
-  const shouldShowProducts = true;
   const priceProgressLeft =
     ((priceRange.min - PRICE_MIN_LIMIT) / Math.max(1, sliderMaxPrice - PRICE_MIN_LIMIT)) * 100;
   const priceProgressRight =
     ((priceRange.max - PRICE_MIN_LIMIT) / Math.max(1, sliderMaxPrice - PRICE_MIN_LIMIT)) * 100;
 
-  if (isLoading) return <div className={styles.loader}>{tr.loading}</div>;
+  // ─── Первая загрузка — показываем полный лоадер (товаров ещё нет) ───
+  if (isInitialLoading) {
+    return <div className={styles.loader}>{tr.loading}</div>;
+  }
 
   return (
     <div className={`${styles.catalogPage} container`}>
@@ -555,23 +572,92 @@ export default function CatalogPage() {
             </div>
           </div>
 
-          <div className={`${styles.grid} ${styles[viewMode]}`}>
-            {shouldShowProducts && visibleProducts.length > 0 ? (
-              paginatedProducts.map((p) =>
-                viewMode === 'grid' ? (
-                  <Card key={p.id} product={p} />
-                ) : viewMode === 'list' ? (
-                  <ProductCard key={p.id} product={p} viewMode={viewMode} />
-                ) : (
-                  <FullProductCard key={p.id} product={p} />
-                )
-              )
-            ) : (
-              <div>{tr.notFound}</div>
+          {/* ─── Обёртка с relative — для оверлея загрузки поверх товаров ─── */}
+          <div style={{ position: 'relative' }}>
+
+            {/* ─── Оверлей загрузки — товары остаются видны под ним ─── */}
+            {isRefetching && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundColor: 'rgba(255, 255, 255, 0.55)',
+                  zIndex: 10,
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'center',
+                  paddingTop: '60px',
+                  backdropFilter: 'blur(1px)',
+                  borderRadius: '8px',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    background: '#fff',
+                    padding: '10px 20px',
+                    borderRadius: '20px',
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.12)',
+                    fontSize: '14px',
+                    color: '#333',
+                    fontWeight: 500,
+                  }}
+                >
+                  {/* Спиннер */}
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    style={{ animation: 'catalog-spin 0.8s linear infinite' }}
+                  >
+                    <style>{`@keyframes catalog-spin { to { transform: rotate(360deg); } }`}</style>
+                    <circle
+                      cx="9" cy="9" r="7"
+                      fill="none"
+                      stroke="#e0e0e0"
+                      strokeWidth="2.5"
+                    />
+                    <path
+                      d="M9 2 a7 7 0 0 1 7 7"
+                      fill="none"
+                      stroke="#2563eb"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  {tr.loading}
+                </div>
+              </div>
             )}
+
+            {/* ─── Грид товаров — старые остаются, новые появляются после загрузки ─── */}
+            <div
+              className={`${styles.grid} ${styles[viewMode]}`}
+              style={{
+                opacity: isRefetching ? 0.5 : 1,
+                transition: 'opacity 0.2s ease',
+                pointerEvents: isRefetching ? 'none' : 'auto',
+              }}
+            >
+              {visibleProducts.length > 0 ? (
+                paginatedProducts.map((p) =>
+                  viewMode === 'grid' ? (
+                    <Card key={p.id} product={p} />
+                  ) : viewMode === 'list' ? (
+                    <ProductCard key={p.id} product={p} viewMode={viewMode} />
+                  ) : (
+                    <FullProductCard key={p.id} product={p} />
+                  )
+                )
+              ) : (
+                <div>{tr.notFound}</div>
+              )}
+            </div>
           </div>
 
-          {shouldShowProducts && totalPages > 1 && (
+          {totalPages > 1 && (
             <div className={styles.pagination}>
               <button
                 type="button"

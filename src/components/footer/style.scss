@@ -16,7 +16,7 @@ footer{
    max-width: 1440px !important;
   display: grid;
   color: #fff;
-  grid-template-columns: 1.3fr 1fr 1fr 1.4fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 40px;
   padding: 60px 80px;
   align-items: flex-start;
@@ -164,9 +164,9 @@ footer{
   width: 100%;
   max-width: 299px;
   height: 250px;
-  margin-top: 100px;
+  margin-top: 0px;
   @media (max-width:950px) {
-    margin-top: 30px;
+    margin-top: 0px;
       width: 100%;
   }
 }

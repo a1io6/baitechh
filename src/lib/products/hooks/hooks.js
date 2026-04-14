@@ -34,7 +34,7 @@ export const useProducts = () => {
 
     // Мутация на обновление
     const updateMutation = useMutation({
-        mutationFn: ({ id, payload }) => productApi.put(id, payload),
+        mutationFn: ({ id, payload }) => productApi.patch(id, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
@@ -100,7 +100,8 @@ export const useProducts = () => {
         isLoading: productsQuery.isLoading,
         isError: productsQuery.isError,
         deleteProduct: deleteMutation.mutate,
-        updateProduct: updateMutation.mutate,
+        updateProduct: updateMutation.mutateAsync,
+        isPending: updateMutation.isPending,
         changeAvailability: changeAvailabilityMutation.mutate,
         addProduct: addProductMutation.mutateAsync,
         categories: categoriesQuery.data?.results || (Array.isArray(categoriesQuery.data) ? categoriesQuery.data : []),

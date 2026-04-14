@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useMemo, useState } from "react";
 import "./OrderTable.scss";
@@ -49,7 +49,6 @@ const resolveStatusMeta = (order) => {
       const matchedId = Number(
         Object.entries(STATUS_MAP).find(([, status]) => status.apiValue === normalized)?.[0] || 1
       );
-
       return { id: matchedId, meta: STATUS_BY_API_VALUE[normalized] };
     }
 
@@ -87,15 +86,12 @@ const getPaginationItems = (currentPage, totalPages) => {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, idx) => idx + 1);
   }
-
   if (currentPage <= 4) {
     return [1, 2, 3, 4, "ellipsis", totalPages];
   }
-
   if (currentPage >= totalPages - 3) {
     return [1, "ellipsis", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
   }
-
   return [1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages];
 };
 
@@ -103,7 +99,6 @@ const formatDateForInput = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
-
   return `${year}-${month}-${day}`;
 };
 
@@ -112,19 +107,11 @@ const getDateRangeByPreset = (presetId) => {
   const startDate = new Date();
 
   switch (presetId) {
-    case "today":
-      break;
-    case "week":
-      startDate.setDate(endDate.getDate() - 6);
-      break;
-    case "month":
-      startDate.setDate(endDate.getDate() - 29);
-      break;
-    case "quarter":
-      startDate.setDate(endDate.getDate() - 89);
-      break;
-    default:
-      return { date_from: "", date_to: "" };
+    case "today": break;
+    case "week": startDate.setDate(endDate.getDate() - 6); break;
+    case "month": startDate.setDate(endDate.getDate() - 29); break;
+    case "quarter": startDate.setDate(endDate.getDate() - 89); break;
+    default: return { date_from: "", date_to: "" };
   }
 
   return {
@@ -134,14 +121,8 @@ const getDateRangeByPreset = (presetId) => {
 };
 
 const normalizeDateRange = (dateFrom, dateTo) => {
-  if (!dateFrom || !dateTo) {
-    return { date_from: dateFrom, date_to: dateTo };
-  }
-
-  if (dateFrom <= dateTo) {
-    return { date_from: dateFrom, date_to: dateTo };
-  }
-
+  if (!dateFrom || !dateTo) return { date_from: dateFrom, date_to: dateTo };
+  if (dateFrom <= dateTo) return { date_from: dateFrom, date_to: dateTo };
   return { date_from: dateTo, date_to: dateFrom };
 };
 
@@ -151,7 +132,7 @@ const OrderTable = () => {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
-  const [returningItem, setReturningItem] = useState(null); // { orderId, productId }
+  const [returningItem, setReturningItem] = useState(null);
 
   const {
     orders,
@@ -162,17 +143,15 @@ const OrderTable = () => {
     isFetching,
     isUpdating,
     updateStatus,
-  } = useOrders({
-    ...filters,
-    page,
-  });
+    updateStatusAsync,
+  } = useOrders({ ...filters, page });
+
   const isSyncing = isFetching || isUpdating;
   const hasNextPage = Boolean(nextPageUrl);
   const hasPreviousPage = Boolean(previousPageUrl);
 
   const activeFilterCount = useMemo(() => {
     const keys = ["order_number", "status", "payment_method", "date_from", "date_to"];
-
     return keys.reduce((count, key) => count + (filters[key] ? 1 : 0), 0);
   }, [filters]);
 
@@ -181,32 +160,22 @@ const OrderTable = () => {
   const toggleFilterModal = () => {
     setIsFilterOpen((prev) => {
       const next = !prev;
-
-      if (next) {
-        setDraftFilters(filters);
-      }
-
+      if (next) setDraftFilters(filters);
       return next;
     });
   };
 
-  const updateDraftFilter = (key, value) => {
-    setDraftFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+  const updateDraftFilter = (key, value) =>
+    setDraftFilters((prev) => ({ ...prev, [key]: value }));
 
-  const toggleDraftChip = (key, value) => {
+  const toggleDraftChip = (key, value) =>
     setDraftFilters((prev) => ({
       ...prev,
       [key]: String(prev[key]) === String(value) ? "" : String(value),
     }));
-  };
 
   const applyDatePreset = (presetId) => {
     const nextRange = getDateRangeByPreset(presetId);
-
     setDraftFilters((prev) => ({
       ...prev,
       date_from: nextRange.date_from,
@@ -216,13 +185,11 @@ const OrderTable = () => {
 
   const isPresetActive = (presetId) => {
     const range = getDateRangeByPreset(presetId);
-
     return draftFilters.date_from === range.date_from && draftFilters.date_to === range.date_to;
   };
 
   const applyDraftFilters = () => {
     const normalizedRange = normalizeDateRange(draftFilters.date_from, draftFilters.date_to);
-
     setPage(1);
     setFilters((prev) => ({
       ...prev,
@@ -231,11 +198,10 @@ const OrderTable = () => {
       date_from: normalizedRange.date_from,
       date_to: normalizedRange.date_to,
     }));
-
     setIsFilterOpen(false);
   };
 
-  const resetDraftFilters = () => {
+  const resetDraftFilters = () =>
     setDraftFilters((prev) => ({
       ...prev,
       status: "",
@@ -243,7 +209,6 @@ const OrderTable = () => {
       date_from: "",
       date_to: "",
     }));
-  };
 
   const resetAllFilters = () => {
     setPage(1);
@@ -255,24 +220,13 @@ const OrderTable = () => {
   const handleReturn = async (order, item) => {
     setReturningItem({ orderId: order.id, productId: item.product });
     try {
-      const response = await fetch(`/api/returns/requests/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          order_id: order.id,
-          reason: "Бракованный товар",
-          items: [{ order_item_id: item.product, quantity: item.quantity }],
-        }),
-      });
-
-      if (response.ok) {
-        alert("Возврат успешно оформлен!");
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        alert(`Ошибка: ${errorData?.detail || "Не удалось оформить возврат"}`);
-      }
-    } catch {
-      alert("Ошибка сети. Попробуйте снова.");
+      await updateStatusAsync({ id: order.id, status: 4 });
+      alert("Возврат успешно оформлен!");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.detail ||
+        "Не удалось оформить возврат";
+      alert(`Ошибка: ${errorMessage}`);
     } finally {
       setReturningItem(null);
     }
@@ -300,7 +254,6 @@ const OrderTable = () => {
   const getPaymentLabel = (paymentMethod) => {
     if (paymentMethod === "cash") return "Наличными";
     if (paymentMethod === "qr") return "QR оплачено";
-
     return "Не указано";
   };
 
@@ -327,10 +280,7 @@ const OrderTable = () => {
             value={filters.order_number}
             onChange={(event) => {
               setPage(1);
-              setFilters((prev) => ({
-                ...prev,
-                order_number: event.target.value,
-              }));
+              setFilters((prev) => ({ ...prev, order_number: event.target.value }));
             }}
           />
         </div>
@@ -350,7 +300,9 @@ const OrderTable = () => {
             >
               <Settings2 size={20} />
               <span>{"Фильтры"}</span>
-              {activeFilterCount > 0 && <span className="settings-button__count">{activeFilterCount}</span>}
+              {activeFilterCount > 0 && (
+                <span className="settings-button__count">{activeFilterCount}</span>
+              )}
             </button>
 
             {isFilterOpen && (
@@ -413,7 +365,6 @@ const OrderTable = () => {
                         <CalendarDays size={15} />
                         {"Дата заказа"}
                       </h4>
-
                       <div className="filter-modal__presets">
                         {DATE_PRESETS.map((preset) => (
                           <button
@@ -426,7 +377,6 @@ const OrderTable = () => {
                           </button>
                         ))}
                       </div>
-
                       <div className="filter-modal__dates">
                         <label>
                           <span>{"От"}</span>
@@ -437,7 +387,6 @@ const OrderTable = () => {
                             onChange={(event) => updateDraftFilter("date_from", event.target.value)}
                           />
                         </label>
-
                         <label>
                           <span>{"До"}</span>
                           <input
@@ -470,9 +419,7 @@ const OrderTable = () => {
         <div className="sync-banner" role="status" aria-live="polite">
           <span className="sync-banner__dot" />
           <span>
-            {isUpdating
-              ? "Сохраняем изменение статуса..."
-              : "Обновляем список заказов..."}
+            {isUpdating ? "Сохраняем изменение статуса..." : "Обновляем список заказов..."}
           </span>
         </div>
       )}
@@ -485,9 +432,7 @@ const OrderTable = () => {
             <div className="table-wrap__status" role="status" aria-live="polite">
               <span className="table-wrap__status-dot" />
               <span>
-                {isUpdating
-                  ? "Применяем изменение..."
-                  : "Загружаем новые данные..."}
+                {isUpdating ? "Применяем изменение..." : "Загружаем новые данные..."}
               </span>
             </div>
           )}
@@ -512,13 +457,15 @@ const OrderTable = () => {
                 return (
                   <React.Fragment key={order.id}>
                     <tr className="table__row" onClick={() => toggleOrder(order.id)}>
-                      <td>{expandedOrderId === order.id ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</td>
+                      <td>
+                        {expandedOrderId === order.id
+                          ? <ChevronUp size={18} />
+                          : <ChevronDown size={18} />}
+                      </td>
                       <td className="fw-bold">#{order.order_number}</td>
                       <td className="table__address">{order.address}</td>
                       <td>{getPaymentLabel(order.payment_method)}</td>
-                      <td className="fw-bold">
-                        {order.total_price} {"сом"}
-                      </td>
+                      <td className="fw-bold">{order.total_price} {"сом"}</td>
                       <td onClick={(event) => event.stopPropagation()}>
                         <div className={`status-wrapper status-wrapper--${statusMeta.class}`}>
                           <select
@@ -527,14 +474,13 @@ const OrderTable = () => {
                             disabled={isUpdating}
                             onChange={(event) => {
                               const nextStatusId = Number(event.target.value);
-                              const nextStatus = STATUS_MAP[nextStatusId];
+                              if (!STATUS_MAP[nextStatusId]) return;
 
-                              if (!nextStatus) return;
-
+                              // PATCH /ordering/orders/{id}/change_status/
+                              // Body: { "status": 4 }
                               updateStatus({
                                 id: order.id,
-                                status: nextStatus.apiValue,
-                                statusId: nextStatusId,
+                                status: nextStatusId, // числовой ID: 1 | 2 | 3 | 4
                               });
                             }}
                           >
@@ -564,49 +510,37 @@ const OrderTable = () => {
                                     <span className="info-label">{"№ заказа"}</span>
                                     <span className="info-value">{order.order_number}</span>
                                   </div>
-
                                   <div className="info-block title">
                                     <span className="info-label">{"Название"}</span>
                                     <span className="info-value">{item.name || "Товар"}</span>
                                   </div>
-
                                   <div className="info-block">
                                     <span className="info-label">{"Цена"}</span>
-                                    <span className="info-value">
-                                      {item.price} {"сом"}
-                                    </span>
+                                    <span className="info-value">{item.price} {"сом"}</span>
                                   </div>
-
                                   <div className="info-block">
                                     <span className="info-label">{"Адрес"}</span>
                                     <span className="info-value">{order.address}</span>
                                   </div>
-
                                   <div className="info-block">
-                                    <span className="info-label">{"Артикуfл"}</span>
+                                    <span className="info-label">{"Артикул"}</span>
                                     <span className="info-value">{item.sku || "-"}</span>
                                   </div>
-
                                   <div className="info-block">
                                     <span className="info-label">{"Количество"}</span>
-                                    <span className="info-value">
-                                      {item.quantity} {"шт"}
-                                    </span>
+                                    <span className="info-value">{item.quantity} {"шт"}</span>
                                   </div>
-
                                   <div className="info-block">
                                     <span className="info-label">{"Дата"}</span>
                                     <span className="info-value">
                                       {order.formatted_date ? order.formatted_date.split(" ")[0] : "-"}
                                     </span>
                                   </div>
-
                                   <div className="info-block">
                                     <span className="info-label">{"Статус"}</span>
                                     <span className="info-value status">{statusMeta.label}</span>
                                   </div>
 
-                                  {/* ─── Кнопка возврата ─── */}
                                   <div className="info-block" style={{ gridColumn: "span 2" }}>
                                     <button
                                       type="button"
@@ -643,19 +577,14 @@ const OrderTable = () => {
                 className="page-btn arrow"
                 type="button"
                 disabled={!hasPreviousPage}
-                onClick={() => {
-                  if (!hasPreviousPage) return;
-                  setPage(Math.max(1, displayPage - 1));
-                }}
+                onClick={() => { if (hasPreviousPage) setPage(Math.max(1, displayPage - 1)); }}
               >
                 &lt;
               </button>
 
               {paginationItems.map((item, index) =>
                 item === "ellipsis" ? (
-                  <span key={`dots-${index}`} className="dots">
-                    ...
-                  </span>
+                  <span key={`dots-${index}`} className="dots">...</span>
                 ) : (
                   <button
                     key={item}
@@ -672,10 +601,7 @@ const OrderTable = () => {
                 className="page-btn arrow"
                 type="button"
                 disabled={!hasNextPage}
-                onClick={() => {
-                  if (!hasNextPage) return;
-                  setPage(Math.min(totalPages, displayPage + 1));
-                }}
+                onClick={() => { if (hasNextPage) setPage(Math.min(totalPages, displayPage + 1)); }}
               >
                 &gt;
               </button>
@@ -688,3 +614,4 @@ const OrderTable = () => {
 };
 
 export default OrderTable;
+

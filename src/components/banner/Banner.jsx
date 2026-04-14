@@ -60,6 +60,7 @@ export function Banner() {
                     sizes="100vw"
                     className="banner-slide__img"
                     priority
+                    quality={80}
                   />
                 ) : (
                   <div className="banner-slide__fallback" />

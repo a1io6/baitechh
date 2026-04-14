@@ -56,7 +56,7 @@ const AddressBook = () => {
   const addresses = data?.results || [];
 
   return (
-    <div className="w-full  font-['Montserrat'] min-h-screen">
+    <div className="w-full cd  font-['Montserrat'] min-h-screen">
      <Under 
        text={t('addressBook.breadcrumbs.home')} 
        text1={t('addressBook.breadcrumbs.account')} 
