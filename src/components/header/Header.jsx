@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import './style.scss'
 import Image from 'next/image'
 import logo from '../../../assets/svg/logo.svg'
@@ -136,9 +136,9 @@ export default function Header() {
   }
 
   const languages = [
-    { code: 'ru', label: 'Русский' },
+    { code: 'ru', label: 'Р СѓСЃСЃРєРёР№' },
     { code: 'en', label: 'English' },
-    { code: 'ky', label: 'Кыргызча' },
+    { code: 'ky', label: 'РљС‹СЂРіС‹Р·С‡Р°' },
   ]
 
   const handleSearchSubmit = (event) => {
@@ -215,7 +215,7 @@ export default function Header() {
         <>
           {suggestionProducts.length > 0 && (
             <div className="search-section">
-              <p className="search-section__title">Товары</p>
+              <p className="search-section__title">РўРѕРІР°СЂС‹</p>
               {suggestionProducts.map((product) => (
                 <button
                   key={product.id}
@@ -224,7 +224,7 @@ export default function Header() {
                   onClick={() => handleProductSelect(product.id)}
                 >
                   <span className="search-item__main">{product.name}</span>
-                  <span className="search-item__meta">Артикул: {product.article || '-'}</span>
+                  <span className="search-item__meta">РђСЂС‚РёРєСѓР»: {product.article || '-'}</span>
                 </button>
               ))}
             </div>
@@ -232,7 +232,7 @@ export default function Header() {
 
           {suggestionCategories.length > 0 && (
             <div className="search-section">
-              <p className="search-section__title">Категории</p>
+              <p className="search-section__title">РљР°С‚РµРіРѕСЂРёРё</p>
               {suggestionCategories.map((categoryName) => (
                 <button
                   key={categoryName}
@@ -241,14 +241,14 @@ export default function Header() {
                   onClick={() => handleCategorySelect(categoryName)}
                 >
                   <span className="search-item__main">{categoryName}</span>
-                  <span className="search-item__meta">Перейти в каталог</span>
+                  <span className="search-item__meta">РџРµСЂРµР№С‚Рё РІ РєР°С‚Р°Р»РѕРі</span>
                 </button>
               ))}
             </div>
           )}
         </>
       ) : (
-        <div className="search-empty">Ничего не найдено</div>
+        <div className="search-empty">РќРёС‡РµРіРѕ РЅРµ РЅР°Р№РґРµРЅРѕ</div>
       )}
     </div>
   )
@@ -259,7 +259,7 @@ export default function Header() {
         <div className="header__logo">
           <div>
             <Link href="/">
-              <Image src={logo} alt="Байтех" width={150} height={50} />
+              <Image src={logo} alt="Байтех" width={200} height={64} className="header__logo-image" priority />
             </Link>
           </div>
 
@@ -384,7 +384,7 @@ export default function Header() {
                 <>
                   {suggestionProducts.length > 0 && (
                     <div className="search-section">
-                      <p className="search-section__title">Товары</p>
+                      <p className="search-section__title">РўРѕРІР°СЂС‹</p>
                       {suggestionProducts.map((product) => (
                         <button
                           key={product.id}
@@ -393,7 +393,7 @@ export default function Header() {
                           onClick={() => handleProductSelect(product.id)}
                         >
                           <span className="search-item__main">{product.name}</span>
-                          <span className="search-item__meta">Артикул: {product.article || '-'}</span>
+                          <span className="search-item__meta">РђСЂС‚РёРєСѓР»: {product.article || '-'}</span>
                         </button>
                       ))}
                     </div>
@@ -401,7 +401,7 @@ export default function Header() {
 
                   {suggestionCategories.length > 0 && (
                     <div className="search-section">
-                      <p className="search-section__title">Категории</p>
+                      <p className="search-section__title">РљР°С‚РµРіРѕСЂРёРё</p>
                       {suggestionCategories.map((categoryName) => (
                         <button
                           key={categoryName}
@@ -410,14 +410,14 @@ export default function Header() {
                           onClick={() => handleCategorySelect(categoryName)}
                         >
                           <span className="search-item__main">{categoryName}</span>
-                          <span className="search-item__meta">Перейти в каталог</span>
+                          <span className="search-item__meta">РџРµСЂРµР№С‚Рё РІ РєР°С‚Р°Р»РѕРі</span>
                         </button>
                       ))}
                     </div>
                   )}
                 </>
               ) : (
-                <div className="search-empty">Ничего не найдено</div>
+                <div className="search-empty">РќРёС‡РµРіРѕ РЅРµ РЅР°Р№РґРµРЅРѕ</div>
               )}
             </div>
           )}
@@ -528,7 +528,7 @@ export default function Header() {
             <button
               className="auth-modal__close"
               onClick={() => setShowAuthModal(false)}
-              aria-label="Закрыть"
+              aria-label="Р—Р°РєСЂС‹С‚СЊ"
             >
               <IoClose size={20} />
             </button>
@@ -559,3 +559,4 @@ export default function Header() {
     </header>
   )
 }
+
