@@ -3,7 +3,7 @@ import "./globals.css";
 import QueryProvider from "../../QueryProvider";
 import I18nProvider from "@/provider/I18nProvider/I18nProvider";
 import ToastProvider from "@/provider/toastProvider/ToastProvider";
-import FloatingButton from "@/components/handlClick/HandleClick";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -110,7 +110,7 @@ export default function RootLayout({ children }) {
             {children}
           </QueryProvider>
         </I18nProvider>
-             <FloatingButton/>
+
       </body>
     </html>
   );
