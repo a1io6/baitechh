@@ -1,7 +1,7 @@
 import SolutionDetailPage from '@/components/solution/SolutionDetail'
 import React from 'react'
 
-export const dynamicParams = false
+export const dynamicParams = true
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://baitech.kg"
 const SOLUTIONS_API_URL = `${API_BASE_URL.replace(/\/$/, "")}/banners/banners/?category=solution`
@@ -22,7 +22,7 @@ export async function generateStaticParams() {
     const solutions = Array.isArray(data) ? data : data?.results || []
     const params = solutions
       .filter((s) => s?.id !== undefined && s?.id !== null)
-      .map((s) => ({ id: String(s.id) }))
+      .map((s) => ({ id: String(s.id) })) 
 
     return params.length > 0 ? params : FALLBACK_IDS.map((id) => ({ id }))
   } catch {

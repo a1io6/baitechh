@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { generateCategoryMetadata } from "@/lib/seo";
 
 export const metadata = generateCategoryMetadata({

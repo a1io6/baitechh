@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import styles from './Navbar.module.scss';
 import { LayoutGrid, Monitor, Video, FileText, BookOpen } from 'lucide-react';
@@ -8,6 +8,11 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useProducts } from '@/lib/products/hooks/hooks';
 
+const CATEGORY_MATCHERS = {
+  pcComponents: ['компьютер', 'комплектующ', 'pc component', 'hardware', 'компьютердик'],
+  videoSurveillance: ['видеонаблюд', 'камер', 'video surveillance', 'cctv', 'видеокөз'],
+};
+
 export default function NavItem() {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
@@ -15,18 +20,43 @@ export default function NavItem() {
   const searchParams = useSearchParams();
   const { categories } = useProducts();
 
+  const normalizeText = (value) =>
+    String(value || '')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const resolveCategoryName = (categoryKey, fallbackName = '') => {
+    const topCategories = (categories || []).filter((category) => category?.parent === null);
+    const matchers = CATEGORY_MATCHERS[categoryKey] || [];
+
+    const found = topCategories.find((category) => {
+      const normalizedName = normalizeText(category?.name);
+      return matchers.some((matcher) => normalizedName.includes(normalizeText(matcher)));
+    });
+
+    return found?.name || fallbackName;
+  };
+
+  const getItemCategory = (item) => {
+    if (!item.categoryKey) return '';
+    return resolveCategoryName(item.categoryKey, item.fallbackCategory);
+  };
+
   const menuItems = [
     { label: t('navbar.catalog'), icon: <LayoutGrid size={18} />, isCatalog: true },
     {
       label: t('navbar.pcComponents'),
       link: '/catalog',
-      category: t('navbar.pcComponents'),
+      categoryKey: 'pcComponents',
+      fallbackCategory: t('navbar.pcComponents'),
       icon: <Monitor size={18} />,
     },
     {
       label: t('navbar.videoSurveillance'),
       link: '/catalog',
-      category: t('navbar.videoSurveillance'),
+      categoryKey: 'videoSurveillance',
+      fallbackCategory: t('navbar.videoSurveillance'),
       icon: <Video size={18} />,
     },
     { label: t('navbar.solutions'), link: '/solution', icon: <FileText size={18} /> },
@@ -48,20 +78,22 @@ export default function NavItem() {
 
   const isActive = (item) => {
     if (normalizePath(pathname) !== normalizePath(item.link)) return false;
-    if (item.category) {
+    const itemCategory = getItemCategory(item);
+    if (itemCategory) {
       const currentCategory = searchParams.get('category');
       if (!currentCategory) return false;
-      if (currentCategory === item.category) return true;
+      if (currentCategory === itemCategory) return true;
 
-      const parentCategory = categories?.find((category) => category.name === item.category);
+      const parentCategory = categories?.find((category) => category.name === itemCategory);
       return hasNestedCategory(parentCategory, currentCategory);
     }
     return true;
   };
 
   const getHref = (item) => {
-    if (item.category) {
-      return `${item.link}?category=${encodeURIComponent(item.category)}`;
+    const itemCategory = getItemCategory(item);
+    if (itemCategory) {
+      return `${item.link}?category=${encodeURIComponent(itemCategory)}`;
     }
     return item.link;
   };

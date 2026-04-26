@@ -135,7 +135,7 @@ function Card({ product }) {
             <button
               type="button"
               className="product-card__preview-btn"
-              aria-label="РџСЂРѕСЃРјРѕС‚СЂ С„РѕС‚Рѕ"
+              aria-label=""
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();

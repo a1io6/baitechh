@@ -54,7 +54,6 @@ export default function AdminBannerPage() {
   const handleSaveBanner = async (formData) => {
     try {
       if (editingBanner) {
-        // ВАЖНО: передаем объект согласно структуре в твоем хуке
         await updateBannerMutation.mutateAsync({
           id: editingBanner.id,
           bannerData: formData,
@@ -84,11 +83,12 @@ export default function AdminBannerPage() {
           >
             Главный баннер
           </button>
+          {/* ИСПРАВЛЕНО: было setActiveTab("event"), проверка была на "events" */}
           <button
             onClick={() => setActiveTab("event")}
             disabled={isLoading}
             className={`admin-banner__tab ${
-              activeTab === "events" ? "admin-banner__tab--active" : ""
+              activeTab === "event" ? "admin-banner__tab--active" : ""
             }`}
           >
             Мероприятия
@@ -159,11 +159,11 @@ export default function AdminBannerPage() {
               setIsOpen={handleCloseModal}
               onSave={handleSaveBanner}
               category={activeTab}
-              initialData={editingBanner} // Передаем данные для редактирования
+              initialData={editingBanner}
             />
           </div>
         </div>
       )}
     </div>
   );
-}
+} 

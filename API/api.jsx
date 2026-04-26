@@ -37,19 +37,26 @@ $api.interceptors.response.use(
   (response) => {
     const lang = localStorage.getItem("language") || "ru";
 
-    const translate = (obj) => {
-      if (Array.isArray(obj)) return obj.map(translate);
-      if (obj && typeof obj === "object") {
-        const newObj = {};
-        for (const key in obj) {
-          if (key.endsWith("_ru") || key.endsWith("_en") || key.endsWith("_ky")) continue;
-          const translated = obj[`${key}_${lang}`] ?? obj[`${key}_ru`] ?? obj[key];
-          newObj[key] = translate(translated);
-        }
-        return newObj;
+   const translate = (obj) => {
+  if (Array.isArray(obj)) return obj.map(translate);
+  if (obj && typeof obj === "object") {
+    const newObj = {};
+    for (const key in obj) {
+      if (key.endsWith("_ru") || key.endsWith("_en") || key.endsWith("_ky")) continue;
+      
+      // ✅ name не трогаем — берём как есть
+      if (key === "name") {
+        newObj[key] = obj[key];
+        continue;
       }
-      return obj;
-    };
+      
+      const translated = obj[`${key}_${lang}`] ?? obj[`${key}_ru`] ?? obj[key];
+      newObj[key] = translate(translated);
+    }
+    return newObj;
+  }
+  return obj;
+};
 
     response.data = translate(response.data);
     return response;

@@ -81,7 +81,7 @@ export default function FloatingButton() {
 
         body {
           font-family: 'Sora', sans-serif;
-              min-height: 100vh;
+          min-height: 100vh;
           min-height: 100dvh;
         }
 
@@ -112,6 +112,7 @@ export default function FloatingButton() {
           flex-direction: column;
           align-items: flex-end;
           gap: 10px;
+          pointer-events: none; /* ← FIX: не блокирует клики под собой */
         }
 
         /* ── desktop ── */
@@ -128,6 +129,7 @@ export default function FloatingButton() {
           flex-direction: column;
           gap: 8px;
           align-items: flex-end;
+          pointer-events: none; /* ← FIX: сам список не перехватывает клики */
         }
 
         /* ── card ── */
@@ -147,17 +149,15 @@ export default function FloatingButton() {
           transform: translateX(20px) scale(0.9);
           pointer-events: none;
           transition: opacity 0.16s ease, transform 0.18s ease, background 0.18s;
-          /* prevent text selection on mobile long-press */
           user-select: none;
           -webkit-user-select: none;
-          /* full-width touch target on small screens */
           min-width: 0;
         }
 
         .contact-card.show {
           opacity: 1;
           transform: translateX(0) scale(1);
-          pointer-events: auto;
+          pointer-events: auto; /* ← только открытые карточки кликабельны */
         }
 
         /* staggered entrance */
@@ -196,7 +196,6 @@ export default function FloatingButton() {
           flex-shrink: 0;
         }
 
-        /* smaller on very small phones */
         @media (max-width: 360px) {
           .contact-icon {
             width: 38px;
@@ -251,6 +250,7 @@ export default function FloatingButton() {
           touch-action: manipulation;
           user-select: none;
           -webkit-user-select: none;
+          pointer-events: auto; /* ← FIX: кнопка всегда кликабельна */
         }
 
         @media (min-width: 480px) {
@@ -421,4 +421,4 @@ export default function FloatingButton() {
       </div>
     </>
   );
-}
+} 

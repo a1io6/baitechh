@@ -61,6 +61,7 @@ const localBusinessJsonLd = {
   "@type": "SecurityService",
   name: "Baitech",
   url: "https://baitech.kg",
+  logo: "https://baitech.kg/icon.svg",
   image: "https://baitech.kg/og-image.jpg",
   telephone: "+996500000000",
   priceRange: "$$",

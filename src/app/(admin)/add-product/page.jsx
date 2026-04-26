@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -139,7 +139,7 @@ const AddProduct = () => {
 
     try {
       await addProduct(payload);
-      router.push("/camera");
+      router.push("/admin/camera");
     } catch (err) {
       console.error("Ошибка публикации:", err);
     } finally {
@@ -451,3 +451,5 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
+
+

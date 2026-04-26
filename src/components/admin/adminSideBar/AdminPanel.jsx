@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
@@ -11,8 +11,8 @@ const menuItems = [
   {
     id: 0,
     text: "Товары",
-    path: "/camera",
-    matchPaths: ["/camera", "/add-product", "/edit-product"],
+    path: "/admin/camera",
+    matchPaths: ["/admin/camera", "/camera", "/add-product", "/edit-product"],
     icon: <Package size={22} />,
   },
   {
@@ -127,3 +127,5 @@ const AdminPanel = () => {
 };
 
 export default AdminPanel;
+
+

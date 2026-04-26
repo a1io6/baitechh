@@ -14,7 +14,7 @@ function ProductDetail() {
   const { id } = useParams();
 
   return (
-    <div className="xl:p-[0px] p-[20px]" style={{ maxWidth: "1279px", margin: "0 auto" }}>
+    <div className="xl:p-[0px] p-[20px]" style={{ maxWidth: "1279px", margin: "0 auto", marginBottom: "50px" }}>
       <Breadcrumb
         items={[
           { label: t('aboutCompany.breadcrumbs.home'), path: "/" },

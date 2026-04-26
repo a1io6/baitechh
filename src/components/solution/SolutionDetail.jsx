@@ -15,7 +15,7 @@ const SolutionDetail = () => {
   const imageUrl = data?.existing_images?.[0]?.image || '';
 
   return (
-    <div className="w-full  bg-[#F5F7FA] container pb-[30px]">
+    <div className="w-full container pb-[30px]">
       <div className="w-full max-w-[1440px] mx-auto px-4 xl:px-[0px]">
 
         <h1 className="font-medium text-[20px] lg:text-[24px] text-[#1f2937] mb-8 lg:mb-[40px]">

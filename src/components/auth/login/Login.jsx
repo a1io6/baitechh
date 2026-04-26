@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import React, { useState } from "react";
 import "./LoginPage.scss";
 import InputField from "@/components/ui/auth/inputFeiled";
@@ -21,7 +21,6 @@ const LoginPage = ({ type = "login" }) => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const router = useRouter();
 
-  // React Query hooks
   const loginMutation = useLogin();
   const registerMutation = useRegister();
 
@@ -29,23 +28,19 @@ const LoginPage = ({ type = "login" }) => {
     e.preventDefault();
 
     if (type === "login") {
-      // Логин
       try {
         const response = await loginMutation.mutateAsync({
           email,
           password
         });
 
-        // ✅ Проверяем роль пользователя после успешного входа
         console.log('Login response:', response);
-        
-        // Определяем роль
+
         const isAdmin = response?.role === 'admin' || 
                         response?.user?.is_staff === true || 
                         response?.user?.is_superuser === true;
         
         if (isAdmin) {
-          // Только для админа — сохраняем в adminToken
           if (response?.access) {
             localStorage.setItem('adminToken', response.access);
           }
@@ -53,9 +48,8 @@ const LoginPage = ({ type = "login" }) => {
             localStorage.setItem('adminRefreshToken', response.refresh);
           }
           toast.success(t('loginPage.messages.welcomeAdmin'));
-          router.push('/camera'); // редирект для админа
+          router.push('/camera');
         } else {
-          // Только для пользователя — сохраняем в access_token
           if (response?.access) {
             localStorage.setItem('access_token', response.access);
             localStorage.setItem('accessToken', response.access);
@@ -64,13 +58,12 @@ const LoginPage = ({ type = "login" }) => {
             localStorage.setItem('refresh_token', response.refresh);
           }
           toast.success(t('loginPage.messages.loginSuccess'));
-          router.push('/'); // редирект для пользователя
+          router.push('/');
         }
 
-        // Сохраняем информацию о пользователе
         if (response?.user) {
           localStorage.setItem('user', JSON.stringify(response.user));
-          console.log('✅ Данные пользователя сохранены');
+          console.log('User data saved');
         }
         
       } catch (error) {
@@ -96,7 +89,6 @@ const LoginPage = ({ type = "login" }) => {
           password
         };
 
-        // Регистрация
         await registerMutation.mutateAsync(formData);
         
         router.push(`/codeverify?email=${encodeURIComponent(email)}`);
@@ -238,3 +230,4 @@ const LoginPage = ({ type = "login" }) => {
 };
 
 export default LoginPage;
+

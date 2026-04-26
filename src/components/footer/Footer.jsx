@@ -40,6 +40,12 @@ function Footer() {
     }
 
     if (/^https?:\/\//i.test(rawAddress)) {
+      // 2GIS embed shows its own dark info card inside iframe.
+      // We can't style/hide that from our site, so use clean Google embed instead.
+      if (rawAddress.includes("2gis.")) {
+        return `https://www.google.com/maps?q=${encodeURIComponent(fallbackAddress)}&output=embed`;
+      }
+
       if (rawAddress.includes("maps.app.goo.gl")) {
         return `https://www.google.com/maps?q=${encodeURIComponent(fallbackAddress)}&output=embed`;
       }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
@@ -96,7 +96,7 @@ const EditProduct = () => {
 
     try {
       await updateProduct({ id, payload: formDataPayload });
-      router.push("/camera");
+      router.push("/admin/camera");
     } catch (err) {
       console.error("Ошибка при обновлении:", err);
       alert("Ошибка при сохранении данных.");
@@ -215,3 +215,4 @@ const EditProduct = () => {
 };
 
 export default EditProduct;
+

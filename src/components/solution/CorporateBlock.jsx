@@ -12,7 +12,7 @@ const CorporateBlock = () => {
   const { data: items = [], isLoading} = useSolutionBanners();
   if (isLoading) return <div className='loader'></div>; 
   return (
-    <section className="w-full bg-[#F5F7FA] py-0 pb-[30px]">
+    <section className="w-full py-0 pb-[30px]">
       <div className="container mx-auto px-4 xl:px-[0px] max-w-[1280px]">
         <Under text={t('corporateBlock.home')} link={'/'} text1={t('corporateBlock.solution')} />
         <h2 className="text-[20px] font-medium md:text-[24px] font-bold text-[#00162A] mb-10">
