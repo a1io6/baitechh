@@ -673,5 +673,12 @@
       "register": "Register",
       "login": "Login"
     }
-  }
+  },
+  "brands": {
+  "hivideo": "Security systems",
+  "dahua": "Video surveillance",
+  "linkff": "Network equipment",
+  "hikvision": "Security systems",
+  "ajax": "Alarm systems"
+}
 }
