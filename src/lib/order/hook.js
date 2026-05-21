@@ -4,7 +4,6 @@ import { $api } from "../../../API/api";
 export const useOrders = (filters = {}) => {
   const queryClient = useQueryClient();
 
-  // Удаляем пустые строки, чтобы не отправлять их в query-параметры
   const activeFilters = Object.fromEntries(
     Object.entries(filters).filter(([_, v]) => v !== "" && v !== null)
   );
@@ -18,45 +17,25 @@ export const useOrders = (filters = {}) => {
     placeholderData: (prev) => prev,
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status, statusId }) => {
-      const normalizedStatus = status ?? statusId;
+const updateStatusMutation = useMutation({
+  mutationFn: async ({ id, itemId, status, statusId }) => {
+    const normalizedStatus = status ?? statusId;
 
-      if (id === undefined || id === null || normalizedStatus === undefined || normalizedStatus === null) {
-        throw new Error("Order id and status are required to update status.");
-      }
+    if (id == null || normalizedStatus == null) {
+      throw new Error("Order id and status are required to update status.");
+    }
 
-      const payloads = [];
-      const pushPayload = (payload) => {
-        const exists = payloads.some((item) => JSON.stringify(item) === JSON.stringify(payload));
-        if (!exists) payloads.push(payload);
-      };
+    const payload = itemId != null
+      ? { item_id: itemId, status: normalizedStatus }
+      : { status: normalizedStatus };
 
-      pushPayload({ status: normalizedStatus });
-      pushPayload({ name: normalizedStatus });
-
-      if (statusId !== undefined && statusId !== null) {
-        pushPayload({ status: statusId });
-        pushPayload({ status_id: statusId });
-      }
-
-      let lastError;
-
-      for (const payload of payloads) {
-        try {
-          const { data } = await $api.patch(`ordering/orders/${id}/change_status/`, payload);
-          return data;
-        } catch (error) {
-          lastError = error;
-        }
-      }
-
-      throw lastError;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] });
-    },
-  });
+    const { data } = await $api.patch(`ordering/orders/${id}/change_status/`, payload);
+    return data;
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["orders"] });
+  },
+});
 
   const getStatuses = useQuery({
     queryKey: ["statuses"],

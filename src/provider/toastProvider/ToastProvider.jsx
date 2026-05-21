@@ -9,7 +9,7 @@ export default function ToastProvider() {
       reverseOrder={false}
       gutter={12}
       toastOptions={{
-        duration: 4000,
+        duration: 1000,
         style: {
           background: '#ffffff',
           color: '#1f2937',
@@ -26,7 +26,7 @@ export default function ToastProvider() {
         },
         
         success: {
-          duration: 3500,
+          duration: 1500,
           style: {
             background: '#ffffff',
             color: '#065f46',
@@ -40,7 +40,7 @@ export default function ToastProvider() {
         },
         
         error: {
-          duration: 5000,
+          duration: 1500,
           style: {
             background: '#ffffff',
             color: '#991b1b',

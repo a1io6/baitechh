@@ -18,43 +18,29 @@ $status-colors: (
 );
 
 .return-btn {
-  width: 200px;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 18px;
-  background: var(--color-background-danger, #fff1f0);
-  color: var(--color-text-danger, #e84040);
-  border: 1.5px solid var(--color-border-danger, #e84040);
-  border-radius: 8px;
+  max-width: 260px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, transform 0.1s;
-  white-space: nowrap;
+  transition: background 0.2s;
 
-  svg {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    transition: transform 0.2s;
-  }
-
-  &:hover:not(:disabled) {
-    background: var(--color-text-danger, #e84040);
+  // Оформить возврат — красная
+  &--make {
+    background: #e23a27;
     color: #fff;
-
-    svg {
-      transform: rotate(-20deg);
-    }
+    &:hover { background: #c0392b; }
+    &:disabled { background: #f1a9a0; cursor: not-allowed; }
   }
 
-  &:active:not(:disabled) {
-    transform: translateY(1px);
-  }
-
-  &:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
+  // Отменить возврат — оранжевая
+  &--cancel {
+    background: #f39c12;
+    color: #fff;
+    &:hover { background: #d68910; }
+    &:disabled { background: #f8c471; cursor: not-allowed; }
   }
 }
 .dashboard {

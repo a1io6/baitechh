@@ -142,7 +142,7 @@ function Card({ product }) {
                 setShowImageModal(true);
               }}
             >
-              <IoEyeOutline size={18} />
+              <IoEyeOutline size={18} /> 
             </button>
             {imageSrc ? (
               <Image

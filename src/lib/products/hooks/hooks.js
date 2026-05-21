@@ -1,117 +1,107 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { productApi } from '../api/useProducts';
+export const useProducts = ({ page = 1, search = "", category = "" } = {}) => {
+  const queryClient = useQueryClient();
 
-export const useProductById = (id) => {
-    const productQuery = useQuery({
-        queryKey: ['product', id],
-        queryFn: () => productApi.getById(id),
-        enabled: !!id, // запрос не идёт, если id не передан
-    });
+  const productsQuery = useQuery({
+    queryKey: ['products', { page, search, category }],
+   queryFn: () => {
+  const params = { page };
+  if (search) params.article = search; // ← было params.search
+  if (category) params.category = category;
+  return productApi.getAll(params);
+},
+    keepPreviousData: true,
+    retry: false,
+  });
 
-    return {
-        product: productQuery.data,
-        isLoading: productQuery.isLoading,
-        isError: productQuery.isError,
-    };
-};
-export const useProducts = () => {
-    const queryClient = useQueryClient();
+  const deleteMutation = useMutation({
+    mutationFn: (id) => productApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
 
-    // Запрос на получение данных
-    const productsQuery = useQuery({
-        queryKey: ['products'],
-        queryFn: productApi.getAll,
-    });
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }) => productApi.patch(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+    onError: (error) => {
+      console.error('Update product error:', error);
+    },
+  });
 
-    // Мутация на удаление
-    const deleteMutation = useMutation({
-        mutationFn: (id) => productApi.delete(id),
-        onSuccess: () => {
-            // Инвалидация кэша, чтобы список обновился автоматически
-            queryClient.invalidateQueries({ queryKey: ['products'] });
-        },
-    });
+  const changeAvailabilityMutation = useMutation({
+    mutationFn: ({ id, is_available }) => productApi.changeAvailability(id, is_available),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
 
-    // Мутация на обновление
-    const updateMutation = useMutation({
-        mutationFn: ({ id, payload }) => productApi.patch(id, payload),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['products'] });
-        },
-        onError: (error) => {
-            console.error('Update product error:', error);
-        },
-    });
+  const addProductMutation = useMutation({
+    mutationFn: (newProduct) => productApi.create(newProduct),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
 
-    const changeAvailabilityMutation = useMutation({
-        mutationFn: ({ id, is_available }) => productApi.changeAvailability(id, is_available),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['products'] });
-        },
-    });
+  const addCategoryMutation = useMutation({
+    mutationFn: (newCat) => productApi.createCategory(newCat),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    },
+  });
 
-    const addProductMutation = useMutation({
-        mutationFn: (newProduct) => productApi.create(newProduct),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['products'] });
-        },
-    });
+  const addBrandMutation = useMutation({
+    mutationFn: (newBrand) => productApi.createBrand(newBrand),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['brands'] });
+    },
+  });
 
-    const addCategoryMutation = useMutation({
-        mutationFn: (newCat) => productApi.createCategory(newCat), // Путь: /products/categories/
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['categories'] });
-        },
-    });
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id) => productApi.deleteCategory(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+    },
+  });
 
-    const addBrandMutation = useMutation({
-        mutationFn: (newBrand) => productApi.createBrand(newBrand), // Путь: /products/brands/
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['brands'] });
-        },
-    });
+  const deleteBrandMutation = useMutation({
+    mutationFn: (id) => productApi.deleteBrand(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['brands'] });
+    },
+  });
 
-    const deleteCategoryMutation = useMutation({
-        mutationFn: (id) => productApi.deleteCategory(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['categories'] });
-        },
-    });
+  const categoriesQuery = useQuery({
+    queryKey: ['categories'],
+    queryFn: productApi.getCategories,
+  });
 
-    const deleteBrandMutation = useMutation({
-        mutationFn: (id) => productApi.deleteBrand(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['brands'] });
-        },
-    });
-
-    const categoriesQuery = useQuery({
-        queryKey: ['categories'],
-        queryFn: productApi.getCategories,
-    });
-
-    const brandsQuery = useQuery({
-        queryKey: ['brands'],
-        queryFn: productApi.getBrands,
-    });
-
-    return {
-        products: productsQuery.data?.results || productsQuery.data || [],
-        isLoading: productsQuery.isLoading,
-        isError: productsQuery.isError,
-        deleteProduct: deleteMutation.mutate,
-        updateProduct: updateMutation.mutateAsync,
-        isPending: updateMutation.isPending,
-        changeAvailability: changeAvailabilityMutation.mutate,
-        addProduct: addProductMutation.mutateAsync,
-        categories: categoriesQuery.data?.results || (Array.isArray(categoriesQuery.data) ? categoriesQuery.data : []),
-        brands: brandsQuery.data?.results || (Array.isArray(brandsQuery.data) ? brandsQuery.data : []),
-        isInitialLoading: categoriesQuery.isLoading || brandsQuery.isLoading,
-        addCategory: addCategoryMutation.mutateAsync,
-        addBrand: addBrandMutation.mutateAsync,
-        deleteCategory: deleteCategoryMutation.mutateAsync,
-        deleteBrand: deleteBrandMutation.mutateAsync,
-    };
+  const brandsQuery = useQuery({
+    queryKey: ['brands'],
+    queryFn: productApi.getBrands,
+  });
+ 
+  return {
+    products: productsQuery.data?.results || [],
+    totalCount: productsQuery.data?.count ?? 0,
+    isLoading: productsQuery.isLoading,
+    isError: productsQuery.isError,
+    deleteProduct: deleteMutation.mutate,
+    updateProduct: updateMutation.mutateAsync,
+    isPending: updateMutation.isPending,
+    changeAvailability: changeAvailabilityMutation.mutate,
+    addProduct: addProductMutation.mutateAsync,
+    categories: categoriesQuery.data?.results || (Array.isArray(categoriesQuery.data) ? categoriesQuery.data : []),
+    brands: brandsQuery.data?.results || (Array.isArray(brandsQuery.data) ? brandsQuery.data : []),
+    isInitialLoading: categoriesQuery.isLoading || brandsQuery.isLoading,
+    addCategory: addCategoryMutation.mutateAsync,
+    addBrand: addBrandMutation.mutateAsync,
+    deleteCategory: deleteCategoryMutation.mutateAsync,
+    deleteBrand: deleteBrandMutation.mutateAsync,
+  };
 };
 export const useSimilarProducts = (productId) => {
     return useQuery({
@@ -121,33 +111,21 @@ export const useSimilarProducts = (productId) => {
     });
 };
 
-// Infinite scroll для продуктов
-export const useInfiniteProducts = (filters = {}) => {
-    return useInfiniteQuery({
-        queryKey: ['products-infinite', filters],
-        queryFn: ({ pageParam = 1 }) =>
-            productApi.getAll({ ...filters, page: pageParam }),
-        getNextPageParam: (lastPage, pages) => {
-            return lastPage.next ? pages.length + 1 : undefined;
-        },
-        initialPageParam: 1,
-    });
-};
-
-// Фильтрация по категории
-export const useProductsByCategory = (category, page = 1) => {
-    return useQuery({
-        queryKey: ['products', 'category', category, page],
-        queryFn: () => productApi.getByCategory(category, page),
-        enabled: !!category,
-    });
-};
-
-// Фильтрация по бренду
-export const useProductsByBrand = (brandId, page = 1) => {
-    return useQuery({
-        queryKey: ['products', 'brand', brandId, page],
-        queryFn: () => productApi.getByBrand(brandId, page),
-        enabled: !!brandId,
-    });
+export const useInfiniteProducts = ({ search = "", category = "", brand = "", page } = {}) => {
+  return useInfiniteQuery({
+    queryKey: ['products-infinite', { search, category, brand, page }],
+    queryFn: ({ pageParam = page || 1 }) => {
+      const params = { page: pageParam };
+      if (search) params.search = search;
+      if (category) params.category = category;
+      if (brand) params.brand = brand;
+      return productApi.getAll(params);
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.next) return undefined;
+      const url = new URL(lastPage.next);
+      return Number(url.searchParams.get('page'));
+    },
+    keepPreviousData: true,
+  });
 };

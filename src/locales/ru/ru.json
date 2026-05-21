@@ -649,5 +649,20 @@
   "linkff": "Сетевое оборудование",
   "hikvision": "Системы безопасности",
   "ajax": "Охранные системы"
-}
+},
+"order": {
+    "number": "Заказ №{{number}}",
+    "date": "Оформлен {{date}}",
+    "status": "Статус",
+    "total": "Общая сумма: {{price}} сом",
+    "total2": "Сумма: {{price}} сом",
+    "quantity": "{{count}} шт."
+  },
+ "status": {
+    "on_the_way": "В пути",
+    "delivered":  "Доставлено",
+    "in_stock":   "На складе",
+    "returned":   "Возврат"
+  }
+  
 }

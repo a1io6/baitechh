@@ -17,9 +17,13 @@ export default function CheckoutModal({ items, allItems, onClose }) {
   const [step, setStep] = useState('loading');
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [selectedAddressString, setSelectedAddressString] = useState('');
   const [createdOrder, setCreatedOrder] = useState(null);
   const [form, setForm] = useState({ first_name: '', last_name: '', phone_number: '' });
   const [payment, setPayment] = useState('cash');
+
+  const buildAddressString = (a) =>
+    `${a.address_1}${a.address_2 ? `, ${a.address_2}` : ''}, ${a.region}`;
 
   useEffect(() => {
     $api.get('/addressbook/addresses/')
@@ -31,6 +35,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
           setAddresses(list);
           const primary = list.find(a => a.is_primary) || list[0];
           setSelectedAddressId(primary.id);
+          setSelectedAddressString(buildAddressString(primary));
           setForm({
             first_name: primary.first_name || '',
             last_name: primary.last_name || '',
@@ -51,6 +56,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
         first_name: found.first_name || '',
         last_name: found.last_name || '',
       }));
+      setSelectedAddressString(buildAddressString(found));
     }
   };
 
@@ -69,7 +75,6 @@ export default function CheckoutModal({ items, allItems, onClose }) {
       queryClient.invalidateQueries(['cart']);
       setCreatedOrder(data);
 
-      // Если наличные — сразу переходим на финальный экран, не вызываем /pay/
       if (payment === 'cash' || data?.payment_method === 'cash') {
         setStep('cash-success');
       } else {
@@ -105,7 +110,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.first_name || !form.last_name || !selectedAddressId) {
+    if (!form.first_name || !form.last_name || !selectedAddressString) {
       toast.error(t('checkoutModal.messages.fillAllFields'));
       return;
     }
@@ -113,13 +118,12 @@ export default function CheckoutModal({ items, allItems, onClose }) {
       first_name: form.first_name,
       last_name: form.last_name,
       phone_number: form.phone_number,
-      address: selectedAddressId,
+      address: selectedAddressString,
       payment_method: payment,
     });
   };
 
   const handlePay = () => {
-    // Наличные — НЕ вызываем /pay/, просто показываем финальный экран
     if (payment === 'cash' || createdOrder?.payment_method === 'cash') {
       setStep('cash-success');
       return;
@@ -278,7 +282,6 @@ export default function CheckoutModal({ items, allItems, onClose }) {
           </>
         )}
 
-        {/* Успешный заказ QR — выбор оплаты */}
         {step === 'success' && createdOrder && (
           <div className={styles.successBlock}>
             <h3 className={styles.title}>{t('checkoutModal.success.title')}</h3>
@@ -311,7 +314,6 @@ export default function CheckoutModal({ items, allItems, onClose }) {
           </div>
         )}
 
-        {/* Финальный экран для наличных */}
         {step === 'cash-success' && (
           <div className={styles.successBlock}>
             <div className={styles.cashSuccessIcon}>✅</div>

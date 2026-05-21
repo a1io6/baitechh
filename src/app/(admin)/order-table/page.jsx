@@ -133,6 +133,7 @@ const OrderTable = () => {
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
   const [returningItem, setReturningItem] = useState(null);
+  const [cancellingItem, setCancellingItem] = useState(null);
 
   const {
     orders,
@@ -217,10 +218,16 @@ const OrderTable = () => {
   };
 
   // ─── Возврат товара ───────────────────────────────────────────────────────
+  // Endpoint: PATCH /ordering/orders/{order.id}/
+  // Body: { item_id: item.id, status: 4 }
   const handleReturn = async (order, item) => {
-    setReturningItem({ orderId: order.id, productId: item.product });
+    setReturningItem({ orderId: order.id, itemId: item.id });
     try {
-      await updateStatusAsync({ id: order.id, status: 4 });
+      await updateStatusAsync({
+        id: order.id,     // path: /ordering/orders/{id}/change_status/
+        itemId: item.id,  // body: item_id (хук сам переводит в item_id)
+        status: 4,        // body: status
+      });
       alert("Возврат успешно оформлен!");
     } catch (error) {
       const errorMessage =
@@ -232,8 +239,33 @@ const OrderTable = () => {
     }
   };
 
-  const isItemReturning = (orderId, productId) =>
-    returningItem?.orderId === orderId && returningItem?.productId === productId;
+  const handleCancelReturn = async (order, item) => {
+    setCancellingItem({ orderId: order.id, itemId: item.id });
+    try {
+      await updateStatusAsync({
+        id: order.id,
+        itemId: item.id,
+        status: 1,
+      });
+      alert("Возврат отменён!");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.detail ||
+        "Не удалось отменить возврат";
+      alert(`Ошибка: ${errorMessage}`);
+    } finally {
+      setCancellingItem(null);
+    }
+  };
+
+  const isItemReturned = (item) =>
+    item?.status?.id === 4 || item?.status?.name === "returned";
+
+  const isItemReturning = (orderId, itemId) =>
+    returningItem?.orderId === orderId && returningItem?.itemId === itemId;
+
+  const isItemCancelling = (orderId, itemId) =>
+    cancellingItem?.orderId === orderId && cancellingItem?.itemId === itemId;
   // ─────────────────────────────────────────────────────────────────────────
 
   const currentPage = page;
@@ -476,11 +508,9 @@ const OrderTable = () => {
                               const nextStatusId = Number(event.target.value);
                               if (!STATUS_MAP[nextStatusId]) return;
 
-                              // PATCH /ordering/orders/{id}/change_status/
-                              // Body: { "status": 4 }
                               updateStatus({
                                 id: order.id,
-                                status: nextStatusId, // числовой ID: 1 | 2 | 3 | 4
+                                status: nextStatusId,
                               });
                             }}
                           >
@@ -502,7 +532,7 @@ const OrderTable = () => {
                             {(order.items || []).map((item, index) => (
                               <div key={index} className="order-details-card">
                                 <div className="item-photo-placeholder">
-                                  {item.image && <img src={item.image} alt={item.name} />}
+                                  {item.img && <img src={item.img} alt={item.name} />}
                                 </div>
 
                                 <div className="item-info-grid">
@@ -537,24 +567,54 @@ const OrderTable = () => {
                                     </span>
                                   </div>
                                   <div className="info-block">
-                                    <span className="info-label">{"Статус"}</span>
-                                    <span className="info-value status">{statusMeta.label}</span>
+                                    <span className="info-label">{"Статус товара"}</span>
+                                    <span
+                                      className="info-value status"
+                                      style={{
+                                        color: item.status?.color_code || "#333",
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {item.status?.id === 4
+                                        ? "Возврат"
+                                        : item.status?.id === 2
+                                        ? "Доставлено"
+                                        : item.status?.id === 3
+                                        ? "На складе"
+                                        : "В пути"}
+                                    </span>
                                   </div>
 
                                   <div className="info-block" style={{ gridColumn: "span 2" }}>
-                                    <button
-                                      type="button"
-                                      className="return-btn"
-                                      disabled={isItemReturning(order.id, item.product)}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleReturn(order, item);
-                                      }}
-                                    >
-                                      {isItemReturning(order.id, item.product)
-                                        ? "Отправка..."
-                                        : "↩ Оформить возврат"}
-                                    </button>
+                                    {isItemReturned(item) ? (
+                                      <button
+                                        type="button"
+                                        className="return-btn return-btn--cancel"
+                                        disabled={isItemCancelling(order.id, item.id)}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleCancelReturn(order, item);
+                                        }}
+                                      >
+                                        {isItemCancelling(order.id, item.id)
+                                          ? "Отмена..."
+                                          : "↺ Отменить возврат"}
+                                      </button>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className="return-btn return-btn--make"
+                                        disabled={isItemReturning(order.id, item.id)}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleReturn(order, item);
+                                        }}
+                                      >
+                                        {isItemReturning(order.id, item.id)
+                                          ? "Отправка..."
+                                          : "↩ Оформить возврат"}
+                                      </button>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -614,4 +674,3 @@ const OrderTable = () => {
 };
 
 export default OrderTable;
-

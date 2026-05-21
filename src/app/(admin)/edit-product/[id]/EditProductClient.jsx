@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { useProducts } from "@/lib/products/hooks/hooks";
+import { productApi } from "@/lib/products/api/useProducts";
 import "./EditProduct.scss";
 import Image from "next/image";
 
@@ -11,7 +13,7 @@ const EditProduct = () => {
   const id = params.id;
   const router = useRouter();
 
-  const { products, categories, brands, updateProduct, isInitialLoading, isLoading, isPending} = useProducts();
+  const { categories, brands, updateProduct, isInitialLoading, isPending } = useProducts();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -28,32 +30,36 @@ const EditProduct = () => {
   const [imageFiles, setImageFiles] = useState([null, null, null, null]);
   const [previews, setPreviews] = useState([null, null, null, null]);
 
-  useEffect(() => {
-    if (id && products) {
-      const found = products.find((p) => String(p.id) === String(id));
-      if (found) {
-        setFormData({
-          name: found.name || "",
-          article: found.article || "",
-          price: found.price || "",
-          category: found.category || "",
-          brand: found.brand || "",
-          bonus: found.bonus || "",
-          description: found.description || "",
-          characteristics: found.characteristics || "",
-          is_available: found.is_available ?? true,
-        });
+  // ← Загружаем товар напрямую по id
+  const { data: product, isLoading: isProductLoading } = useQuery({
+    queryKey: ["product", id],
+    queryFn: () => productApi.getById(id),
+    enabled: !!id,
+  });
 
-        if (found.existing_images && found.existing_images.length > 0) {
-          const loadedPreviews = [null, null, null, null];
-          found.existing_images.forEach((img, idx) => {
-            if (idx < 4) loadedPreviews[idx] = img.image;
-          });
-          setPreviews(loadedPreviews);
-        }
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        name: product.name || "",
+        article: product.article || "",
+        price: product.price || "",
+        category: product.category || "",
+        brand: product.brand || "",
+        bonus: product.bonus || "",
+        description: product.description || "",
+        characteristics: product.characteristics || "",
+        is_available: product.is_available ?? true,
+      });
+
+      if (product.existing_images && product.existing_images.length > 0) {
+        const loadedPreviews = [null, null, null, null];
+        product.existing_images.forEach((img, idx) => {
+          if (idx < 4) loadedPreviews[idx] = img.image;
+        });
+        setPreviews(loadedPreviews);
       }
     }
-  }, [id, products]);
+  }, [product]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -100,11 +106,12 @@ const EditProduct = () => {
     } catch (err) {
       console.error("Ошибка при обновлении:", err);
       alert("Ошибка при сохранении данных.");
-    } 
+    }
   };
 
-  if (isInitialLoading ) return <div className="loader"/>;
+  if (isInitialLoading || isProductLoading) return <div className="loader" />;
 
+  // остальной JSX без изменений
   return (
     <div className="edit-product-page">
       <div className="page-header">
@@ -186,22 +193,21 @@ const EditProduct = () => {
           </div>
         </div>
 
-        <div className="form-group">
-          <label>Описание</label>
-          <textarea name="description" value={formData.description} onChange={handleInputChange} />
-        </div>
+       <div className="form-group">
+    <label>Описание</label>
+    <textarea name="description" value={formData.description} onChange={handleInputChange} />
+</div>
 
-        <div className="form-group checkbox-group">
-          <label className="checkbox-label">
-            <input
-              name="is_available"
-              type="checkbox"
-              checked={formData.is_available}
-              onChange={handleInputChange}
-            />
-            <span>В наличии</span>
-          </label>
-        </div>
+<div className="form-group">
+    <label>Характеристики</label>
+    <textarea name="characteristics" value={formData.characteristics} onChange={handleInputChange} />
+</div>
+
+<div className="form-group">
+    <label>Бонус</label>
+    <input name="bonus" type="number" value={formData.bonus} onChange={handleInputChange} />
+</div>
+
 
         <div className="form-actions">
           <button type="button" className="cancel-btn" onClick={() => router.back()}>Отмена</button>

@@ -1,31 +1,36 @@
-import React from 'react'
-import './OtherHistoryCard.scss'
+    import React from 'react'
+    import { useTranslation } from 'react-i18next'
+    import './OtherHistoryCard.scss'
 
-function OtherHistoryCard({ item }) {
-    const statusClass = () => {
-        switch (item.status) {
-            case 1: return 'status status--pending';   // В обработке
-            case 2: return 'status status--success';   // Доставлено
-            case 3: return 'status status--error';     // Отменен
-            default: return 'status';
-        }
+    const STATUS_CLASSES = {
+        in_stock:  'status status--success',
+        pending:   'status status--pending',
+        cancelled: 'status status--error',
+        delivered: 'status status--success',
     }
 
-    return (
-        <div className='otherhistorycard'>
-            <h1 className='ordernumber'>Заказ №{item.order_number}</h1>
+    function OtherHistoryCard({ item }) {
+        const { t } = useTranslation()
 
-            <p className='date'>Оформлен {item.formatted_date}</p>
+        return (
+            <div className='otherhistorycard'>
+                <h1 className='ordernumber'>{t('order.number', { number: item.order_number })}</h1>
 
-            <p className='statuss'>
-                Статус: <span className={statusClass()}>{item.status_display}</span>
-            </p>
+                <p className='date'>{t('order.date', { date: item.formatted_date })}</p>
 
-            <h2 className='price'>Сумма: {item.total_price} сом</h2>
+                <p className='statuss'>
+                    {t('order.status')}: <span className={STATUS_CLASSES[item.status_display] || 'status'}>
+                        {t(`status.${item.status_display}`)}
+                    </span>
+                </p>
 
-            <div className="orderImg">
-                {item.items[0]?.image ? (
-                    <img src={item.items[0].image} alt="" />
+                <h2 className='price'>{t('order.total', { price: item.total_price })}</h2>
+
+            <div className="orderImgs flex flex-col gap-[10px]">
+        {item.items.map((product) => (
+            <div className="orderImg" key={product.id}>
+                {product.img ? (
+                    <img src={product.img} alt="" />
                 ) : (
                     <div style={{
                         width: 100,
@@ -36,12 +41,21 @@ function OtherHistoryCard({ item }) {
                         flexShrink: 0,
                     }}/>
                 )}
-                <span>{item.items[0]?.quantity} шт.</span>
+                <div className="flex flex-col gap-1">
+                    <span>{t('order.quantity', { count: product.quantity })}</span>
+                    <span>{t('order.total2', { price: product.price })}</span>
+                    <p className='statuss'>
+                    {t('order.status')}: <span className={STATUS_CLASSES[product.status.name] || 'status'}>
+                        {t(`status.${product.status.name}`)}
+                    </span>
+                </p>
+                </div>
             </div>
+        ))}
+    </div>
+                <p>{item.address}</p>
+            </div>
+        )
+    }
 
-            <p>{item.address}</p>
-        </div>
-    )
-}
-
-export default OtherHistoryCard
+    export default OtherHistoryCard

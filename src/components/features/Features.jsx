@@ -26,19 +26,19 @@ function Features() {
       productImage: Hivideo,
       label: t('brands.hivideo'),
     },
-    dahua: {
-      logo: ajhuaImage2,
-      productImage: ajhuaImage,
-      label: t('brands.dahua'),
-    },
     linkff: {
       logo: LinkFf2,
       productImage: LinkFf,
       label: t('brands.linkff'),
     },
+    dahua: {
+      logo: ajhuaImage2,
+      productImage: ajhuaImage,
+      label: t('brands.dahua'),
+    },
     hikvision: {
-      logo: Hikvision,
-      productImage: Hikvision2,
+      logo: Hikvision2,
+      productImage: Hikvision,
       label: t('brands.hikvision'),
     },
     ajax: {
@@ -49,7 +49,7 @@ function Features() {
   };
 
   const handleClick = (brand) => {
-    router.push(`/catalog/?category=IP%20${encodeURIComponent(brand.name)}`);
+    router.push(`/catalog/?brand=${brand.id}`);
   };
 
   if (isInitialLoading) {
@@ -64,10 +64,18 @@ function Features() {
     );
   }
 
-  const filteredBrands = brands.filter((brand) => {
-    const key = brand.name?.toLowerCase().replace(/\s+/g, '');
-    return !!BRAND_META[key];
-  });
+  const BRAND_ORDER = ['hivideo', 'linkff', 'dahua', 'hikvision', 'ajax'];
+
+  const filteredBrands = brands
+    .filter((brand) => {
+      const key = brand.name?.toLowerCase().replace(/\s+/g, '');
+      return !!BRAND_META[key];
+    })
+    .sort((a, b) => {
+      const keyA = a.name?.toLowerCase().replace(/\s+/g, '');
+      const keyB = b.name?.toLowerCase().replace(/\s+/g, '');
+      return BRAND_ORDER.indexOf(keyA) - BRAND_ORDER.indexOf(keyB);
+    });
 
   return (
     <div className="features">

@@ -680,5 +680,19 @@
   "linkff": "Тармак жабдуулары",
   "hikvision": "Коопсуздук системалары",
   "ajax": "Күзөт системалары"
-}
+},
+  "order": {
+    "number": "Буйрутма №{{number}}",
+    "date": "Таризделген {{date}}",
+    "status": "Статус",
+    "total": " Общий сумма: {{price}} сом",
+    "total2": "Total: {{price}} сом",
+    "quantity": "{{count}} дана"
+  },
+"status": {
+    "on_the_way": "Жолдо",
+    "delivered":  "Жеткирилди",
+    "in_stock":   "Складда",
+    "returned":   "Кайтарылды"
+  }
 }

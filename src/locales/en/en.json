@@ -680,5 +680,19 @@
   "linkff": "Network equipment",
   "hikvision": "Security systems",
   "ajax": "Alarm systems"
-}
+},
+"order": {
+    "number": "Order #{{number}}",
+    "date": "Placed on {{date}}",
+    "status": "Status",
+    "total": "All total: {{price}} som",
+    "total2": "Total: {{price}} som",
+    "quantity": "{{count}} pcs."
+  },
+ "status": {
+    "on_the_way": "On the way",
+    "delivered":  "Delivered",
+    "in_stock":   "In stock",
+    "returned":   "Returned"
+  }
 }

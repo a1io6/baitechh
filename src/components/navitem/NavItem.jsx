@@ -70,7 +70,6 @@ export default function NavItem() {
       hasNestedCategory(subcategory, currentCategory)
     );
   };
-
   const normalizePath = (path) => {
     if (!path) return '/';
     return path.length > 1 ? path.replace(/\/+$/, '') : path;
