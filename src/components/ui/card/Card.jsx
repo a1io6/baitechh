@@ -16,6 +16,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { useSiteSettings } from "@/lib/settings/hook";
 
 const HIGH_PRICE_LIMIT = 100000;
+const PRODUCT_PLACEHOLDER = "/product-placeholder.svg";
 
 const buildWhatsAppLink = (whatsapp, phone, message) => {
   const encodedMessage = encodeURIComponent(message);
@@ -61,12 +62,16 @@ function Card({ product }) {
     (item) => item.product?.id === productId || item.product_id === productId
   );
   const isInCart = !!cartItem;
-  const imageSrc = product?.existing_images?.[0]?.image || "/placeholder.png";
+  const imageSrc = product?.existing_images?.[0]?.image || PRODUCT_PLACEHOLDER;
   const isAvailable = product?.is_available;
-  const formattedPrice = Number.isFinite(Number(product?.price))
-    ? Number(product.price).toLocaleString("ru-RU")
+  const numericPrice =
+    product?.price === null || product?.price === undefined || product?.price === ""
+      ? null
+      : Number(product.price);
+  const formattedPrice = Number.isFinite(numericPrice)
+    ? numericPrice.toLocaleString("ru-RU", { maximumFractionDigits: 0 })
     : "-";
-  const isHighPrice = Number(product?.price) >= HIGH_PRICE_LIMIT;
+  const isHighPrice = Number.isFinite(numericPrice) && numericPrice >= HIGH_PRICE_LIMIT;
 
   const whatsappMessage = isHighPrice
     ? "Здравствуйте! Интересует товар: " + (product?.name || "-") + ", артикул: " + (product?.article || "-") + "."
@@ -147,7 +152,7 @@ function Card({ product }) {
             {imageSrc ? (
               <Image
                 src={imageSrc}
-                alt={product?.name || "product"}
+                alt={"product"}
                 width={300}
                 height={300}
                 className="product-card__img"
@@ -173,9 +178,9 @@ function Card({ product }) {
           {product.name}
         </h3>
 
-        <ul className="product-card__features">
+        <p className="product-card__features">
           {product.description}
-        </ul>
+        </p>
 
         <div className="product-card__footer">
           {isHighPrice ? (
@@ -200,7 +205,7 @@ function Card({ product }) {
                   {product.bonus || 0} {t("card.bonuses")}
                 </span>
                 <span className="amount">
-                  {product.price.toLocaleString()} {t("card.currency")}
+                  {formattedPrice} {t("card.currency")}
                 </span>
               </div>
               <button

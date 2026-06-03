@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useSiteSettings } from '@/lib/settings/hook';
 
 const HIGH_PRICE_LIMIT = 100000;
+const PRODUCT_PLACEHOLDER = '/product-placeholder.svg';
 
 const buildWhatsAppLink = (whatsapp, phone, message) => {
   const encodedMessage = encodeURIComponent(message);
@@ -40,7 +41,7 @@ const buildWhatsAppLink = (whatsapp, phone, message) => {
 
 export default function FullProductCard({ product }) {
   const { t } = useTranslation();
-  const imageUrl = product.existing_images?.[0]?.image || '/placeholder.png';
+  const imageUrl = product.existing_images?.[0]?.image || PRODUCT_PLACEHOLDER;
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const productId = product?.id ?? product?.pk ?? product?.product_id ?? product?.product?.id;
@@ -152,7 +153,7 @@ export default function FullProductCard({ product }) {
                     {product.bonus || 0} {t('card.bonuses')}
                   </div>
                   <div className={styles.price}>
-                    {Number(product.price).toLocaleString()} {t('card.currency')}
+                    {formattedPrice} {t('card.currency')}
                   </div>
                 </div>
 

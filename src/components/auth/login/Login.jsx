@@ -48,7 +48,7 @@ const LoginPage = ({ type = "login" }) => {
             localStorage.setItem('adminRefreshToken', response.refresh);
           }
           toast.success(t('loginPage.messages.welcomeAdmin'));
-          router.push('/camera');
+          router.push('/productss');
         } else {
           if (response?.access) {
             localStorage.setItem('access_token', response.access);

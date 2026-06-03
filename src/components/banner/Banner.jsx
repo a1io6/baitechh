@@ -12,13 +12,19 @@ import { useBanners } from '@/lib/banners/hooks/hooks';
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 import Image from 'next/image';
 
-export function Banner() {
-    const { data: banners = [], isLoading, error } = useBanners('main');
-    const prevRef = useRef(null);
-    const nextRef = useRef(null);
+export function Banner({ categoryName }) {
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
-    if (isLoading) return <div className="loader"></div>;
-    if (error) return null;
+  const { data: banners = [], isLoading, error } = useBanners('main');
+
+  const filteredBanners = categoryName
+    ? banners.filter((b) => b.title?.toLowerCase() === categoryName.toLowerCase())
+    : banners;
+
+  if (isLoading) return <div className="loader"></div>;
+  if (error) return null;
+  if (filteredBanners.length === 0) return null;
 
   return (
     <div className="hero-banner container">
@@ -40,17 +46,15 @@ export function Banner() {
         autoplay={{ delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true }}
         effect="fade"
         fadeEffect={{ crossFade: true }}
-        loop={banners.length > 1}
+        loop={filteredBanners.length > 1}
         speed={1000}
         className="hero-banner__swiper"
       >
-        {banners.map((banner) => {
+        {filteredBanners.map((banner) => {
           const backgroundImage = banner.existing_images?.[0]?.image;
-
           return (
             <SwiperSlide key={banner.id}>
               <div className="banner-slide">
-                {/* Картинка задаёт высоту блока */}
                 {backgroundImage ? (
                   <Image
                     src={backgroundImage}
@@ -65,13 +69,8 @@ export function Banner() {
                 ) : (
                   <div className="banner-slide__fallback" />
                 )}
-
                 <div className="banner-slide__overlay" />
-
-                <div className="banner-slide__content container">
-                  <h1 className="banner-slide__title">{banner.title}</h1>
-                  <p className="banner-slide__subtitle">{banner.description || banner.subtitle}</p>
-                </div>
+                <div className="banner-slide__content container" />
               </div>
             </SwiperSlide>
           );

@@ -11,8 +11,8 @@ const menuItems = [
   {
     id: 0,
     text: "Товары",
-    path: "/admin/camera",
-    matchPaths: ["/admin/camera", "/camera", "/add-product", "/edit-product"],
+    path: "/productss",
+    matchPaths: ["/productss", "/admin/camera", "/add-product", "/edit-product"],
     icon: <Package size={22} />,
   },
   {

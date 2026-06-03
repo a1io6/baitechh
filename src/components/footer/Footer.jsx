@@ -31,34 +31,24 @@ function Footer() {
     }));
   };
 
-  const getMapEmbedUrl = () => {
-    const rawAddress = String(settings?.address || "").trim();
-    const fallbackAddress = t("footer.address.street");
+const getMapEmbedUrl = () => {
+  const rawAddress = String(settings?.address || '').trim();
 
-    if (!rawAddress) {
-      return `https://www.google.com/maps?q=${encodeURIComponent(fallbackAddress)}&output=embed`;
-    }
-
-    if (/^https?:\/\//i.test(rawAddress)) {
-      // 2GIS embed shows its own dark info card inside iframe.
-      // We can't style/hide that from our site, so use clean Google embed instead.
-      if (rawAddress.includes("2gis.")) {
-        return `https://www.google.com/maps?q=${encodeURIComponent(fallbackAddress)}&output=embed`;
-      }
-
-      if (rawAddress.includes("maps.app.goo.gl")) {
-        return `https://www.google.com/maps?q=${encodeURIComponent(fallbackAddress)}&output=embed`;
-      }
-
-      if (rawAddress.includes("google.com/maps") && !rawAddress.includes("output=embed")) {
-        const separator = rawAddress.includes("?") ? "&" : "?";
-        return `${rawAddress}${separator}output=embed`;
-      }
+  // Если уже готовый embed URL
+  if (/^https?:\/\//i.test(rawAddress)) {
+    if (rawAddress.includes('yandex') || rawAddress.includes('openstreetmap')) {
       return rawAddress;
     }
+    if (rawAddress.includes('google.com/maps') && !rawAddress.includes('output=embed')) {
+      const separator = rawAddress.includes('?') ? '&' : '?';
+      return `${rawAddress}${separator}output=embed`;
+    }
+    if (rawAddress.includes('google.com/maps/embed')) return rawAddress;
+  }
 
-    return `https://www.google.com/maps?q=${encodeURIComponent(rawAddress)}&output=embed`;
-  };
+  // По умолчанию Yandex Maps с координатами Baitech
+  return `https://yandex.ru/map-widget/v1/?ll=74.636407%2C42.844049&z=16&pt=74.636407,42.844049,pm2rdm&l=map`;
+};
 
   return (
     <footer className="footer">
@@ -167,6 +157,7 @@ function Footer() {
               <li><a href="/profile">{t('footer.client.account')}</a></li>
               <li><Link href="/profile?tab=orders">{t('footer.client.orderHistory')}</Link></li>
               <li><Link href="/profile?tab=returns">{t('footer.client.returns')}</Link></li>
+              <li><Link href="/calculator">{t('footer.client.calculator')}</Link></li>
             </ul>
           </div>
         </div>
@@ -193,25 +184,29 @@ function Footer() {
           <div className="footer__map">
             <div className="footer__map-title">{t('footer.map')}</div>
             {!isLoading && (
-              <iframe
-                title="2GIS Map"
-                src={getMapEmbedUrl()}
-                width="100%"
-                height="400"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+           <iframe
+  title="Yandex Map"
+  src={getMapEmbedUrl()}
+  width="100%"
+  height="400"
+  loading="lazy"
+  allow="fullscreen"
+  referrerPolicy="no-referrer-when-downgrade"
+/>
             )}
           </div>
         </div>
 
       </div>
 
-      <div className="footer__bottom flex justify-between items-center gap-5">
+      <div className="footer__bottom flex justify-around  items-center gap-5">
         <h3>
         Baitech © 2021
-        </h3>
-        <h3>Разработано Baitech company</h3>
+        </h3> 
+        <a href="https://www.instagram.com/a1i.o6/" target='_blank'>a1i.06</a>
+        <a className="border-b-[1px] border-b-[#0e2eff] leading-snug " href='https://baitech-it.vercel.app/' target='_blank' rel='noopener noreferrer'>
+          Разработано Baitech.it company
+        </a>
       </div>
     </footer>
   );

@@ -102,7 +102,7 @@ const EditProduct = () => {
 
     try {
       await updateProduct({ id, payload: formDataPayload });
-      router.push("/admin/camera");
+      router.push("/productss");
     } catch (err) {
       console.error("Ошибка при обновлении:", err);
       alert("Ошибка при сохранении данных.");

@@ -22,9 +22,9 @@ const CardSkeleton = () => (
   </div>
 );
 
-export function Recommendations() {
-  const { t } = useTranslation();
-  const { products = [], isLoading, isError } = useProducts();
+export function Recommendations({ categoryName }) {
+ const { t } = useTranslation();
+  const { products = [], isLoading, isError } = useProducts({ category: categoryName || '' });
 
   const recommendedProducts = products.slice(0, 10);
 
@@ -41,7 +41,9 @@ export function Recommendations() {
 
   return (
     <div className="recommendations">
-      <h2 className="recommendations__title">{t("recommendations.title")}</h2>
+      <h2 className="recommendations__title">
+        {categoryName ? categoryName : t("recommendations.title")}
+      </h2>
       <div className="recommendations-carousel">
         <button className="recommendations__nav recommendations__nav--prev" aria-label="Previous products">
           <IoChevronBackOutline size={22} />

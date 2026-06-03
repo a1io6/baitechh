@@ -11,6 +11,7 @@ import { useCart, useCreateCartItem, useDeleteCartItem } from "@/lib/cart/hooks/
 import { useSiteSettings } from "@/lib/settings/hook";
 
 const HIGH_PRICE_LIMIT = 100000;
+const PRODUCT_PLACEHOLDER = "/product-placeholder.svg";
 
 const buildWhatsAppLink = (whatsapp, phone, message) => {
   const encodedMessage = encodeURIComponent(message);
@@ -72,8 +73,8 @@ const ProductCard = ({ productId }) => {
         if (!isMounted) return;
 
         setProduct(data);
-        const images = data.existing_images?.map((img) => img.image) || [];
-        setActiveImage(images[0] || null);
+        const images = data.existing_images?.map((img) => img.image).filter(Boolean) || [];
+        setActiveImage(images[0] || PRODUCT_PLACEHOLDER);
       } catch (err) {
         console.error("Ошибка загрузки товара:", err);
       } finally {
@@ -90,7 +91,9 @@ const ProductCard = ({ productId }) => {
     };
   }, [productId]);
 
-  const images = product?.existing_images?.map((img) => img.image) || [];
+  const images = product?.existing_images?.map((img) => img.image).filter(Boolean) || [];
+  const displayImages = images.length > 0 ? images : [PRODUCT_PLACEHOLDER];
+  const currentImage = activeImage || displayImages[0];
 
   const increment = () => setCount((c) => c + 1);
   const decrement = () => count > 1 && setCount((c) => c - 1);
@@ -138,10 +141,10 @@ const ProductCard = ({ productId }) => {
       <div className="product">
         <div className="product__gallery">
           <div className="product__thumbs">
-            {images.map((img) => (
+            {displayImages.map((img) => (
               <button
                 key={img}
-                className={`product__thumb ${activeImage === img ? "active" : ""}`}
+                className={`product__thumb ${currentImage === img ? "active" : ""}`}
                 onClick={() => setActiveImage(img)}
                 type="button"
               >
@@ -151,9 +154,7 @@ const ProductCard = ({ productId }) => {
           </div>
 
           <div className="product__image">
-            {activeImage && (
-              <Image src={activeImage} alt={productName} width={471} height={471} />
-            )}
+            <Image src={currentImage} alt={productName} width={471} height={471} />
           </div>
         </div>
 

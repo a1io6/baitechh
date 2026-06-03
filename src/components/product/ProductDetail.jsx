@@ -24,7 +24,7 @@ function ProductDetail() {
       <ProductCard productId={id} /> 
       <Description productId={id} />
       <ProductSpecs productId={id} />
-      <PopularCard  productId={id} />
+      <PopularCard  productId={id} /> 
     </div>
   );
 }

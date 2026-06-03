@@ -1,0 +1,34 @@
+.breadcrumb {
+  padding: 12px 0;
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  position: relative;
+}
+
+.link {
+  position: relative;
+  font-size: 16px;
+  color: #6b7280;
+  text-decoration: none;
+  padding-bottom: 4px;
+  transition: color 0.2s ease;
+}
+
+.active {
+  color: #111827;
+}
+
+.separator {
+  color: #9ca3af;
+  user-select: none;
+}

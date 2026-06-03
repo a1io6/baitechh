@@ -14,6 +14,7 @@ const CATEGORY_MATCHERS = {
 };
 
 export default function NavItem() {
+  
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const pathname = usePathname();
@@ -46,19 +47,19 @@ export default function NavItem() {
   const menuItems = [
     { label: t('navbar.catalog'), icon: <LayoutGrid size={18} />, isCatalog: true },
     {
-      label: t('navbar.pcComponents'),
-      link: '/catalog',
-      categoryKey: 'pcComponents',
-      fallbackCategory: t('navbar.pcComponents'),
-      icon: <Monitor size={18} />,
-    },
-    {
-      label: t('navbar.videoSurveillance'),
-      link: '/catalog',
-      categoryKey: 'videoSurveillance',
-      fallbackCategory: t('navbar.videoSurveillance'),
-      icon: <Video size={18} />,
-    },
+  label: t('navbar.pcComponents'),
+  link: '/',
+  categoryKey: 'pcComponents',
+  fallbackCategory: t('navbar.pcComponents'),
+  icon: <Monitor size={18} />,
+},
+{
+  label: t('navbar.videoSurveillance'),
+  link: '/',
+  categoryKey: 'videoSurveillance', 
+  fallbackCategory: t('navbar.videoSurveillance'),
+  icon: <Video size={18} />,
+},
     { label: t('navbar.solutions'), link: '/solution', icon: <FileText size={18} /> },
     { label: t('navbar.courses'), link: '/course', icon: <BookOpen size={18} /> },
   ];

@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   metadataBase: new URL("https://baitech.kg"),
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    shortcut: ["/icon.svg"],
-    apple: ["/icon.svg"],
+    icon: [{ url: "/icon.png", type: "image/svg+xml" }],
+    shortcut: ["/icon.png"],
+    apple: ["/icon.png"],
   },
   title: {
     default: "Baitech.kg — камеры и видеонаблюдение в Бишкеке",

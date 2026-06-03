@@ -461,6 +461,11 @@
   flex-direction: column;
   gap: 8px;
 }
+.scrollArea::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 6px;
+  background-color: #0e2e5b;
+}
 
 .checkbox {
   display: flex;

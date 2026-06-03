@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useSiteSettings } from '@/lib/settings/hook';
 
 const HIGH_PRICE_LIMIT = 100000;
+const PRODUCT_PLACEHOLDER = '/product-placeholder.svg';
 
 const buildWhatsAppLink = (whatsapp, phone, message) => {
   const encodedMessage = encodeURIComponent(message);
@@ -38,7 +39,7 @@ const buildWhatsAppLink = (whatsapp, phone, message) => {
 
 export default function ProductCard({ product, viewMode }) {
   const { t } = useTranslation();
-  const imageUrl = product.existing_images?.[0]?.image || '/placeholder.png';
+  const imageUrl = product.existing_images?.[0]?.image || PRODUCT_PLACEHOLDER;
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const productId = product?.id ?? product?.pk ?? product?.product_id ?? product?.product?.id;
   const productDetailPath = productId
@@ -142,7 +143,7 @@ export default function ProductCard({ product, viewMode }) {
                   </div>
                   <div className={styles.priceRow}>
                     <span className={styles.price}>
-                      {Number(product.price).toLocaleString()} {t('card.currency')}
+                      {formattedPrice} {t('card.currency')}
                     </span>
                     <button
                       className={styles.cartBtn}

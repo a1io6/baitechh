@@ -4,53 +4,52 @@ import './style.scss';
 import { useRouter } from 'next/navigation';
 import { useProducts } from '@/lib/products/hooks/hooks';
 import { useTranslation } from 'react-i18next';
-import Hivideo from '../../../assets/svg/Система безопастности (2) (1).svg';
-import Hivideo2 from '../../../assets/svg/Система безопастности (3) (2).svg';
-import ajhuaImage from '../../../assets/svg/1.svg';
-import ajhuaImage2 from '../../../assets/svg/2.svg';
-import LinkFf from '../../../assets/svg/dahua.svg';
-import LinkFf2 from '../../../assets/svg/dahua2.svg';
-import Hikvision from '../../../assets/svg/hikvision.svg';
-import Hikvision2 from '../../../assets/svg/hikvision2.svg';
-import ajax from '../../../assets/svg/ajax.svg';
-import ajax2 from '../../../assets/svg/ajax2.svg';
 
-function Features() {
+import HivideoImg from '../../../assets/png/HIVIDEO.png';
+import LinkffImg from '../../../assets/png/LinkFF.png';
+import HikvisionImg from '../../../assets/png/HIKVISION.png';
+import TplinkImg from '../../../assets/png/tp-link.png';
+import DahuaImg from '../../../assets/png/dahua.png';
+import AjaxImg from '../../../assets/png/ajax.png';
+import PantumImg from '../../../assets/png/PANTUM.png';
+import MsiImg from '../../../assets/png/msi.png';
+import CanonImg from '../../../assets/png/canon.png';
+
+// Какие бренды показывать для каждой категории
+const CATEGORY_BRANDS = {
+  all:   ['ajax', 'dahua', 'msi', 'pantum', 'linkff'], // главная
+  video: ['ajax', 'dahua', 'hikvision', 'hivideo', ],   // Видеонаблюдение
+  pc:    ['tplink', 'canon', 'msi', 'pantum', 'linkff'],                  // Комплектующие ПК
+};
+
+const VIDEO_MATCHERS = ['видеонаблюд', 'камер', 'cctv'];
+const PC_MATCHERS = ['комплектующ', 'компьютер', 'пк'];
+
+const BRAND_META = {
+  hivideo:   { image: HivideoImg },
+  linkff:    { image: LinkffImg },
+  hikvision: { image: HikvisionImg },
+  tplink:    { image: TplinkImg },
+  dahua:     { image: DahuaImg },
+  ajax:      { image: AjaxImg },
+  pantum:    { image: PantumImg },
+  msi:       { image: MsiImg },
+  canon:     { image: CanonImg },
+};
+
+function Features({ categoryName }) {
   const { brands, isInitialLoading } = useProducts();
-  const { t } = useTranslation();
   const router = useRouter();
 
-  const BRAND_META = {
-    hivideo: {
-      logo: Hivideo2,
-      productImage: Hivideo,
-      label: t('brands.hivideo'),
-    },
-    linkff: {
-      logo: LinkFf2,
-      productImage: LinkFf,
-      label: t('brands.linkff'),
-    },
-    dahua: {
-      logo: ajhuaImage2,
-      productImage: ajhuaImage,
-      label: t('brands.dahua'),
-    },
-    hikvision: {
-      logo: Hikvision2,
-      productImage: Hikvision,
-      label: t('brands.hikvision'),
-    },
-    ajax: {
-      logo: ajax2,
-      productImage: ajax,
-      label: t('brands.ajax'),
-    },
+  const getCategoryBrands = () => {
+    if (!categoryName) return CATEGORY_BRANDS.all;
+    const lower = categoryName.toLowerCase();
+    if (VIDEO_MATCHERS.some((m) => lower.includes(m))) return CATEGORY_BRANDS.video;
+    if (PC_MATCHERS.some((m) => lower.includes(m))) return CATEGORY_BRANDS.pc;
+    return CATEGORY_BRANDS.all;
   };
 
-  const handleClick = (brand) => {
-    router.push(`/catalog/?brand=${brand.id}`);
-  };
+  const allowedKeys = getCategoryBrands();
 
   if (isInitialLoading) {
     return (
@@ -64,50 +63,37 @@ function Features() {
     );
   }
 
-  const BRAND_ORDER = ['hivideo', 'linkff', 'dahua', 'hikvision', 'ajax'];
-
   const filteredBrands = brands
     .filter((brand) => {
-      const key = brand.name?.toLowerCase().replace(/\s+/g, '');
-      return !!BRAND_META[key];
-    })
-    .sort((a, b) => {
-      const keyA = a.name?.toLowerCase().replace(/\s+/g, '');
-      const keyB = b.name?.toLowerCase().replace(/\s+/g, '');
-      return BRAND_ORDER.indexOf(keyA) - BRAND_ORDER.indexOf(keyB);
+      const key = brand.name?.toLowerCase().replace(/[\s-]/g, '');
+      return allowedKeys.some((k) => key?.includes(k) || k.includes(key));
     });
+
+  if (filteredBrands.length === 0) return null;
 
   return (
     <div className="features">
       <div className="features__container">
         {filteredBrands.map((brand) => {
-          const key = brand.name?.toLowerCase().replace(/\s+/g, '');
+          const key = Object.keys(BRAND_META).find((k) =>
+            brand.name?.toLowerCase().replace(/[\s-]/g, '').includes(k) ||
+            k.includes(brand.name?.toLowerCase().replace(/[\s-]/g, ''))
+          );
           const meta = BRAND_META[key];
+          if (!meta) return null;
 
           return (
             <div
               key={brand.id}
               className="feature-card"
-              onClick={() => handleClick(brand)}
+              onClick={() => router.push(`/catalog/?brand=${brand.id}`)}
             >
-              <div className="feature-card__left">
-                <img
-                  className="feature-card__logo"
-                  src={meta.logo.src ?? meta.logo}
-                  alt={brand.name}
-                  draggable={false}
-                />
-                <span className="feature-card__label">{meta.label}</span>
-              </div>
-
-              <div className="feature-card__right">
-                <img
-                  className="feature-card__product-img"
-                  src={meta.productImage.src ?? meta.productImage}
-                  alt=""
-                  draggable={false}
-                />
-              </div>
+              <img
+                className="feature-card__full-img"
+                src={meta.image.src ?? meta.image}
+                alt={brand.name}
+                draggable={false}
+              />
             </div>
           );
         })}

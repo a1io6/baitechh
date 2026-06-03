@@ -14,7 +14,7 @@ export const useOrders = (filters = {}) => {
       const { data } = await $api.get("/ordering/orders/", { params: activeFilters });
       return data;
     },
-    placeholderData: (prev) => prev,
+      placeholderData: (prev) => prev,
   });
 
 const updateStatusMutation = useMutation({
@@ -34,6 +34,7 @@ const updateStatusMutation = useMutation({
   },
   onSuccess: () => {
     queryClient.invalidateQueries({ queryKey: ["orders"] });
+     queryClient.invalidateQueries({ queryKey: ["statuses"] });
   },
 });
 

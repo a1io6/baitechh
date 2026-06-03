@@ -139,7 +139,7 @@ const AddProduct = () => {
 
     try {
       await addProduct(payload);
-      router.push("/admin/camera");
+      router.push("/productss");
     } catch (err) {
       console.error("Ошибка публикации:", err);
     } finally {

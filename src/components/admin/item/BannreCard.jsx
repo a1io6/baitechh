@@ -4,16 +4,7 @@ import "./BannerCard.scss";
 export function AdminItem({ banner, handleDelete, handleToggle, handleEdit }) {
   return (
     <div key={banner.id} className="banner-item">
-      {/* Чекбокс */}
-      <label className="banner-item__checkbox">
-        <input
-          type="checkbox"
-          checked={banner.active}
-          onChange={() => handleToggle(banner.id)}
-        />
-        <span className="banner-item__checkmark"></span>
-      </label>
-      {/* Превью изображения */}
+    
     <div className="banner-item__image">
   {banner.existing_images && banner.existing_images.length > 0 ? (
     // Если картинки есть, проходим по массиву и выводим их

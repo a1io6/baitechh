@@ -111,7 +111,7 @@ export const useLogin = () => {
         // Уведомляем об изменении авторизации
         window.dispatchEvent(new Event('authChange'));
         
-        router.push('/admin');
+        router.push('/productss');
       } else {
         // ✅ Для обычного пользователя тоже access_token
         localStorage.setItem('access_token', data.access);

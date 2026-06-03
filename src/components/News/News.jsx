@@ -37,7 +37,7 @@ export function News() {
   };
 
   return (
-    <section className="pb-16">
+    <section className="pb-16 max-w-[1350px] mx-auto xl:px-0">
       <div className="w-full mx-auto px-3 xl:px-0">
         <h2
           className="sm:text-5xl text-3xl font-bold md:text-center text-start text-[#1e293b]"
