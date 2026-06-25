@@ -156,11 +156,11 @@ export default function TelephoneSvyazPage() {
             
             {/* ─── ХЛЕБНЫЕ КРОШКИ ─── */}
             <div className="text-[13px] font-medium text-white/60 mb-3 flex items-center gap-1.5 flex-wrap">
-              <Link href="/solutions" className="hover:text-white transition-colors duration-200">
+              <Link href="/solution" className="hover:text-white transition-colors duration-200">
                 {t('telephoneCommunication.breadcrumb.solutions')}
               </Link>
               <span className="text-white/30">&gt;</span>
-              <Link href="/solutions/promyshlennaya-svyaz" className="hover:text-white transition-colors duration-200">
+              <Link href="/solution/promyshlennaya-svyaz" className="hover:text-white transition-colors duration-200">
                 {t('telephoneCommunication.breadcrumb.industrialCommunication')}
               </Link>
               <span className="text-white/30">&gt;</span>
