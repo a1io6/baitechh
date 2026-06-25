@@ -1,8 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createPortal } from 'react-dom';
 import styles from './FullProductCard.module.scss';
 import { IoCartOutline, IoCart, IoEyeOutline, IoClose } from 'react-icons/io5';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -43,7 +42,6 @@ export default function FullProductCard({ product }) {
   const { t } = useTranslation();
   const imageUrl = product.existing_images?.[0]?.image || PRODUCT_PLACEHOLDER;
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const productId = product?.id ?? product?.pk ?? product?.product_id ?? product?.product?.id;
   const productDetailPath = productId
     ? `/productdetail/${encodeURIComponent(String(productId))}`
@@ -78,10 +76,6 @@ export default function FullProductCard({ product }) {
       addToCart({ product_id: productId, quantity: 1 });
     }
   };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <div className={styles.card}>
@@ -205,24 +199,28 @@ export default function FullProductCard({ product }) {
         </div>
       </Link>
 
-      {mounted && isPreviewOpen
-        ? createPortal(
-            <div className={styles.previewOverlay} onClick={() => setIsPreviewOpen(false)}>
-              <div className={styles.previewModal} onClick={(event) => event.stopPropagation()}>
-                <button
-                  type="button"
-                  className={styles.previewClose}
-                  aria-label="Close preview"
-                  onClick={() => setIsPreviewOpen(false)}
-                >
-                  <IoClose size={20} />
-                </button>
-                <img src={imageUrl} alt={product.name} className={styles.previewImage} />
-              </div>
-            </div>,
-            document.body
-          )
-        : null}
+      {isPreviewOpen && (
+        <div className={styles.previewOverlay} onClick={() => setIsPreviewOpen(false)}>
+          <div className={styles.previewModal} onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className={styles.previewClose}
+              aria-label="Close preview"
+              onClick={() => setIsPreviewOpen(false)}
+            >
+              <IoClose size={20} />
+            </button>
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              width={860}
+              height={640}
+              className={styles.previewImage}
+              sizes="min(860px, 100vw)"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

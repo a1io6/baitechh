@@ -1,4 +1,5 @@
     import React from 'react'
+    import Image from 'next/image'
     import { useTranslation } from 'react-i18next'
     import './OtherHistoryCard.scss'
 
@@ -30,7 +31,7 @@
         {item.items.map((product) => (
             <div className="orderImg" key={product.id}>
                 {product.img ? (
-                    <img src={product.img} alt="" />
+                    <Image src={product.img} alt="" width={85} height={85} />
                 ) : (
                     <div style={{
                         width: 100,

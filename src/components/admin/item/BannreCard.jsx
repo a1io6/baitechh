@@ -1,4 +1,5 @@
 import { Edit2, Trash2 } from "lucide-react";
+import Image from "next/image";
 import "./BannerCard.scss";
 
 export function AdminItem({ banner, handleDelete, handleToggle, handleEdit }) {
@@ -9,7 +10,7 @@ export function AdminItem({ banner, handleDelete, handleToggle, handleEdit }) {
   {banner.existing_images && banner.existing_images.length > 0 ? (
     // Если картинки есть, проходим по массиву и выводим их
     banner.existing_images.map((item) => (
-      <img src={item.image} alt="Banner" key={item.id} />
+      <Image src={item.image} alt="Banner" key={item.id} width={80} height={60} />
     ))
   ) : (
     // Если картинок нет (пустой массив или null), показываем заглушку

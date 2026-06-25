@@ -1,5 +1,6 @@
 'use client'
 import React from 'react'
+import Image from 'next/image'
 import { useTranslation } from 'react-i18next'
 import { GoArrowUpRight, GoCheck } from 'react-icons/go'
 import { solutionTranslations } from '@/lib/solution/data'
@@ -22,7 +23,7 @@ function Hero({ solution }) {
   return (
     <div className="mb-14">
       {solution.heroIcon && (
-        <img src={solution.heroIcon} alt="" className="h-10 mb-6" />
+        <Image src={solution.heroIcon} alt="" width={160} height={40} className="h-10 w-auto mb-6" />
       )}
 
       <h1 className="text-[28px] md:text-[36px] font-bold text-[#173B73] mb-4 leading-snug">
@@ -48,8 +49,8 @@ function Hero({ solution }) {
         </div>
 
         {solution.image && (
-          <div className="lg:col-span-5 relative rounded-lg overflow-hidden border border-gray-200 shadow-sm max-h-[260px] bg-gray-50">
-            <img src={solution.image} alt={solution.title} className="w-full h-full object-cover" />
+          <div className="lg:col-span-5 relative rounded-lg overflow-hidden border border-gray-200 shadow-sm h-[260px] bg-gray-50">
+            <Image src={solution.image} alt={solution.title} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
           </div>
         )}
       </div>
@@ -77,7 +78,7 @@ function AdvantagesRow({ heading, items }) {
           >
             <div className="w-12 h-12 mb-4 flex items-center justify-center">
               {item.icon ? (
-                <img src={item.icon} alt="" className="w-full h-full object-contain" />
+                <Image src={item.icon} alt="" width={48} height={48} className="w-full h-full object-contain" />
               ) : (
                 <div className="w-full h-full rounded-full bg-gray-100" />
               )}
@@ -132,10 +133,13 @@ function TextImageBlock({ block, reverse }) {
         <div className={`lg:col-span-6 ${reverse ? 'lg:[direction:ltr]' : ''}`}>
           {/* Сюда кладёшь либо обычное фото, либо картинку-схему/диаграмму */}
           <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50 aspect-[4/3] flex items-center justify-center p-4">
-            <img
+            <Image
               src={block.image || '/images/placeholder-4-3.jpg'}
               alt={block.heading}
+              width={640}
+              height={480}
               className="w-full h-full object-contain"
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </div>
         </div>
@@ -164,7 +168,7 @@ function StandardsList({ heading, items }) {
           >
             <div className="w-8 h-8 mb-3 flex items-center justify-center text-[#173B73]">
               {item.icon ? (
-                <img src={item.icon} alt="" className="w-full h-full object-contain" />
+                <Image src={item.icon} alt="" width={32} height={32} className="w-full h-full object-contain" />
               ) : (
                 <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
                   <path d="M6 2h9l3 3v17H6V2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
@@ -196,10 +200,13 @@ function ProductCards({ heading, products }) {
         {products.map((product, i) => (
           <div key={i} className="flex flex-col border border-gray-200 rounded-lg overflow-hidden hover:border-[#173B73] transition-colors duration-300">
             <div className="aspect-square bg-gray-50 flex items-center justify-center p-6">
-              <img
+              <Image
                 src={product.image || '/images/placeholder-square.jpg'}
                 alt={product.name}
+                width={260}
+                height={260}
                 className="w-full h-full object-contain"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             </div>
             <div className="p-5 flex-1 flex flex-col">
@@ -248,10 +255,13 @@ function SoftwareGallery({ heading, subheading, items }) {
         {items.map((item, i) => (
           <div key={i} className="flex flex-col">
             <div className="aspect-[4/3] rounded-lg overflow-hidden border border-gray-200 bg-gray-50 mb-3">
-              <img
+              <Image
                 src={item.image || '/images/placeholder-4-3.jpg'}
                 alt={item.title}
+                width={420}
+                height={315}
                 className="w-full h-full object-cover"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             </div>
             <p className="text-[14px] text-gray-700 leading-snug">{item.title}</p>

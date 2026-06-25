@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './ProductCard.module.scss';
 import { IoCartOutline, IoCart, IoEyeOutline, IoClose } from 'react-icons/io5';
 import { FaWhatsapp } from 'react-icons/fa';
@@ -97,7 +98,14 @@ export default function ProductCard({ product, viewMode }) {
               >
                 <IoEyeOutline size={18} />
               </button>
-              <img src={imageUrl} alt={product.name} />
+              <Image
+                src={imageUrl}
+                alt={product.name}
+                width={260}
+                height={220}
+                className={styles.cardImage}
+                sizes={viewMode === 'grid' ? '(max-width: 768px) 80vw, 260px' : '240px'}
+              />
               {viewMode === 'grid' && (
                 <div className={styles.dots}>
                   <span className={styles.active}></span>
@@ -194,7 +202,14 @@ export default function ProductCard({ product, viewMode }) {
             >
               <IoClose size={20} />
             </button>
-            <img src={imageUrl} alt={product.name} className={styles.previewImage} />
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              width={820}
+              height={620}
+              className={styles.previewImage}
+              sizes="min(820px, 100vw)"
+            />
           </div>
         </div>
       )}
