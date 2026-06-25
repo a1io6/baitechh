@@ -260,14 +260,14 @@ export default function CheckoutModal({ items, allItems, onClose }) {
                     />
                     <span>{t('checkoutModal.form.qrPayment')}</span>
                   </label>
-                  <label className={styles.paymentOption}>
+                  {/* <label className={styles.paymentOption}>
                     <input
                       type="checkbox"
                       checked={payment === 'cash'}
                       onChange={() => setPayment('cash')}
                     />
                     <span>{t('checkoutModal.form.cash')}</span>
-                  </label>
+                  </label> */}
                 </div>
 
                 <button

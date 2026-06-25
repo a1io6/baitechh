@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -7,6 +7,7 @@ import "./style.scss";
 import { useBanner } from "@/lib/news/hooks/hooks";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
 
 const NewsSkeleton = () => (
   <div
@@ -25,15 +26,13 @@ const NewsSkeleton = () => (
 export function News() {
   const { data, isLoading, error } = useBanner();
   const { t } = useTranslation();
-  const [expandedItems, setExpandedItems] = useState({});
+  const router = useRouter();
   const newsItems = data || [];
   const shouldLoop = (isLoading ? 3 : newsItems.length) > 3;
 
-  const canExpand = (title, description) =>
-    (title || "").trim().length > 55 || (description || "").trim().length > 120;
-
-  const toggleExpand = (id) => {
-    setExpandedItems((prev) => ({ ...prev, [id]: !prev[id] }));
+  // Функция для перехода на страницу новости
+  const handleNewsClick = (item) => {
+    router.push(`/news/${item.id}`);
   };
 
   return (
@@ -84,14 +83,13 @@ export function News() {
                 const imageUrl = item.existing_images?.[0]?.image;
                 const title = item.title || "Без названия";
                 const description = item.description || "Описание отсутствует";
-                const isExpanded = !!expandedItems[item.id];
-                const showToggle = canExpand(title, description);
 
                 return (
                   <SwiperSlide key={item.id}>
                     <div
                       className="bg-white flex flex-col gap-[10px] rounded-[15px] shadow-sm transition-all duration-300 hover:shadow-lg cursor-pointer"
                       style={{ padding: "10px" }}
+                      onClick={() => handleNewsClick(item)}
                     >
                       <div className="h-[250px] lg:h-[320px] w-full bg-[#bfbfbf] rounded-[10px] shrink-0 overflow-hidden relative">
                         {imageUrl ? (
@@ -111,32 +109,13 @@ export function News() {
                         )}
                       </div>
 
-                      <div className={`px-2 ${isExpanded ? "h-auto" : "h-[80px]"}`}>
-                        <h3
-                          className={`text-[14px] lg:text-[20px] font-semibold text-[#1e293b] mb-2 leading-tight ${
-                            isExpanded ? "line-clamp-none" : "line-clamp-1"
-                          } ${showToggle ? "cursor-pointer" : ""}`}
-                          onClick={showToggle ? () => toggleExpand(item.id) : undefined}
-                        >
+                      <div className="px-2 h-[80px]">
+                        <h3 className="text-[14px] lg:text-[20px] font-semibold text-[#1e293b] mb-2 leading-tight line-clamp-1">
                           {title}
                         </h3>
-                        <p
-                          className={`text-[#64748b] text-[12px] lg:text-[16px] ${
-                            isExpanded ? "line-clamp-none" : "line-clamp-2"
-                          } ${showToggle ? "cursor-pointer" : ""}`}
-                          onClick={showToggle ? () => toggleExpand(item.id) : undefined}
-                        >
+                        <p className="text-[#64748b] text-[12px] lg:text-[16px] line-clamp-2">
                           {description}
                         </p>
-                        {showToggle && (
-                          <button
-                            type="button"
-                            className="mt-1 text-[12px] lg:text-[14px] font-medium text-[#0E2E5B]"
-                            onClick={() => toggleExpand(item.id)}
-                          >
-                            {isExpanded ? "Скрыть" : "Еще"}
-                          </button>
-                        )}
                       </div>
                     </div>
                   </SwiperSlide>

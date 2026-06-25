@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="49" height="49" viewBox="0 0 49 49">
+  <defs>
+    <style>
+      .cls-1 { fill: none; stroke: #1565C0; stroke-miterlimit: 10; stroke-width: 1.5; }
+    </style>
+  </defs>
+  <!-- голова человека -->
+  <circle class="cls-1" cx="18" cy="10" r="6"/>
+  <!-- тело -->
+  <path class="cls-1" d="M6 38 C6 28 30 28 30 38"/>
+  <!-- маленький щит справа -->
+  <path class="cls-1" d="M34 20 L27 23 L27 30 C27 35 34 39 34 39 C34 39 41 35 41 30 L41 23 Z"/>
+  <!-- галочка на щите -->
+  <polyline class="cls-1" points="30,30 33,33 38,26"/>
+</svg>

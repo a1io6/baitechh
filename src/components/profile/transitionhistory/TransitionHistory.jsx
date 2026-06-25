@@ -26,7 +26,7 @@ function TransactionHistory() {
 
       {transactions.length === 0 && (
         <p className="transactionhistory__empty">
-          {t("transactionHistory.empty") || "История транзакций пуста"}
+          {t("transactionHistory.empty.title") || "У вас пока нет транзакций"}
         </p>
       )}
 

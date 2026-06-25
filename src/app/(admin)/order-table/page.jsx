@@ -10,7 +10,6 @@ const STATUS_MAP = {
   1: { class: "transit", label: "В пути", apiValue: "on_the_way" },
   2: { class: "delivered", label: "Доставлено", apiValue: "delivered" },
   3: { class: "stock", label: "На складе", apiValue: "in_stock" },
-  4: { class: "returns", label: "Возврат", apiValue: "returned" },
 };
 
 const STATUS_BY_API_VALUE = Object.values(STATUS_MAP).reduce((acc, statusMeta) => {
@@ -59,6 +58,10 @@ const resolveStatusMeta = (order) => {
 
   return { id: 1, meta: STATUS_MAP[1] };
 };
+
+// Хелпер — товар в статусе "возврат"
+const isItemReturnedStatus = (item) =>
+  item?.status?.id === 4 || item?.status?.name === "returned";
 
 const PAYMENT_METHODS = [
   { id: "cash", label: "Наличными" },
@@ -124,6 +127,15 @@ const normalizeDateRange = (dateFrom, dateTo) => {
   if (!dateFrom || !dateTo) return { date_from: dateFrom, date_to: dateTo };
   if (dateFrom <= dateTo) return { date_from: dateFrom, date_to: dateTo };
   return { date_from: dateTo, date_to: dateFrom };
+};
+
+const getItemStatusLabel = (statusId) => {
+  switch (statusId) {
+    case 4: return "Возврат";
+    case 2: return "Доставлено";
+    case 3: return "На складе";
+    default: return "В пути";
+  }
 };
 
 const OrderTable = () => {
@@ -218,15 +230,13 @@ const OrderTable = () => {
   };
 
   // ─── Возврат товара ───────────────────────────────────────────────────────
-  // Endpoint: PATCH /ordering/orders/{order.id}/
-  // Body: { item_id: item.id, status: 4 }
   const handleReturn = async (order, item) => {
     setReturningItem({ orderId: order.id, itemId: item.id });
     try {
       await updateStatusAsync({
-        id: order.id,     // path: /ordering/orders/{id}/change_status/
-        itemId: item.id,  // body: item_id (хук сам переводит в item_id)
-        status: 4,        // body: status
+        id: order.id,
+        itemId: item.id,
+        status: 4,
       });
       alert("Возврат успешно оформлен!");
     } catch (error) {
@@ -258,14 +268,27 @@ const OrderTable = () => {
     }
   };
 
-  const isItemReturned = (item) =>
-    item?.status?.id === 4 || item?.status?.name === "returned";
+  const isItemReturned = (item) => isItemReturnedStatus(item);
 
   const isItemReturning = (orderId, itemId) =>
     returningItem?.orderId === orderId && returningItem?.itemId === itemId;
 
   const isItemCancelling = (orderId, itemId) =>
     cancellingItem?.orderId === orderId && cancellingItem?.itemId === itemId;
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ─── Смена статуса заказа → пробрасываем на все товары, кроме "Возврат" ──
+  // Сама проброска на товары происходит декларативно при рендере:
+  // effectiveStatusId = isItemReturnedStatus(item) ? 4 : statusValue (см. ниже).
+  // Здесь просто отправляем новый статус заказа на сервер.
+  const handleOrderStatusChange = (order, nextStatusId) => {
+    if (!STATUS_MAP[nextStatusId]) return;
+
+    updateStatus({
+      id: order.id,
+      status: nextStatusId,
+    });
+  };
   // ─────────────────────────────────────────────────────────────────────────
 
   const currentPage = page;
@@ -506,12 +529,7 @@ const OrderTable = () => {
                             disabled={isUpdating}
                             onChange={(event) => {
                               const nextStatusId = Number(event.target.value);
-                              if (!STATUS_MAP[nextStatusId]) return;
-
-                              updateStatus({
-                                id: order.id,
-                                status: nextStatusId,
-                              });
+                              handleOrderStatusChange(order, nextStatusId);
                             }}
                           >
                             {Object.entries(STATUS_MAP).map(([id, status]) => (
@@ -529,96 +547,101 @@ const OrderTable = () => {
                       <tr className="items-row">
                         <td colSpan="7">
                           <div className="items-container">
-                            {(order.items || []).map((item, index) => (
-                              <div key={index} className="order-details-card">
-                                <div className="item-photo-placeholder">
-                                  {item.img && <img src={item.img} alt={item.name} />}
-                                </div>
+                            {(order.items || []).map((item, index) => {
+                              // Статус товара = статус заказа, ВСЕГДА,
+                              // кроме товаров в статусе "Возврат" — те не меняются
+                              // независимо от того, что прислал бекенд по самому товару.
+                              const effectiveStatusId = isItemReturnedStatus(item)
+                                ? 4
+                                : statusValue;
 
-                                <div className="item-info-grid">
-                                  <div className="info-block">
-                                    <span className="info-label">{"№ заказа"}</span>
-                                    <span className="info-value">{order.order_number}</span>
-                                  </div>
-                                  <div className="info-block title">
-                                    <span className="info-label">{"Название"}</span>
-                                    <span className="info-value">{item.name || "Товар"}</span>
-                                  </div>
-                                  <div className="info-block">
-                                    <span className="info-label">{"Цена"}</span>
-                                    <span className="info-value">{item.price} {"сом"}</span>
-                                  </div>
-                                  <div className="info-block">
-                                    <span className="info-label">{"Адрес"}</span>
-                                    <span className="info-value">{order.address}</span>
-                                  </div>
-                                  <div className="info-block">
-                                    <span className="info-label">{"Артикул"}</span>
-                                    <span className="info-value">{item.sku || "-"}</span>
-                                  </div>
-                                  <div className="info-block">
-                                    <span className="info-label">{"Количество"}</span>
-                                    <span className="info-value">{item.quantity} {"шт"}</span>
-                                  </div>
-                                  <div className="info-block">
-                                    <span className="info-label">{"Дата"}</span>
-                                    <span className="info-value">
-                                      {order.formatted_date ? order.formatted_date.split(" ")[0] : "-"}
-                                    </span>
-                                  </div>
-                                  <div className="info-block">
-                                    <span className="info-label">{"Статус товара"}</span>
-                                    <span
-                                      className="info-value status"
-                                      style={{
-                                        color: item.status?.color_code || "#333",
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {item.status?.id === 4
-                                        ? "Возврат"
-                                        : item.status?.id === 2
-                                        ? "Доставлено"
-                                        : item.status?.id === 3
-                                        ? "На складе"
-                                        : "В пути"}
-                                    </span>
+                              return (
+                                <div key={index} className="order-details-card">
+                                  <div className="item-photo-placeholder">
+                                    {item.img && <img src={item.img} alt={item.name} />}
                                   </div>
 
-                                  <div className="info-block" style={{ gridColumn: "span 2" }}>
-                                    {isItemReturned(item) ? (
-                                      <button
-                                        type="button"
-                                        className="return-btn return-btn--cancel"
-                                        disabled={isItemCancelling(order.id, item.id)}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleCancelReturn(order, item);
+                                  <div className="item-info-grid">
+                                    <div className="info-block">
+                                      <span className="info-label">{"№ заказа"}</span>
+                                      <span className="info-value">{order.order_number}</span>
+                                    </div>
+                                    <div className="info-block title">
+                                      <span className="info-label">{"Название"}</span>
+                                      <span className="info-value">{item.name || "Товар"}</span>
+                                    </div>
+                                    <div className="info-block">
+                                      <span className="info-label">{"Цена"}</span>
+                                      <span className="info-value">{item.price} {"сом"}</span>
+                                    </div>
+                                    <div className="info-block">
+                                      <span className="info-label">{"Адрес"}</span>
+                                      <span className="info-value">{order.address}</span>
+                                    </div>
+                                    <div className="info-block">
+                                      <span className="info-label">{"Артикул"}</span>
+                                      <span className="info-value">{item.sku || "-"}</span>
+                                    </div>
+                                    <div className="info-block">
+                                      <span className="info-label">{"Количество"}</span>
+                                      <span className="info-value">{item.quantity} {"шт"}</span>
+                                    </div>
+                                    <div className="info-block">
+                                      <span className="info-label">{"Дата"}</span>
+                                      <span className="info-value">
+                                        {order.formatted_date ? order.formatted_date.split(" ")[0] : "-"}
+                                      </span>
+                                    </div>
+                                    <div className="info-block">
+                                      <span className="info-label">{"Статус товара"}</span>
+                                      <span
+                                        className="info-value status"
+                                        style={{
+                                          color: effectiveStatusId === 4
+                                            ? "#e53e3e"
+                                            : item.status?.color_code || "#333",
+                                          fontWeight: 600,
                                         }}
                                       >
-                                        {isItemCancelling(order.id, item.id)
-                                          ? "Отмена..."
-                                          : "↺ Отменить возврат"}
-                                      </button>
-                                    ) : (
-                                      <button
-                                        type="button"
-                                        className="return-btn return-btn--make"
-                                        disabled={isItemReturning(order.id, item.id)}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleReturn(order, item);
-                                        }}
-                                      >
-                                        {isItemReturning(order.id, item.id)
-                                          ? "Отправка..."
-                                          : "↩ Оформить возврат"}
-                                      </button>
-                                    )}
+                                        {getItemStatusLabel(effectiveStatusId)}
+                                      </span>
+                                    </div>
+
+                                    <div className="info-block" style={{ gridColumn: "span 2" }}>
+                                      {isItemReturned(item) ? (
+                                        <button
+                                          type="button"
+                                          className="return-btn return-btn--cancel"
+                                          disabled={isItemCancelling(order.id, item.id)}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleCancelReturn(order, item);
+                                          }}
+                                        >
+                                          {isItemCancelling(order.id, item.id)
+                                            ? "Отмена..."
+                                            : "↺ Отменить возврат"}
+                                        </button>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          className="return-btn return-btn--make"
+                                          disabled={isItemReturning(order.id, item.id)}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleReturn(order, item);
+                                          }}
+                                        >
+                                          {isItemReturning(order.id, item.id)
+                                            ? "Отправка..."
+                                            : "↩ Оформить возврат"}
+                                        </button>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </td>
                       </tr>

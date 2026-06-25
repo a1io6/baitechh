@@ -157,6 +157,7 @@ const getMapEmbedUrl = () => {
               <li><a href="/profile">{t('footer.client.account')}</a></li>
               <li><Link href="/profile?tab=orders">{t('footer.client.orderHistory')}</Link></li>
               <li><Link href="/profile?tab=returns">{t('footer.client.returns')}</Link></li>
+              <li><Link href="/dilleram">{t('footer.client.diller')}</Link></li>
               <li><Link href="/calculator">{t('footer.client.calculator')}</Link></li>
             </ul>
           </div>

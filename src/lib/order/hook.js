@@ -14,29 +14,40 @@ export const useOrders = (filters = {}) => {
       const { data } = await $api.get("/ordering/orders/", { params: activeFilters });
       return data;
     },
-      placeholderData: (prev) => prev,
+    placeholderData: (prev) => prev,
   });
 
-const updateStatusMutation = useMutation({
-  mutationFn: async ({ id, itemId, status, statusId }) => {
-    const normalizedStatus = status ?? statusId;
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, itemId, status, statusId }) => {
+      const normalizedStatus = status ?? statusId;
 
-    if (id == null || normalizedStatus == null) {
-      throw new Error("Order id and status are required to update status.");
-    }
+      if (id == null || normalizedStatus == null) {
+        throw new Error("Order id and status are required to update status.");
+      }
 
-    const payload = itemId != null
-      ? { item_id: itemId, status: normalizedStatus }
-      : { status: normalizedStatus };
+      const payload = itemId != null
+        ? { item_id: itemId, status: normalizedStatus }
+        : { status: normalizedStatus };
 
-    const { data } = await $api.patch(`ordering/orders/${id}/change_status/`, payload);
-    return data;
-  },
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
-     queryClient.invalidateQueries({ queryKey: ["statuses"] });
-  },
-});
+      const { data } = await $api.patch(`ordering/orders/${id}/change_status/`, payload);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["statuses"] });
+    },
+    onError: (error) => {
+      // ВРЕМЕННО для отладки — чтобы увидеть, что реально отвечает бекенд
+      console.error("Ошибка смены статуса заказа:", error?.response?.data || error);
+      const detail =
+        error?.response?.data?.detail ||
+        error?.response?.data?.status?.[0] ||
+        JSON.stringify(error?.response?.data) ||
+        error?.message ||
+        "Неизвестная ошибка";
+      alert(`Не удалось обновить статус: ${detail}`);
+    },
+  });
 
   const getStatuses = useQuery({
     queryKey: ["statuses"],
@@ -58,6 +69,8 @@ const updateStatusMutation = useMutation({
     updateStatus: updateStatusMutation.mutate,
     updateStatusAsync: updateStatusMutation.mutateAsync,
     isUpdating: updateStatusMutation.isPending,
+    isUpdateError: updateStatusMutation.isError,
+    updateError: updateStatusMutation.error,
     statuses: getStatuses.data,
   };
 };

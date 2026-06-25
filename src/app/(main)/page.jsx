@@ -1,5 +1,5 @@
 // app/page.jsx
-import HomeContent from '@/components/home/HomeContent';
+import HomeContent from '../../components/home/HomeContent';
 import '../globals.css'
 
 export const metadata = {

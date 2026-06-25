@@ -7,7 +7,7 @@ import './style.scss'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-import { LogoutModal } from '@/components/logoutModal/logoutModal'
+import { LogoutModal } from '../../../components/logoutModal/logoutModal'
 import { useTranslation } from 'react-i18next'
 
 function ModalAuth({ onClose }) {

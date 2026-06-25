@@ -1,211 +1,138 @@
 'use client'
 import Link from 'next/link'
-import React from 'react'
-import { GoArrowUpRight} from "react-icons/go";
-import { LuArrowRight } from "react-icons/lu";
-import { useTranslation } from 'react-i18next'
-import {
-  Building2,
-  Cable,
-  Camera,
-  CarFront,
-  DoorOpen,
-  House,
-  HousePlug,
-  Laptop,
-  Lightbulb,
-  Lock,
-  MonitorSmartphone,
-  Network,
-  Router,
-  Server,
-  Shield,
-  ShieldCheck,
-  ShieldUser,
-  Siren,
-  Store,
-  Wifi,
-  Wrench,
-} from 'lucide-react'
+import React, { Suspense, useRef } from 'react'
+import { GoArrowUpRight } from "react-icons/go";
+import { Canvas, useFrame } from '@react-three/fiber'
 import Under from '../ui/under/Under'
 import { solutionsData, solutionTranslations } from '@/lib/solution/data'
+import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 
-// ─── SVG иконки (outline, монолинейные — под стиль arman) ───────────────────
-const icons = {
-  camera: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="4" y="16" width="40" height="32" rx="4" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M44 26l14-8v28l-14-8V26z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-      <circle cx="22" cy="32" r="6" stroke="currentColor" strokeWidth="2.5"/>
-    </svg>
-  ),
-  'building-store': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M8 24l6-14h36l6 14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M8 24a8 8 0 0016 0 8 8 0 0016 0 8 8 0 0016 0" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M8 32v22h48V32" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <rect x="24" y="38" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2.5"/>
-    </svg>
-  ),
-  home: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M6 30L32 8l26 22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M12 26v26h40V26" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <rect x="24" y="36" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2.5"/>
-    </svg>
-  ),
-  car: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M10 34l8-16h28l8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <rect x="4" y="34" width="56" height="14" rx="4" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="16" cy="52" r="6" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="48" cy="52" r="6" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M4 42h56" stroke="currentColor" strokeWidth="2.5"/>
-    </svg>
-  ),
-  'shield-lock': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M32 6L8 16v18c0 14 12 22 24 26 12-4 24-12 24-26V16L32 6z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-      <rect x="24" y="30" width="16" height="14" rx="3" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M27 30v-4a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  door: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="14" y="6" width="36" height="52" rx="3" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M14 58H6m44 0h8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <circle cx="44" cy="32" r="3" stroke="currentColor" strokeWidth="2.5"/>
-    </svg>
-  ),
-  lock: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="10" y="28" width="44" height="30" rx="4" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M20 28V20a12 12 0 0124 0v8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <circle cx="32" cy="44" r="4" stroke="currentColor" strokeWidth="2.5"/>
-      <line x1="32" y1="48" x2="32" y2="54" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  bell: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M32 8a18 18 0 0118 18v12l4 6H10l4-6V26A18 18 0 0132 8z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-      <path d="M26 44a6 6 0 0012 0" stroke="currentColor" strokeWidth="2.5"/>
-      <line x1="32" y1="4" x2="32" y2="8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  'user-shield': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <circle cx="24" cy="18" r="10" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M4 58c0-12 9-18 20-18s20 6 20 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M46 28l12 6v10c0 6-5 11-12 13-7-2-12-7-12-13V34l12-6z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-    </svg>
-  ),
-  wifi: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M8 24a34 34 0 0148 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M16 32a22 22 0 0132 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M24 40a10 10 0 0116 0" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <circle cx="32" cy="50" r="4" stroke="currentColor" strokeWidth="2.5"/>
-    </svg>
-  ),
-  router: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="6" y="28" width="52" height="20" rx="4" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M16 28V18m16 10V14m16 14V18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <circle cx="16" cy="38" r="3" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="28" cy="38" r="3" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M40 38h10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  'topology-star': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <circle cx="32" cy="32" r="6" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="32" cy="8" r="5" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="56" cy="44" r="5" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="8" cy="44" r="5" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M32 26V13m15.7 18.5l8.7 5M16.3 31.5l-8.7 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  plug: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M22 6v16m20-16v16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M12 22h40a16 16 0 01-16 16H28A16 16 0 0112 22z" stroke="currentColor" strokeWidth="2.5"/>
-      <line x1="32" y1="38" x2="32" y2="58" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  'smart-home': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M6 30L32 8l26 22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M12 26v26h40V26" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <circle cx="32" cy="38" r="8" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M28 34l3 4 5-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  bulb: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M32 10c-9.9 0-18 7.9-18 17.8 0 6.1 3 10.3 6.9 14.2 1.7 1.7 3.1 3.9 3.1 6h16c0-2.1 1.4-4.3 3.1-6 3.9-3.9 6.9-8.1 6.9-14.2C50 17.9 41.9 10 32 10z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-      <path d="M26 48h12M24 54h16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M32 4v4M18 12l3 3M46 12l-3 3" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  'device-tv': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="12" y="8" width="40" height="48" rx="6" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="32" cy="28" r="10" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M32 22v6l4 2" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M26 46h12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  tools: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M18 14l8 8-9 9-8-8 9-9z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-      <path d="M38 14a10 10 0 0112 12L34 42l-8-8 16-16z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-      <path d="M30 38l-8 8M18 50l-4 4M34 42l10 10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  server: (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="6" y="8" width="52" height="16" rx="3" stroke="currentColor" strokeWidth="2.5"/>
-      <rect x="6" y="28" width="52" height="16" rx="3" stroke="currentColor" strokeWidth="2.5"/>
-      <rect x="6" y="48" width="52" height="10" rx="3" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="16" cy="16" r="3" stroke="currentColor" strokeWidth="2.5"/>
-      <circle cx="16" cy="36" r="3" stroke="currentColor" strokeWidth="2.5"/>
-    </svg>
-  ),
-  'shield-check': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M32 6L8 16v18c0 14 12 22 24 26 12-4 24-12 24-26V16L32 6z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-      <path d="M22 33l7 7 14-14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  'cloud-lock': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <path d="M44 44H20a14 14 0 010-28 4 4 0 010-.4A16 16 0 0152 28a10 10 0 01-8 16z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-      <rect x="24" y="40" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M27 40v-4a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  'device-laptop': (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-      <rect x="10" y="10" width="44" height="30" rx="3" stroke="currentColor" strokeWidth="2.5"/>
-      <path d="M4 52h56M18 52l-4 0m32 0h4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M4 52l6-10h44l6 10" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-    </svg>
-  ),
+// ─── ИМПОРТЫ SVG ИКОНОК ───
+import IconTopologyStar from '../../../assets/svg/иконка11-blue-mirrored.svg';
+import IconBell        from '../../../assets/svg/ико19-blue-mirrored.svg';
+import IconDeviceTv    from '../../../assets/svg/иконка17-blue-mirrored.svg';
+import IconWifi        from '../../../assets/svg/icon_besp_shir_dost-blue-mirrored.svg';
+import IconCamera      from '../../../assets/svg/иконка13-blue-mirrored.svg';
+import IconShieldLock  from '../../../assets/svg/иконка14-blue-mirrored.svg';
+import IconDoor        from '../../../assets/svg/иконка15-blue-mirrored.svg';
+// import IconUserShield  from '../../../assets/svg/иконка16-blue-mirrored.svg';
+import IconBellEvac    from '../../../assets/svg/ико23-blue-mirrored.svg';
+import IconTools       from '../../../assets/svg/Icon-04-blue-mirrored.svg';
+import IconPlug        from '../../../assets/svg/icon_sis_elektropit-blue-mirrored.svg';
+import IconBulb        from '../../../assets/svg/icon_prom_osv-blue-mirrored.svg';
+import IconLaptop      from '../../../assets/svg/icon_monitor_kontrol-blue-mirrored.svg';
+import IconRouter      from '../../../assets/svg/icon_seti_sis_pered_dann-blue-mirrored.svg';
+import IconServer      from '../../../assets/svg/icon_sis_obr_hran_dann-blue-mirrored (1).svg';
+import IconClock       from '../../../assets/svg/icon_sis_chas-blue-mirrored.svg';
+import IconTopology    from '../../../assets/svg/иконка11-blue-mirrored.svg';
+import IconShieldCheck from '../../../assets/svg/shield-check-blue.svg';
+import IconUserShield  from '../../../assets/svg/user-shield-blue.svg';
+
+// ─── МАППИНГ ИКОНОК ───
+const ICON_MAP = {
+  'topology-star': IconTopologyStar,
+  'bell':          IconBell,
+  'device-tv':     IconDeviceTv,
+  'wifi':          IconWifi,
+  'camera':        IconCamera,
+  'shield-lock':   IconShieldLock,
+  'door':          IconDoor,
+  'user-shield':   IconUserShield,
+  'bell-evac':     IconBellEvac,
+  'tools':         IconTools,
+  'plug':          IconPlug,
+  'bulb':          IconBulb,
+  'device-laptop': IconLaptop,
+  'router':        IconRouter,
+  'server':        IconServer,
+  'shield-check':  IconShieldCheck,
+};
+
+// Иконки для секций (в HeroBanner маленькие)
+const SECTION_ICON_MAP = {
+  'router':        IconRouter,
+  'shield-check':  IconShieldCheck,
+  'plug':          IconPlug,
+  'topology-star': IconTopologyStar,
+};
+
+// ─── ЛОКАЛЬНЫЕ ПЕРЕВОДЫ ДЛЯ СТРОК, НЕ ВХОДЯЩИХ В uiT ───
+const heroExtra = {
+  tagline: {
+    ru: 'Байтех — от проектирования до пусконаладки. Решение под ключ.',
+    ky: 'Байтех — долбоорлоодон тартып орнотуп-тууралоого чейин. Ачкычтуу чечим.',
+    en: 'Baitech — from design to commissioning. A turnkey solution.',
+  },
+  downloadLabel: {
+    ru: 'Скачать презентацию (.pdf)',
+    ky: 'Презентацияны жүктөп алуу (.pdf)',
+    en: 'Download presentation (.pdf)',
+  },
 }
 
-function SvgIcon({ name }) {
-  return (
-    <div className="w-[80px] h-[80px] mx-auto mb-5 text-current transition-colors">
-      {icons[name] || (
-        <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-          <rect x="8" y="8" width="48" height="48" rx="6" stroke="currentColor" strokeWidth="2.5"/>
-        </svg>
-      )}
+function SvgIcon({ name, className = "w-[80px] h-[80px]" }) {
+  const src = ICON_MAP[name];
+  if (!src) return (
+    <div className={`${className} mx-auto mb-5`}>
+      <svg viewBox="0 0 64 64" fill="none" className="w-full h-full text-current">
+        <rect x="8" y="8" width="48" height="48" rx="6" stroke="currentColor" strokeWidth="2.5"/>
+      </svg>
     </div>
+  );
+  return (
+    <div className={`${className} mx-auto mb-5 relative`}>
+      <Image
+        src={src}
+        alt={name}
+        fill
+        style={{ objectFit: 'contain' }}
+      />
+    </div>
+  );
+}
+
+// ─── 3D АНИМАЦИЯ ───
+function AnimatedGrid() {
+  const pointsRef = useRef(null)
+  useFrame(({ clock }) => {
+    if (!pointsRef.current) return
+    const positions = pointsRef.current.geometry.attributes.position.array
+    const time = clock.getElapsedTime()
+    let index = 0
+    for (let i = 0; i < 35; i++) {
+      for (let j = 0; j < 35; j++) {
+        const x = (i - 17.5) * 0.5
+        const y = (j - 17.5) * 0.5
+        positions[index + 2] = Math.sin(x * 0.4 + time * 0.6) * Math.cos(y * 0.4 + time * 0.6) * 0.6
+        index += 3
+      }
+    }
+    pointsRef.current.geometry.attributes.position.needsUpdate = true
+  })
+  const count = 35
+  const positions = React.useMemo(() => {
+    const pos = new Float32Array(count * count * 3)
+    let index = 0
+    for (let i = 0; i < count; i++) {
+      for (let j = 0; j < count; j++) {
+        pos[index++] = (i - count / 2) * 0.55
+        pos[index++] = (j - count / 2) * 0.55
+        pos[index++] = 0
+      }
+    }
+    return pos
+  }, [])
+  return (
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial color="#173B73" size={0.06} sizeAttenuation transparent opacity={0.5} />
+    </points>
   )
 }
 
-// ─── Одна секция (заголовок по центру + иконки-карточки в ряд) ───────────────
 function SolutionSection({ section, lang }) {
   const title = section.title[lang] || section.title.ru
   const count = section.items.length
@@ -213,26 +140,25 @@ function SolutionSection({ section, lang }) {
   return (
     <div id={section.id} className="mb-[80px]">
       <Link href={section.href} className="group block text-center mb-10">
-        <span className="text-[22px] md:text-[26px] font-medium text-[#173B73] border-b-[2px] border-[#173B73] pb-1 group-hover:text-[#172B99] group-hover:border-[#172B99] transition-colors">
+        <span className="text-[28px] md:text-[32px] font-bold text-[#173B73] group-hover:text-[#172B99] transition-colors">
           {title}
         </span>
       </Link>
 
       <div className={
-        count === 3
-          ? "flex justify-between gap-6 flex-wrap"
+        count === 5
+          ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-10"
           : "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10"
       }>
         {section.items.map((item) => (
           <Link
             key={item.id}
             href={item.href}
-            className={`group flex flex-col items-center text-center text-[#173B73] ${count === 3 ? 'flex-1' : ''}`}
+            className="group flex flex-col items-center text-center text-[#173B73]"
           >
             <SvgIcon name={item.icon} />
-            <span className="text-[15px] flex text-[#1f2937] group-hover:text-[#172B99] transition-colors leading-snug">
+            <span className="text-[15px] text-[#1f2937] group-hover:text-[#172B99] transition-colors leading-snug">
               {item.title[lang] || item.title.ru}
-              <span className="ml-1 text-[#173B73]"><LuArrowRight/></span>
             </span>
           </Link>
         ))}
@@ -240,72 +166,96 @@ function SolutionSection({ section, lang }) {
     </div>
   )
 }
-// ─── Hero баннер (как на arman — оранжевый фон, список якорей) ───────────────
+
 function HeroBanner({ sections, lang, uiT }) {
+  const extra = {
+    tagline: heroExtra.tagline[lang] || heroExtra.tagline.ru,
+    downloadLabel: heroExtra.downloadLabel[lang] || heroExtra.downloadLabel.ru,
+  }
   return (
     <div
       className="w-full relative overflow-hidden mb-[70px]"
       style={{ background: 'linear-gradient(135deg, rgb(2, 13, 48) 0%, #0e2e5b 58%, #000000 100%)' }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(217,121,65,0.28),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.08),transparent_28%)]" />
-      <div className="absolute inset-0 opacity-[0.14] pointer-events-none select-none">
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute border border-white/60 rounded-full flex items-center justify-center"
-            style={{
-              width: 60 + (i % 3) * 20,
-              height: 60 + (i % 3) * 20,
-              top: `${10 + (i % 4) * 22}%`,
-              left: `${40 + (i % 5) * 12}%`,
-            }}
-          >
-            <div className="w-5 h-5 bg-[#172B99] rounded-sm opacity-60" />
-          </div>
-        ))}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(217,121,65,0.22),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.06),transparent_30%)]" />
+
+      <div className="absolute right-0 top-0 w-[45%] h-full hidden lg:block pointer-events-none opacity-60">
+        <Suspense fallback={null}>
+          <Canvas camera={{ position: [0, -5, 4.5], fov: 45 }}>
+            <ambientLight intensity={0.4} />
+            <AnimatedGrid />
+          </Canvas>
+        </Suspense>
       </div>
 
-      <div className="container mx-auto px-4 xl:px-0 max-w-[1280px] py-[56px] md:py-[68px] relative z-10">
-        <div className="max-w-[620px]">
-          <h1 className="mt-5 text-[32px] md:text-[42px] font-bold text-white mb-5 leading-tight">
-            {uiT.heroTitle}
-          </h1>
-          <p className="mb-8 text-[15px] md:text-[17px] leading-7 text-white/78">
-            {uiT.heroDesc}
-          </p>
+      <div className="container mx-auto px-4 xl:px-0 max-w-[1280px] py-[52px] md:py-[68px] relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+
+          <div className="lg:col-span-7">
+            <h1 className="text-[28px] md:text-[40px] font-bold text-white mb-2 leading-tight">
+              {uiT.heroTitle}
+            </h1>
+            <p className="text-[15px] md:text-[17px] text-white/70 font-semibold mb-3 leading-snug">
+              {extra.tagline}
+            </p>
+            <p className="mb-7 text-[14px] md:text-[15px] leading-7 text-white/70 max-w-lg">
+              {uiT.heroDesc}
+            </p>
+
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              {sections.map((s) => {
+                const iconSrc = SECTION_ICON_MAP[s.icon];
+                return (
+                  <li key={s.id}>
+                    <Link
+                      href={s.href}
+                      className="group flex items-center gap-3 rounded-xl border border-white/12 bg-white/8 px-4 py-2.5 text-white/90 backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/12"
+                    >
+                      <div className="flex-shrink-0 w-6 h-6 relative">
+                        {iconSrc ? (
+                          <Image src={iconSrc} alt={s.icon} fill style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+                        ) : (
+                          <svg viewBox="0 0 64 64" fill="none" className="w-full h-full text-white/70">
+                            <rect x="8" y="8" width="48" height="48" rx="6" stroke="currentColor" strokeWidth="2.5"/>
+                          </svg>
+                        )}
+                      </div>
+                      <span className="text-[13px] md:text-[14px] flex-1 group-hover:text-white transition-colors leading-snug">
+                        {s.title[lang] || s.title.ru}
+                      </span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#173B72] text-[13px] font-bold text-white flex-shrink-0">
+                        <GoArrowUpRight />
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div className="lg:col-span-5 lg:pl-2 flex items-center justify-center">
+            
+            <a  href="/baitech-presentation.pdf"
+              download
+              className="inline-flex items-center gap-2.5 border border-white/30 text-white text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              {extra.downloadLabel}
+            </a>
+          </div>
+
         </div>
-        <ul className="grid max-w-[760px] grid-cols-1 md:grid-cols-2 gap-3">
-          {sections.map((s) => (
-            <li key={s.id}
-              
-                href={`#${s.id}`}
-                className="group flex items-center gap-3 rounded-2xl border border-white/12 bg-white/8 px-4 py-3 text-white/90 backdrop-blur-sm transition-all hover:border-[#172B99]/70 hover:bg-white/12"
-              >
-                <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 text-[#D97941] p-[7px]">
-                  {icons[s.icon] ? icons[s.icon] : (
-                    <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-                      <rect x="8" y="8" width="48" height="48" rx="6" stroke="currentColor" strokeWidth="2.5"/>
-                    </svg>
-                  )}
-                </div>
-                <span className="text-[15px] md:text-[16px] flex-1 group-hover:text-white transition-colors">
-                  {s.title[lang] || s.title.ru}
-                </span>
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#173B72] text-[14px] font-bold text-white flex-shrink-0">
-                  <GoArrowUpRight />
-                </span>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   )
 }
-// ─── Главный компонент ────────────────────────────────────────────────────────
+
 const CorporateBlock = () => {
   const { i18n } = useTranslation()
-  const lang = ['ru', 'kg', 'en'].includes(i18n.language) ? i18n.language : 'ru'
-  const uiT = solutionTranslations[lang]
+  const lang = ['ru', 'ky', 'en'].includes(i18n.language) ? i18n.language : 'ru'
+  const uiT = solutionTranslations[lang] || solutionTranslations.ru
 
   return (
     <section className="w-full">
@@ -313,15 +263,9 @@ const CorporateBlock = () => {
         <Under text={uiT.breadcrumbHome} link="/" text1={uiT.breadcrumbSolutions} />
       </div>
       <HeroBanner sections={solutionsData} lang={lang} uiT={uiT} />
-
       <div className="container mx-auto px-4 xl:px-0 max-w-[1280px] pb-[60px]">
-
         {solutionsData.map((section) => (
-          <SolutionSection
-            key={section.id}
-            section={section}
-            lang={lang}
-          />
+          <SolutionSection key={section.id} section={section} lang={lang} />
         ))}
       </div>
     </section>

@@ -14,6 +14,7 @@ import AjaxImg from '../../../assets/png/ajax.png';
 import PantumImg from '../../../assets/png/PANTUM.png';
 import MsiImg from '../../../assets/png/msi.png';
 import CanonImg from '../../../assets/png/canon.png';
+import Image from 'next/image';
 
 // Какие бренды показывать для каждой категории
 const CATEGORY_BRANDS = {
@@ -71,6 +72,7 @@ function Features({ categoryName }) {
 
   if (filteredBrands.length === 0) return null;
 
+  
   return (
     <div className="features">
       <div className="features__container">
@@ -88,11 +90,12 @@ function Features({ categoryName }) {
               className="feature-card"
               onClick={() => router.push(`/catalog/?brand=${brand.id}`)}
             >
-              <img
+              <Image
                 className="feature-card__full-img"
                 src={meta.image.src ?? meta.image}
                 alt={brand.name}
                 draggable={false}
+                fill
               />
             </div>
           );

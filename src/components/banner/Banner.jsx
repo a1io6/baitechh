@@ -8,7 +8,7 @@ import 'swiper/css/effect-fade';
 import 'swiper/css/navigation';
 import 'swiper/css/autoplay';
 import './HeroBanner.scss';
-import { useBanners } from '@/lib/banners/hooks/hooks';
+import { useBanners } from '../../lib/banners/hooks/hooks';
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 import Image from 'next/image';
 

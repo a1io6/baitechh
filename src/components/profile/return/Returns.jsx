@@ -82,9 +82,9 @@ export function Returns() {
                             </h2>
 
                             <div className="orderImg">
-                                {item.items[0]?.image ? (
+                                {item.items[0]?.img ? (
                                     <Image
-                                        src={item.items[0].image}
+                                        src={item.items[0].img}
                                         alt="image"
                                         width={20}
                                         height={20}

@@ -12,7 +12,7 @@ const getPaginationItems = (currentPage, totalPages) => {
   if (totalPages <= 7)
     return Array.from({ length: totalPages }, (_, idx) => idx + 1);
   if (currentPage <= 4)
-    return [1, 2, 3, 4, "ellipsis", totalPages];
+    return [1, 2, 3, 4, 5, "ellipsis", totalPages];
   if (currentPage >= totalPages - 3)
     return [1, "ellipsis", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
   return [1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages];
@@ -62,11 +62,12 @@ const handleKeyDown = (e) => {
   const paginationItems = getPaginationItems(page, totalPages);
 
   // Защита от выхода за пределы страниц
-  useEffect(() => {
-    if (page > 1 && totalPages > 0 && page > totalPages) {
-      setPage(1);
-    }
-  }, [totalPages, page]);
+useEffect(() => {
+  if (isLoading) return; // не сбрасываем страницу пока грузятся новые данные
+  if (page > 1 && totalPages > 0 && page > totalPages) {
+    setPage(1);
+  }
+}, [totalPages, page, isLoading]);
 
   // --- Модальные окна ---
   const openActionModal = (product) => {

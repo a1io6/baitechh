@@ -3,11 +3,11 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Banner } from '@/components/banner/Banner';
-import Features from '@/components/features/Features';
-import CatalogButton from '@/components/catalogbutton/CatalogButton';
-import { Recommendations } from '@/components/recomendation/Recommendations';
-import { News } from '@/components/News/News';
+import { Banner } from '../banner/Banner';
+import Features from '../features/Features';
+import CatalogButton from '../catalogbutton/CatalogButton';
+import { Recommendations } from '../recomendation/Recommendations';
+import { News } from '../News/News';
 
 function HomeInner() {
   const searchParams = useSearchParams();
@@ -17,7 +17,7 @@ function HomeInner() {
   return (
     <div>
       <Banner categoryName={categoryName} />
-      {!hasCategoryPreview && <CatalogButton />}
+      <CatalogButton />
       <Features categoryName={hasCategoryPreview ? categoryName : null} />
       <Recommendations categoryName={hasCategoryPreview ? categoryName : null} />
       <News />

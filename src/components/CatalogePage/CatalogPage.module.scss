@@ -12,6 +12,19 @@
   display: flex;
   gap: 24px;
 }
+.mobileFilterBar {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+}
+
+.desktopOnly {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
 // Хлебные крошки
 .breadcrumbs {
   display: flex;

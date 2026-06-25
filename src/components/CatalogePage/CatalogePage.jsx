@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useProducts } from '@/lib/products/hooks/hooks';
 import { productApi } from '@/lib/products/api/useProducts';
 import styles from './CatalogPage.module.scss';
-import { LayoutGrid, List, AlignJustify, ChevronDown, Search, ChevronRight, ChevronLeft } from 'lucide-react';
+import { LayoutGrid, List, AlignJustify, ChevronDown, Search, ChevronRight, ChevronLeft, SlidersHorizontal, X, Check } from 'lucide-react';
 import ProductCard from './ProductCard';
 import FullProductCard from './FullProductCard';
 import Card from '../ui/card/Card';
@@ -13,25 +13,31 @@ import { useTranslation } from 'react-i18next';
 
 const CATALOG_TEXTS = {
   ru: {
-    home: 'Главная', catalog: 'Каталог', loading: 'Загрузка...', filterTitle: 'Фильтр товаров',
+    home: 'Главная', catalog: 'Каталог', loading: 'Загрузка...', filterTitle: 'Фильтры',
     subcategories: 'Подкатегории', category: 'Категория', categorySearch: 'Поиск категории...',
     brand: 'Бренд', brandSearch: 'Поиск бренда...', price: 'Цена', from: 'От', to: 'До',
-    show: 'Показать', reset: 'Сбросить фильтры', notFound: 'Товары не найдены',
+    show: 'Показать', reset: 'Сбросить', notFound: 'Товары не найдены',
     notMatched: 'Ничего не найдено', prev: 'Назад', next: 'Вперед',
+    filters: 'Фильтры', apply: 'Применить', closeFilters: 'Закрыть фильтры',
+    activeFilters: 'активных фильтра',
   },
   en: {
-    home: 'Home', catalog: 'Catalog', loading: 'Loading...', filterTitle: 'Product Filters',
+    home: 'Home', catalog: 'Catalog', loading: 'Loading...', filterTitle: 'Filters',
     subcategories: 'Subcategories', category: 'Category', categorySearch: 'Search category...',
     brand: 'Brand', brandSearch: 'Search brand...', price: 'Price', from: 'From', to: 'To',
-    show: 'Show', reset: 'Reset filters', notFound: 'No products found',
+    show: 'Show', reset: 'Reset', notFound: 'No products found',
     notMatched: 'Nothing found', prev: 'Previous', next: 'Next',
+    filters: 'Filters', apply: 'Apply', closeFilters: 'Close filters',
+    activeFilters: 'active filters',
   },
   ky: {
-    home: 'Башкы бет', catalog: 'Каталог', loading: 'Жүктөлүүдө...', filterTitle: 'Товар фильтрлери',
+    home: 'Башкы бет', catalog: 'Каталог', loading: 'Жүктөлүүдө...', filterTitle: 'Фильтрлер',
     subcategories: 'Подкатегориялар', category: 'Категория', categorySearch: 'Категория издөө...',
     brand: 'Бренд', brandSearch: 'Бренд издөө...', price: 'Баа', from: 'Баштап', to: 'Чейин',
-    show: 'Көрсөтүү', reset: 'Фильтрлерди тазалоо', notFound: 'Товарлар табылган жок',
+    show: 'Көрсөтүү', reset: 'Тазалоо', notFound: 'Товарлар табылган жок',
     notMatched: 'Эч нерсе табылган жок', prev: 'Артка', next: 'Алга',
+    filters: 'Фильтрлер', apply: 'Колдонуу', closeFilters: 'Жабуу',
+    activeFilters: 'активдүү фильтр',
   },
 };
 
@@ -50,6 +56,283 @@ const getPaginationItems = (currentPage, totalPages) => {
   return [1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', totalPages];
 };
 
+// ─── Mobile Filter Bottom Sheet ───────────────────────────────────────────────
+function MobileFilterSheet({
+  isOpen, onClose, tr,
+  subcategories, categories, filteredCategories, cat, bnd,
+  categorySearch, setCategorySearch,
+  brandSource, filteredBrands, brandSearch, setBrandSearch,
+  priceRange, sliderMaxPrice, PRICE_MIN_LIMIT, PRICE_STEP,
+  handleReset, hasActiveFilters, activeFilterCount,
+  router, searchParams,
+}) {
+  const sheetRef = useRef(null);
+  const dragStartY = useRef(null);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [activeSection, setActiveSection] = useState(null);
+
+  // ── Локальный черновик выбора — не меняет URL пока не нажат «Применить»
+  const [draftCat, setDraftCat] = useState(cat);
+  const [draftBnd, setDraftBnd] = useState(bnd);
+  const [draftPrice, setDraftPrice] = useState({ min: priceRange.min, max: priceRange.max });
+
+  // Синхронизируем черновик при открытии sheet
+  useEffect(() => {
+    if (isOpen) {
+      setDraftCat(cat);
+      setDraftBnd(bnd);
+      setDraftPrice({ min: priceRange.min, max: priceRange.max });
+    }
+  }, [isOpen]);
+
+  const draftProgressLeft = ((draftPrice.min - PRICE_MIN_LIMIT) / Math.max(1, sliderMaxPrice - PRICE_MIN_LIMIT)) * 100;
+  const draftProgressRight = ((draftPrice.max - PRICE_MIN_LIMIT) / Math.max(1, sliderMaxPrice - PRICE_MIN_LIMIT)) * 100;
+
+  const hasDraftChanges =
+    draftCat !== cat ||
+    draftBnd !== bnd ||
+    draftPrice.min !== priceRange.min ||
+    draftPrice.max !== priceRange.max;
+
+  const handleApply = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (draftCat) params.set('category', draftCat); else params.delete('category');
+    if (draftBnd) params.set('brand', draftBnd); else params.delete('brand');
+    if (draftPrice.min > PRICE_MIN_LIMIT) params.set('min_price', String(draftPrice.min)); else params.delete('min_price');
+    if (draftPrice.max < sliderMaxPrice) params.set('max_price', String(draftPrice.max)); else params.delete('max_price');
+    router.push(`?${params.toString()}`);
+    onClose();
+  };
+
+  const handleDraftReset = () => {
+    setDraftCat(null);
+    setDraftBnd(null);
+    setDraftPrice({ min: PRICE_MIN_LIMIT, max: sliderMaxPrice });
+  };
+
+  const hasDraftActive = draftCat || draftBnd || draftPrice.min > PRICE_MIN_LIMIT || draftPrice.max < sliderMaxPrice;
+
+  // Drag-to-close
+  const onTouchStart = (e) => { dragStartY.current = e.touches[0].clientY; };
+  const onTouchMove = (e) => {
+    const delta = Math.max(0, e.touches[0].clientY - dragStartY.current);
+    setDragOffset(delta);
+  };
+  const onTouchEnd = () => {
+    if (dragOffset > 120) onClose();
+    setDragOffset(0);
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  const sections = [
+    subcategories.length > 0 && { key: 'sub', label: tr.subcategories },
+    { key: 'cat', label: tr.category },
+    { key: 'brand', label: tr.brand },
+    { key: 'price', label: tr.price },
+  ].filter(Boolean);
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
+          zIndex: 1000, opacity: isOpen ? 1 : 0,
+          pointerEvents: isOpen ? 'auto' : 'none',
+          transition: 'opacity 0.28s ease',
+          backdropFilter: isOpen ? 'blur(2px)' : 'none',
+        }}
+      />
+
+      {/* Sheet */}
+      <div
+        ref={sheetRef}
+        style={{
+          position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 1001,
+          background: '#fff', borderRadius: '20px 20px 0 0', maxHeight: '92dvh',
+          display: 'flex', flexDirection: 'column',
+          transform: isOpen ? `translateY(${dragOffset}px)` : 'translateY(100%)',
+          transition: dragOffset > 0 ? 'none' : 'transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)',
+          boxShadow: '0 -8px 40px rgba(0,0,0,0.18)', willChange: 'transform',
+        }}
+      >
+        {/* Drag handle + header */}
+        <div
+          onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
+          style={{ padding: '12px 0 4px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'grab', flexShrink: 0 }}
+        >
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: '#D1D5DB', marginBottom: 8 }} />
+          <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 16px 8px' }}>
+            <span style={{ fontWeight: 700, fontSize: 18, color: '#111' }}>{tr.filterTitle}</span>
+            <button onClick={onClose} aria-label={tr.closeFilters}
+              style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <X size={16} color="#374151" />
+            </button>
+          </div>
+        </div>
+
+        {/* Section tabs */}
+        <div style={{ borderBottom: '1px solid #F3F4F6', flexShrink: 0, overflowX: 'auto', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'flex', padding: '0 16px', minWidth: 'max-content' }}>
+            {sections.map((s) => (
+              <button key={s.key} onClick={() => setActiveSection(activeSection === s.key ? null : s.key)}
+                style={{
+                  padding: '10px 16px', border: 'none',
+                  borderBottom: activeSection === s.key ? '2px solid #2563EB' : '2px solid transparent',
+                  background: 'none', fontSize: 14,
+                  fontWeight: activeSection === s.key ? 600 : 400,
+                  color: activeSection === s.key ? '#2563EB' : '#6B7280',
+                  cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s',
+                }}>
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Scrollable content */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px', WebkitOverflowScrolling: 'touch' }}>
+
+          {/* Subcategories */}
+          {(activeSection === 'sub' || activeSection === null) && subcategories.length > 0 && (
+            <div style={{ marginBottom: 24 }}>
+              {activeSection === null && <div style={{ fontSize: 13, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>{tr.subcategories}</div>}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {subcategories.map((sub) => {
+                  const selected = draftCat === sub.name;
+                  return (
+                    <button key={sub.id}
+                      onClick={() => setDraftCat(selected ? null : sub.name)}
+                      style={{
+                        padding: '8px 14px', borderRadius: 20,
+                        border: selected ? '2px solid #2563EB' : '1.5px solid #E5E7EB',
+                        background: selected ? '#EFF6FF' : '#F9FAFB',
+                        color: selected ? '#2563EB' : '#374151',
+                        fontSize: 14, fontWeight: selected ? 600 : 400,
+                        cursor: 'pointer', transition: 'all 0.15s',
+                        display: 'flex', alignItems: 'center', gap: 6,
+                      }}>
+                      {selected && <Check size={13} />}{sub.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Category */}
+          {(activeSection === 'cat' || activeSection === null) && (
+            <div style={{ marginBottom: 24 }}>
+              {activeSection === null && <div style={{ fontSize: 13, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>{tr.category}</div>}
+              <div style={{ position: 'relative', marginBottom: 10 }}>
+                <input type="text" placeholder={tr.categorySearch} value={categorySearch}
+                  onChange={(e) => setCategorySearch(e.target.value)}
+                  style={{ width: '100%', padding: '10px 36px 10px 14px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box', background: '#F9FAFB' }} />
+                <Search size={16} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', pointerEvents: 'none' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 220, overflowY: 'auto' }}>
+                {filteredCategories.length > 0 ? filteredCategories.map((category) => {
+                  const selected = draftCat === category.name;
+                  return (
+                    <label key={category.id} onClick={() => setDraftCat(selected ? null : category.name)}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 10, cursor: 'pointer', background: selected ? '#EFF6FF' : 'transparent', transition: 'background 0.12s' }}>
+                      <span style={{ fontSize: 15, color: selected ? '#2563EB' : '#111', fontWeight: selected ? 600 : 400 }}>{category.name}</span>
+                      <div style={{ width: 22, height: 22, borderRadius: 11, border: selected ? 'none' : '1.5px solid #D1D5DB', background: selected ? '#2563EB' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {selected && <Check size={13} color="#fff" />}
+                      </div>
+                    </label>
+                  );
+                }) : <div style={{ padding: '16px 0', color: '#9CA3AF', fontSize: 14, textAlign: 'center' }}>{tr.notMatched}</div>}
+              </div>
+            </div>
+          )}
+
+          {/* Brand */}
+          {(activeSection === 'brand' || activeSection === null) && (brandSource.length > 0 || brandSearch) && (
+            <div style={{ marginBottom: 24 }}>
+              {activeSection === null && <div style={{ fontSize: 13, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>{tr.brand}</div>}
+              <div style={{ position: 'relative', marginBottom: 10 }}>
+                <input type="text" placeholder={tr.brandSearch} value={brandSearch}
+                  onChange={(e) => setBrandSearch(e.target.value)}
+                  style={{ width: '100%', padding: '10px 36px 10px 14px', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, outline: 'none', boxSizing: 'border-box', background: '#F9FAFB' }} />
+                <Search size={16} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF', pointerEvents: 'none' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 220, overflowY: 'auto' }}>
+                {filteredBrands.length > 0 ? filteredBrands.map((brand) => {
+                  const selected = draftBnd === String(brand.id);
+                  return (
+                    <label key={brand.id} onClick={() => setDraftBnd(selected ? null : String(brand.id))}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 10, cursor: 'pointer', background: selected ? '#EFF6FF' : 'transparent', transition: 'background 0.12s' }}>
+                      <span style={{ fontSize: 15, color: selected ? '#2563EB' : '#111', fontWeight: selected ? 600 : 400 }}>{brand.name}</span>
+                      <div style={{ width: 22, height: 22, borderRadius: 11, border: selected ? 'none' : '1.5px solid #D1D5DB', background: selected ? '#2563EB' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {selected && <Check size={13} color="#fff" />}
+                      </div>
+                    </label>
+                  );
+                }) : <div style={{ padding: '16px 0', color: '#9CA3AF', fontSize: 14, textAlign: 'center' }}>{tr.notMatched}</div>}
+              </div>
+            </div>
+          )}
+
+          {/* Price */}
+          {(activeSection === 'price' || activeSection === null) && (
+            <div style={{ marginBottom: 24 }}>
+              {activeSection === null && <div style={{ fontSize: 13, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>{tr.price}</div>}
+              <div className={styles.priceRangeValues}>
+                <span>{tr.from}: {draftPrice.min.toLocaleString()} с</span>
+                <span>{tr.to}: {draftPrice.max.toLocaleString()} с</span>
+              </div>
+              <div className={styles.priceSlider}>
+                <div className={styles.priceSliderTrack} />
+                <div className={styles.priceSliderRange} style={{ left: `${draftProgressLeft}%`, width: `${draftProgressRight - draftProgressLeft}%` }} />
+                <input type="range" min={PRICE_MIN_LIMIT} max={sliderMaxPrice} step={PRICE_STEP}
+                  value={draftPrice.min}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setDraftPrice((prev) => ({ ...prev, min: Math.min(v, prev.max - PRICE_STEP) }));
+                  }}
+                  className={`${styles.priceThumb} ${styles.priceThumbMin}`} aria-label={tr.from} />
+                <input type="range" min={PRICE_MIN_LIMIT} max={sliderMaxPrice} step={PRICE_STEP}
+                  value={draftPrice.max}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setDraftPrice((prev) => ({ ...prev, max: Math.max(v, prev.min + PRICE_STEP) }));
+                  }}
+                  className={`${styles.priceThumb} ${styles.priceThumbMax}`} aria-label={tr.to} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bottom action bar */}
+        <div style={{ padding: '12px 16px', borderTop: '1px solid #F3F4F6', display: 'flex', gap: 10, flexShrink: 0, background: '#fff' }}>
+          {hasDraftActive && (
+            <button onClick={handleDraftReset}
+              style={{ flex: 1, padding: '14px', borderRadius: 12, border: '1.5px solid #E5E7EB', background: '#fff', color: '#374151', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+              {tr.reset}
+            </button>
+          )}
+          <button onClick={handleApply}
+            style={{
+              flex: 2, padding: '14px', borderRadius: 12, border: 'none',
+              background: hasDraftChanges ? '#2563EB' : '#93C5FD',
+              color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer',
+              transition: 'background 0.2s',
+            }}>
+            {tr.apply}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Main Component ────────────────────────────────────────────────────────────
 export default function CatalogPage() {
   const ITEMS_PER_PAGE = 20;
   const PRICE_MIN_LIMIT = 0;
@@ -63,6 +346,7 @@ export default function CatalogPage() {
   const [staleProducts, setStaleProducts] = useState([]);
   const [priceRange, setPriceRange] = useState({ min: PRICE_MIN_LIMIT, max: DEFAULT_PRICE_MAX_LIMIT });
   const [categoryBrands, setCategoryBrands] = useState([]);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -84,7 +368,6 @@ export default function CatalogPage() {
     brand: bnd || "",
   });
 
-  // Сброс страницы при смене фильтров
   const prevFiltersRef = useRef({ cat, bnd });
   useEffect(() => {
     const prev = prevFiltersRef.current;
@@ -95,17 +378,13 @@ export default function CatalogPage() {
     }
   }, [cat, bnd]);
 
-  // Обновляем stale товары когда загрузка завершена
   useEffect(() => {
-    if (!isLoading && !isFetching) {
-      setStaleProducts(allProducts);
-    }
+    if (!isLoading && !isFetching) setStaleProducts(allProducts);
   }, [isLoading, isFetching, allProducts]);
 
   const displayProducts = (isLoading || isFetching) ? staleProducts : allProducts;
   const isRefetching = (isLoading || isFetching) && staleProducts.length > 0;
   const isInitialLoading = (isLoading || isFetching) && staleProducts.length === 0;
-
   const totalPages = Math.max(1, Math.ceil((totalCount ?? 0) / ITEMS_PER_PAGE));
 
   useEffect(() => {
@@ -260,8 +539,21 @@ export default function CatalogPage() {
   };
 
   const hasActiveFilters = cat || bnd || query || searchParams.get('min_price') || searchParams.get('max_price');
+
+  // Count active filters for badge
+  const activeFilterCount = [cat, bnd, searchParams.get('min_price') || searchParams.get('max_price'), query].filter(Boolean).length;
+
   const priceProgressLeft = ((priceRange.min - PRICE_MIN_LIMIT) / Math.max(1, sliderMaxPrice - PRICE_MIN_LIMIT)) * 100;
   const priceProgressRight = ((priceRange.max - PRICE_MIN_LIMIT) / Math.max(1, sliderMaxPrice - PRICE_MIN_LIMIT)) * 100;
+
+  const sharedFilterProps = {
+    tr, subcategories, categories, filteredCategories, cat, bnd,
+    categorySearch, setCategorySearch,
+    brandSource, filteredBrands, brandSearch, setBrandSearch,
+    priceRange, sliderMaxPrice, PRICE_MIN_LIMIT, PRICE_STEP,
+    handleReset, hasActiveFilters, activeFilterCount,
+    router, searchParams,
+  };
 
   if (isInitialLoading) {
     return <div className={styles.loader}>{tr.loading}</div>;
@@ -282,8 +574,140 @@ export default function CatalogPage() {
         ))}
       </nav>
 
+      {/* ── Mobile filter bar ── */}
+      <div className={styles.mobileFilterBar}>
+        <div style={{
+          display: 'flex', gap: 8, overflowX: 'auto', scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch', padding: '2px 0 8px',
+          msOverflowStyle: 'none',
+        }}>
+
+          {/* Все фильтры — всегда первым */}
+          <button
+            onClick={() => setMobileFilterOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
+              padding: '9px 14px', borderRadius: 20,
+              border: activeFilterCount > 0 ? '1.5px solid #2563EB' : '1.5px solid #D1D5DB',
+              background: activeFilterCount > 0 ? '#2563EB' : '#fff',
+              color: activeFilterCount > 0 ? '#fff' : '#374151',
+              fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            }}>
+            <SlidersHorizontal size={15} />
+            {tr.filters}
+            {activeFilterCount > 0 && (
+              <span style={{
+                width: 18, height: 18, borderRadius: 9,
+                background: '#fff', color: '#2563EB',
+                fontSize: 11, fontWeight: 700,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          {/* Разделитель */}
+          <div style={{ width: 1, background: '#E5E7EB', flexShrink: 0, margin: '4px 0' }} />
+
+          {/* Категория — дропдаун-пилюля */}
+          <button
+            onClick={() => { setMobileFilterOpen(true); }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
+              padding: '9px 14px', borderRadius: 20,
+              border: cat ? '1.5px solid #2563EB' : '1.5px solid #D1D5DB',
+              background: cat ? '#EFF6FF' : '#F9FAFB',
+              color: cat ? '#2563EB' : '#374151',
+              fontSize: 14, fontWeight: cat ? 600 : 400, cursor: 'pointer',
+              maxWidth: 140, overflow: 'hidden',
+            }}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {cat || tr.category}
+            </span>
+            {cat
+              ? <X size={13} onClick={(e) => { e.stopPropagation(); updateParams({ category: null }); }} />
+              : <ChevronDown size={13} />
+            }
+          </button>
+
+          {/* Бренд — пилюля */}
+          <button
+            onClick={() => setMobileFilterOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
+              padding: '9px 14px', borderRadius: 20,
+              border: bnd ? '1.5px solid #2563EB' : '1.5px solid #D1D5DB',
+              background: bnd ? '#EFF6FF' : '#F9FAFB',
+              color: bnd ? '#2563EB' : '#374151',
+              fontSize: 14, fontWeight: bnd ? 600 : 400, cursor: 'pointer',
+              maxWidth: 130,
+            }}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {bnd
+                ? (brandSource.find(b => String(b.id) === bnd)?.name || bnd)
+                : tr.brand
+              }
+            </span>
+            {bnd
+              ? <X size={13} onClick={(e) => { e.stopPropagation(); updateParams({ brand: null }); }} />
+              : <ChevronDown size={13} />
+            }
+          </button>
+
+          {/* Цена — пилюля */}
+          <button
+            onClick={() => setMobileFilterOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
+              padding: '9px 14px', borderRadius: 20,
+              border: (minPriceFilter || maxPriceFilter) ? '1.5px solid #2563EB' : '1.5px solid #D1D5DB',
+              background: (minPriceFilter || maxPriceFilter) ? '#EFF6FF' : '#F9FAFB',
+              color: (minPriceFilter || maxPriceFilter) ? '#2563EB' : '#374151',
+              fontSize: 14, fontWeight: (minPriceFilter || maxPriceFilter) ? 600 : 400, cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}>
+            <span>
+              {(minPriceFilter || maxPriceFilter)
+                ? `${priceRange.min.toLocaleString()}–${priceRange.max.toLocaleString()} с`
+                : tr.price
+              }
+            </span>
+            {(minPriceFilter || maxPriceFilter)
+              ? <X size={13} onClick={(e) => {
+                  e.stopPropagation();
+                  const p = new URLSearchParams(searchParams.toString());
+                  p.delete('min_price'); p.delete('max_price');
+                  router.push(`?${p.toString()}`);
+                }} />
+              : <ChevronDown size={13} />
+            }
+          </button>
+
+          {/* Сброс всего — только если есть активные */}
+          {hasActiveFilters && (
+            <button
+              onClick={handleReset}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
+                padding: '9px 14px', borderRadius: 20,
+                border: '1.5px solid #FCA5A5',
+                background: '#FEF2F2', color: '#DC2626',
+                fontSize: 14, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap',
+              }}>
+              <X size={13} />
+              {tr.reset}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Filter Sheet */}
+      <MobileFilterSheet isOpen={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)} {...sharedFilterProps} />
+
       <div className={styles.layout}>
-        <aside className={styles.sidebar}>
+        {/* Desktop sidebar — hidden on mobile via CSS */}
+        <aside className={`${styles.sidebar} ${styles.desktopOnly}`}>
           <div className={styles.filterTitle} style={{ display: 'flex', justifyContent: 'space-between' }}>
             {tr.filterTitle}
           </div>
@@ -354,8 +778,8 @@ export default function CatalogPage() {
           <div className={styles.filterSection}>
             <div className={styles.filterGroup}>{tr.price} <ChevronDown size={14} /></div>
             <div className={styles.priceRangeValues}>
-              <span>{tr.from}: {priceRange.min.toLocaleString()}</span>
-              <span>{tr.to}: {priceRange.max.toLocaleString()}</span>
+              <span>{tr.from}: {priceRange.min.toLocaleString()} с</span>
+              <span>{tr.to}: {priceRange.max.toLocaleString()} с</span>
             </div>
             <div className={styles.priceSlider}>
               <div className={styles.priceSliderTrack} />

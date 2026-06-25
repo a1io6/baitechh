@@ -1,14 +1,15 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { productApi } from '../api/useProducts';
-export const useProducts = ({ page = 1, search = "", category = "" } = {}) => {
+export const useProducts = ({ page = 1, search = "", category = "" , brand = ""} = {}) => {
   const queryClient = useQueryClient();
 
   const productsQuery = useQuery({
-    queryKey: ['products', { page, search, category }],
+    queryKey: ['products', { page, search, category, brand }],
    queryFn: () => {
   const params = { page };
   if (search) params.article = search; // ← было params.search
   if (category) params.category = category;
+   if (brand) params.brand = brand; 
   return productApi.getAll(params);
 },
     keepPreviousData: true,
