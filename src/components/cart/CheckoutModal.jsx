@@ -20,7 +20,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
   const [selectedAddressString, setSelectedAddressString] = useState('');
   const [createdOrder, setCreatedOrder] = useState(null);
   const [form, setForm] = useState({ first_name: '', last_name: '', phone_number: '' });
-  const [payment, setPayment] = useState('cash');
+  const [payment] = useState('qr');
 
   const buildAddressString = (a) =>
     `${a.address_1}${a.address_2 ? `, ${a.address_2}` : ''}, ${a.region}`;
@@ -59,6 +59,10 @@ export default function CheckoutModal({ items, allItems, onClose }) {
       setSelectedAddressString(buildAddressString(found));
     }
   };
+
+  const isFormValid = form.first_name.trim() !== '' &&
+                      form.last_name.trim() !== '' &&
+                      form.phone_number.trim() !== '';
 
   const orderMutation = useMutation({
     mutationFn: async (orderData) => {
@@ -110,7 +114,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.first_name || !form.last_name || !selectedAddressString) {
+    if (!isFormValid || !selectedAddressString) {
       toast.error(t('checkoutModal.messages.fillAllFields'));
       return;
     }
@@ -252,28 +256,13 @@ export default function CheckoutModal({ items, allItems, onClose }) {
                 </div>
 
                 <div className={styles.paymentSection}>
-                  <label className={styles.paymentOption}>
-                    <input
-                      type="checkbox"
-                      checked={payment === 'qr'}
-                      onChange={() => setPayment('qr')}
-                    />
-                    <span>{t('checkoutModal.form.qrPayment')}</span>
-                  </label>
-                  {/* <label className={styles.paymentOption}>
-                    <input
-                      type="checkbox"
-                      checked={payment === 'cash'}
-                      onChange={() => setPayment('cash')}
-                    />
-                    <span>{t('checkoutModal.form.cash')}</span>
-                  </label> */}
+                  <p>{t('checkoutModal.form.qrPayment')}</p>
                 </div>
 
                 <button
                   type="submit"
                   className={styles.btnPrimary}
-                  disabled={orderMutation.isPending}
+                  disabled={orderMutation.isPending || !isFormValid}
                 >
                   {orderMutation.isPending ? t('checkoutModal.form.processing') : t('checkoutModal.form.submitButton')}
                 </button>
@@ -292,7 +281,7 @@ export default function CheckoutModal({ items, allItems, onClose }) {
               </p>
               <p className={styles.summaryRow}>
                 <span>{orderDateLabel}:</span>
-                <span>{orderDateValue}</span>
+                <span>{createdOrder.created_at}</span>
               </p>
               <p className={styles.summaryRow}>
                 <span>{t('checkoutModal.success.totalAmount')}:</span>
