@@ -7,7 +7,7 @@ import img1 from '../../../../../../assets/svg/logo.svg'
 import img2 from '../../../../../../assets/png/Gemini_Generated_Image_8zznit8zznit8zzn.png'
 import img3 from '../../../../../../assets/png/Gemini_Generated_Image_cu23egcu23egcu23.png'
 import img4 from '../../../../../../assets/png/Gemini_Generated_Image_1jr08t1jr08t1jr0.png'
-import img5 from '../../../../../../assets/png/ChatGPT Image 25 июн. 2026 г., 13_36_49.png'
+import img5 from '../../../../../../assets/png/internetseti.png'
 import { Canvas, useFrame } from '@react-three/fiber'
 
 function AnimatedGrid() {
@@ -156,11 +156,11 @@ export default function WirelessBroadbandPage() {
 
             {/* Breadcrumb */}
             <div className="text-[13px] font-medium text-white/70 mb-3 flex items-center gap-1.5 flex-wrap">
-              <Link href="/solutions" className="hover:text-white transition-colors">
+              <Link href="/solution" className="hover:text-white transition-colors">
                 {t(`${base}.breadcrumb.solutions`)}
               </Link>
               <span className="text-white/40">&gt;</span>
-              <Link href="/solutions/infrastructure" className="hover:text-white transition-colors">
+              <Link href="/solution/infrastruktura" className="hover:text-white transition-colors">
                 {t(`${base}.breadcrumb.infrastructure`)}
               </Link>
               <span className="text-white/40">&gt;</span>

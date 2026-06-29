@@ -3,12 +3,16 @@
     import { useTranslation } from 'react-i18next'
     import './OtherHistoryCard.scss'
 
-    const STATUS_CLASSES = {
-        in_stock:  'status status--success',
-        pending:   'status status--pending',
-        cancelled: 'status status--error',
-        delivered: 'status status--success',
-    }
+   const STATUS_CLASSES = {
+  on_the_way:       'status status--transit',
+  in_stock:         'status status--success',
+  pending:          'status status--pending',
+  cancelled:        'status status--error',
+  delivered:        'status status--success',
+  returned:         'status status--error',
+  not_paid:         'status status--error',
+  awaiting_payment: 'status status--pending',
+}
 
     function OtherHistoryCard({ item }) {
         const { t } = useTranslation()

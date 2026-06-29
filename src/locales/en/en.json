@@ -697,11 +697,15 @@
     "quantity": "{{count}} pcs."
   },
  "status": {
-    "on_the_way": "On the way",
-    "delivered":  "Delivered",
-    "in_stock":   "In stock",
-    "returned":   "Returned"
-  },
+  "on_the_way":       "In Transit",
+  "delivered":        "Delivered",
+  "in_stock":         "In Stock",
+  "returned":         "Returned",
+  "not_paid":         "Not Paid",
+  "awaiting_payment": "Awaiting Payment",
+  "pending":          "Pending",
+  "cancelled":        "Cancelled"
+},
   "calculator": {
   "title": "Video Surveillance Calculator",
   "subtitle": "Answer a few questions — it will take no more than 1 minute",

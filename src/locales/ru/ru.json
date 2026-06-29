@@ -665,12 +665,16 @@
     "total2": "Сумма: {{price}} сом",
     "quantity": "{{count}} шт."
   },
- "status": {
-    "on_the_way": "В пути",
-    "delivered":  "Доставлено",
-    "in_stock":   "На складе",
-    "returned":   "Возврат"
-  },
+"status": {
+  "on_the_way":       "В пути",
+  "delivered":        "Доставлено",
+  "in_stock":         "На складе",
+  "returned":         "Возврат",
+  "not_paid":         "Не оплачено",
+  "awaiting_payment": "Ожидание оплаты",
+  "pending":          "В обработке",
+  "cancelled":        "Отменено"
+},
   "calculator": {
   "title": "Калькулятор видеонаблюдения",
   "subtitle": "Ответьте на несколько вопросов — это займёт не более 1 минуты",

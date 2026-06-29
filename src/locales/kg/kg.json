@@ -697,11 +697,15 @@
     "quantity": "{{count}} дана"
   },
 "status": {
-    "on_the_way": "Жолдо",
-    "delivered":  "Жеткирилди",
-    "in_stock":   "Складда",
-    "returned":   "Кайтарылды"
-  },
+  "on_the_way":       "Жолдо",
+  "delivered":        "Жеткирилди",
+  "in_stock":         "Кампада",
+  "returned":         "Кайтарылды",
+  "not_paid":         "Төлөнгөн жок",
+  "awaiting_payment": "Төлөм күтүлүүдө",
+  "pending":          "Иштетилүүдө",
+  "cancelled":        "Жокко чыгарылды"
+},
   "calculator": {
   "title": "Видеобайкоо калькулятору",
   "subtitle": "Бир нече суроолорго жооп бериңиз — бул 1 мүнөттөн ашпайт",

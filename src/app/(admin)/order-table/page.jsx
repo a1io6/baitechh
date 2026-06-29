@@ -7,10 +7,16 @@ import { Settings2, ChevronDown, ChevronUp, CalendarDays, X } from "lucide-react
 import { useOrders } from "@/lib/order/hook";
 
 const STATUS_MAP = {
-  1: { class: "transit", label: "В пути", apiValue: "on_the_way" },
-  2: { class: "delivered", label: "Доставлено", apiValue: "delivered" },
-  3: { class: "stock", label: "На складе", apiValue: "in_stock" },
+  1: { class: "transit",   label: "В пути",             apiValue: "on_the_way" },
+  2: { class: "delivered", label: "Доставлено",          apiValue: "delivered" },
+  3: { class: "stock",     label: "На складе",           apiValue: "in_stock" },
+  4: { class: "returned",  label: "Возврат",             apiValue: "returned" },
+  5: { class: "not-paid",  label: "Не оплачено",         apiValue: "not_paid" },
+  6: { class: "awaiting",  label: "Ожидание оплаты",     apiValue: "awaiting_payment" },
 };
+
+// Только эти доступны в селекте
+const SELECTABLE_STATUSES = [1, 2, 3];
 
 const STATUS_BY_API_VALUE = Object.values(STATUS_MAP).reduce((acc, statusMeta) => {
   acc[statusMeta.apiValue] = statusMeta;
@@ -132,6 +138,8 @@ const normalizeDateRange = (dateFrom, dateTo) => {
 const getItemStatusLabel = (statusId) => {
   switch (statusId) {
     case 4: return "Возврат";
+    case 5: return "Не оплачено";
+    case 6: return "Ожидание оплаты";
     case 2: return "Доставлено";
     case 3: return "На складе";
     default: return "В пути";
@@ -521,25 +529,28 @@ const OrderTable = () => {
                       <td className="table__address">{order.address}</td>
                       <td>{getPaymentLabel(order.payment_method)}</td>
                       <td className="fw-bold">{order.total_price} {"сом"}</td>
-                      <td onClick={(event) => event.stopPropagation()}>
-                        <div className={`status-wrapper status-wrapper--${statusMeta.class}`}>
-                          <select
-                            className="status-wrapper__select"
-                            value={statusValue}
-                            disabled={isUpdating}
-                            onChange={(event) => {
-                              const nextStatusId = Number(event.target.value);
-                              handleOrderStatusChange(order, nextStatusId);
-                            }}
-                          >
-                            {Object.entries(STATUS_MAP).map(([id, status]) => (
-                              <option key={id} value={id}>
-                                {status.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+  <div className={`status-wrapper status-wrapper--${statusMeta.class}`}>
+    {SELECTABLE_STATUSES.includes(statusValue) ? (
+      <select
+        className="status-wrapper__select"
+        value={statusValue}
+        disabled={isUpdating}
+        onChange={(e) => handleOrderStatusChange(order, Number(e.target.value))}
+      >
+        {SELECTABLE_STATUSES.map((id) => (
+          <option key={id} value={id}>
+            {STATUS_MAP[id].label}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <span className="status-wrapper__badge">
+        {statusMeta.label}
+      </span>
+    )}
+  </div>
+</td>
                       <td>{order.formatted_date}</td>
                     </tr>
 
@@ -551,10 +562,7 @@ const OrderTable = () => {
                               // Статус товара = статус заказа, ВСЕГДА,
                               // кроме товаров в статусе "Возврат" — те не меняются
                               // независимо от того, что прислал бекенд по самому товару.
-                              const effectiveStatusId = isItemReturnedStatus(item)
-                                ? 4
-                                : statusValue;
-
+const effectiveStatusId = item?.status?.id ?? statusValue;
                               return (
                                 <div key={index} className="order-details-card">
                                   <div className="item-photo-placeholder">

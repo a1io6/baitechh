@@ -143,9 +143,13 @@ export default function DataStoragePage() {
         <div className="max-w-[1280px] mx-auto px-4 xl:px-0 h-full grid grid-cols-1 md:grid-cols-12 items-center relative z-10">
           <div className="col-span-1 md:col-span-7 flex flex-col justify-center h-full pt-4 md:pt-0">
             <div className="text-[13px] font-medium text-white/70 mb-3 flex items-center gap-1.5 flex-wrap">
+               <Link href="/solution" className="hover:text-white transition-colors">
               <span>{t('infrastruktura.dataStorage.breadcrumb.solutions')}</span>
+               </Link>
               <span className="text-white/40">&gt;</span>
+                 <Link href="/solution/infrastruktura" className="hover:text-white transition-colors">
               <span>{t('infrastruktura.dataStorage.breadcrumb.infrastructure')}</span>
+                 </Link>
               <span className="text-white/40">&gt;</span>
             </div>
             <h1 className="text-2xl md:text-4xl font-bold text-white tracking-wide leading-tight max-w-xl">
