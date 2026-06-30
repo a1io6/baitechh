@@ -50,8 +50,8 @@
                     <span>{t('order.quantity', { count: product.quantity })}</span>
                     <span>{t('order.total2', { price: product.price })}</span>
                     <p className='statuss'>
-                    {t('order.status')}: <span className={STATUS_CLASSES[product.status.name] || 'status'}>
-                        {t(`status.${product.status.name}`)}
+                    {t('order.status')}: <span className={STATUS_CLASSES[product.status?.name] || 'status'}>
+                       {product.status?.name ? t(`status.${product.status.name}`) : '—'}
                     </span>
                 </p>
                 </div>
